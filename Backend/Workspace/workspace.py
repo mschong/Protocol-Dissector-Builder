@@ -15,6 +15,8 @@
 class Workspace:
     name = None
     projects = None
+    startdate = None
+    editDate = None
 
     def __init__(self, name, projects):
         print("[+] Initializing Workspace " + name)

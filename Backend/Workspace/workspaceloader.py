@@ -1,4 +1,4 @@
-import sys
+import sys, os, ntpath
 import xml.etree.ElementTree as ET
 sys.path.append('../..')
 from Backend.Workspace import workspace
@@ -8,7 +8,8 @@ from Backend.Project import project
 #
 class WorkspaceLoader:
 
-    def saveworkspace(self, name, path, projects):
+    def saveworkspace(self, file, projects):
+        name = ntpath.basename(file)
         if name is None or name == "":
             print("[-] The name of the workspace cannot be empty")
             exit(1)
@@ -21,15 +22,15 @@ class WorkspaceLoader:
                 xml += "</project>"
         xml += "<workspace name=\"" + name + "\"></workspace>"
         try:
-            with open(name + ".txt", "w") as text_file:
+            with open(file, "w") as text_file:
                 text_file.write(xml)
         except:
             print("[-] Unable to create file")
 
-    def parsexmltoworkspace(self, name, path):
+    def parsexmltoworkspace(self, file):
         print("[+] Parsing Workspace")
         try:
-            tree = ET.parse(path + "/" + name)
+            tree = ET.parse(file)
             root = tree.getroot()
             wsname = root.get("name")
             projects = []
@@ -38,14 +39,15 @@ class WorkspaceLoader:
                 # TODO:missing implementation to parse the attributes of each project xml
                 #  like bytes, multi bytes, etc
                 projects.append(p)
+                print("[+] Added Project " + p.name + " to Workspace")
             ws = workspace.Workspace(wsname, projects)
+            ws.startdate = root.get("startdate")
+            ws.editDate = root.get("editdate")
             return ws
         except :
             print("[-] Unable to parse Workspace from XML")
-            print("[-] Exiting now")
-        exit(1)
 
-    def loadworkspace(self, name, path):
-        print("[+] Loading Workspace from " + path + "/" + name)
-        ws = self.parsexmltoworkspace(name, path)
+    def loadworkspace(self, file):
+        print("[+] Loading Workspace from " + file)
+        ws = self.parsexmltoworkspace(file)
         return ws
