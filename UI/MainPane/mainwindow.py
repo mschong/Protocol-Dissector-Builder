@@ -38,7 +38,8 @@ class UiMainWindow(object):
         self.workspaceButton = QtWidgets.QPushButton(self.centralwidget)
         self.workspaceButton.setGeometry(QtCore.QRect(10, 50, 181, 25))
         self.workspaceButton.setObjectName("workspaceButton")
-        self.workspaceButton.clicked.connect(self.openworkspace)
+        #self.workspaceButton.clicked.connect(self.openworkspace)
+        self.workspaceButton.clicked.connect(self.addContextMenuToWorkspaceOpenButton)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1000, 22))
@@ -75,19 +76,33 @@ class UiMainWindow(object):
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.workspace_file = openWorkspaceUi.linePath.text()
             self.workspaceLabel.setText(self.workspace_file)
+            self.loadWorkspace()
 
     def createemptyworkspace(self, name):
         self.workspace = workspace.Workspace(name, None)
 
     def loadWorkspace(self):
-        if self.workspace == None:
-            errmsg = "Error While loading Workspace: Workspace cannot be None"
+        if self.workspace_file == None or self.workspace_file == "":
+            errmsg = "Error While loading Workspace: Workspace cannot be None or Empty"
             print("[-] " + errmsg)
             self.showErrorMessage(errmsg)
             return
-        self.workspaceLabel.setText(self.workspace.name)
+        wsname = ntpath.basename(self.workspace_file)
+        wspath = ntpath.dirname(self.workspace_file)
+        try:
+            wsl = workspaceloader.WorkspaceLoader()
+            self.workspace = wsl.loadworkspace(self.workspace_file)
+        except:
+            errmsg = "Error While loading Workspace"
+            print("[-] " + errmsg)
+            self.showErrorMessage(errmsg)
 
-    def workspaceContextMenu(self, event):
+    def runWithUnsavedWorkspace(self):
+        self.workspace = workspace.Workspace("untitled", None)
+        self.workspaceLabel.setText("Untitled Workspace*")
+        print("[+] Created generic untitled workspace")
+
+    def addContextMenuToWorkspace(self, event):
         cmenu = QtWidgets.QMenu()
         addNewProjectAction = cmenu.addAction("Add Project [+]")
         configureAction = cmenu.addAction("Configure Workspace")
@@ -102,7 +117,19 @@ class UiMainWindow(object):
         msgBox.setWindowTitle("Error")
         msgBox.exec_()
 
+    def addContextMenuToWorkspaceOpenButton(self):
+        self.workspaceButton.menu = QtWidgets.QMenu()
+        newWsAction = self.workspaceButton.menu.addAction("New Workspace")
+        openWsAction = self.workspaceButton.menu.addAction("Open Workspace ...")
+        action = self.workspaceButton.menu.exec_(self.workspaceButton.mapToGlobal(QtCore.QPoint(self.workspaceButton.pos())))
+        if action == newWsAction:
+            self.runWithUnsavedWorkspace()
+        elif action == openWsAction:
+            self.openworkspace()
+
+
 if __name__ == "__main__":
+    print("[+] Initializing GUI")
     app = QtWidgets.QApplication(sys.argv)
     mainDialog = QtWidgets.QMainWindow()
     ui = UiMainWindow()

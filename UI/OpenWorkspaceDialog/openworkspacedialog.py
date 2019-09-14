@@ -40,7 +40,6 @@ class Ui_OpenWorkspaceDialog(object):
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.file = str(dialog.selectedFiles()[0])
             self.linePath.setText(self.file)
-            self.path = self.linePath.text
 
     def retranslateUi(self, OpenWorkspaceDialog):
         _translate = QtCore.QCoreApplication.translate

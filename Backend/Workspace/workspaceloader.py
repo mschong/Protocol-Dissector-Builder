@@ -28,7 +28,7 @@ class WorkspaceLoader:
             print("[-] Unable to create file")
 
     def parsexmltoworkspace(self, file):
-        print("[+] Parsing Workspace")
+        print("[+] Parsing Workspace from " + file)
         try:
             tree = ET.parse(file)
             root = tree.getroot()
@@ -39,7 +39,7 @@ class WorkspaceLoader:
                 # TODO:missing implementation to parse the attributes of each project xml
                 #  like bytes, multi bytes, etc
                 projects.append(p)
-                print("[+] Added Project " + p.name + " to Workspace")
+                print("[+] Parsed Project " + p.name + " from Workspace")
             ws = workspace.Workspace(wsname, projects)
             ws.startdate = root.get("startdate")
             ws.editDate = root.get("editdate")
@@ -48,6 +48,7 @@ class WorkspaceLoader:
             print("[-] Unable to parse Workspace from XML")
 
     def loadworkspace(self, file):
-        print("[+] Loading Workspace from " + file)
+        print("[+] Opening Workspace from " + file)
         ws = self.parsexmltoworkspace(file)
+        print("[+] Parsing complete")
         return ws
