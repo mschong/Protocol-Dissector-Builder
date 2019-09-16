@@ -7,7 +7,7 @@ from Backend.Workspace import workspace
 from UI.OpenWorkspaceDialog import openworkspacedialog
 
 class UiMainWindow(object):
-
+    workspace_pool = None
     workspace_file = None
     workspace = None
 
@@ -32,14 +32,13 @@ class UiMainWindow(object):
         self.canvasFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.canvasFrame.setObjectName("canvasFrame")
         self.workspaceLabel = QtWidgets.QLabel(self.centralwidget)
-        self.workspaceLabel.setGeometry(QtCore.QRect(390, 10, 300, 17))
+        self.workspaceLabel.setGeometry(QtCore.QRect(390, 10, 500, 17))
         self.workspaceLabel.setText("")
         self.workspaceLabel.setObjectName("workspaceLabel")
         self.workspaceButton = QtWidgets.QPushButton(self.centralwidget)
         self.workspaceButton.setGeometry(QtCore.QRect(10, 50, 181, 25))
         self.workspaceButton.setObjectName("workspaceButton")
-        #self.workspaceButton.clicked.connect(self.openworkspace)
-        self.workspaceButton.clicked.connect(self.addContextMenuToWorkspaceOpenButton)
+        self.workspaceButton.clicked.connect(self.addContextMenuToSelfWorkspaceOpenButton)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1000, 22))
@@ -92,6 +91,7 @@ class UiMainWindow(object):
         try:
             wsl = workspaceloader.WorkspaceLoader()
             self.workspace = wsl.loadworkspace(self.workspace_file)
+            self.moveWorkspaceButtonToBottom()
         except:
             errmsg = "Error While loading Workspace"
             print("[-] " + errmsg)
@@ -101,13 +101,7 @@ class UiMainWindow(object):
         self.workspace = workspace.Workspace("untitled", None)
         self.workspaceLabel.setText("Untitled Workspace*")
         print("[+] Created generic untitled workspace")
-
-    def addContextMenuToWorkspace(self, event):
-        cmenu = QtWidgets.QMenu()
-        addNewProjectAction = cmenu.addAction("Add Project [+]")
-        configureAction = cmenu.addAction("Configure Workspace")
-        closeWorkspaceAction = cmenu.addAction("Close Workspace [X]")
-        #cmenu.exec_(self.mapToGlobal(event.pos()))
+        self.moveWorkspaceButtonToBottom()
 
     def showErrorMessage(self, errostr):
         msgBox = QtWidgets.QMessageBox()
@@ -117,16 +111,47 @@ class UiMainWindow(object):
         msgBox.setWindowTitle("Error")
         msgBox.exec_()
 
-    def addContextMenuToWorkspaceOpenButton(self):
+    def addContextMenuToSelfWorkspaceOpenButton(self):
         self.workspaceButton.menu = QtWidgets.QMenu()
         newWsAction = self.workspaceButton.menu.addAction("New Workspace")
         openWsAction = self.workspaceButton.menu.addAction("Open Workspace ...")
-        action = self.workspaceButton.menu.exec_(self.workspaceButton.mapToGlobal(QtCore.QPoint(self.workspaceButton.pos())))
+        action = self.workspaceButton.menu.exec_(self.getDefaultContextMenuQPointforButton(self.workspaceButton))
         if action == newWsAction:
             self.runWithUnsavedWorkspace()
         elif action == openWsAction:
             self.openworkspace()
 
+    def addContextMenuToProject(self, parent):
+        parent.menu = QtWidgets.QMenu()
+        saveProjectAction = parent.menu.addAction("Save Project")
+        exportProjectAction = parent.menu.addAction("Export Dissector [ -> ]")
+        configureProjectAction = parent.menu.addAction("Configure Project")
+        closeProjectAction = parent.menu.addAction("Close Project [ X ]")
+
+    def addContextMenuToWorskpaceGenericButton(self, parent):
+        parent.menu = QtWidgets.QMenu()
+        addWsAction = parent.menu.addAction("Add a Project")
+        configureWsAction = parent.menu.addAction("Configure Workspace")
+        closeWsAction = parent.menu.addAction("Close Workspace [ X ]")
+
+    def getDefaultContextMenuQPointforButton(self, button):
+        point = QtCore.QPoint()
+        point.setX(button.pos().x())
+        point.setY(button.pos().y() + 70)
+        return point
+
+    def moveWorkspaceButtonToBottom(self):
+        currentPos = self.workspaceButton.pos()
+        x = currentPos.x()
+        y = self.treeView.rect().bottom()
+        point = QtCore.QPoint(x, y)
+        self.workspaceButton.move(point)
+
+    def createWorspaceGenericButton(self, wspace):
+        button = QtWidgets.QPushButton()
+        button.setText(wspace.name)
+        self.addContextMenuToWorskpaceGenericButton(button)
+        return button
 
 if __name__ == "__main__":
     print("[+] Initializing GUI")
