@@ -5,11 +5,11 @@ sys.path.insert(1, "../../")
 from Backend.Workspace import workspaceloader
 from Backend.Workspace import workspace
 from UI.OpenWorkspaceDialog import openworkspacedialog
+from UI.WorkspaceButton import WorkspaceButton
 
 class UiMainWindow(object):
-    workspace_pool = None
+    workspace_pool = []
     workspace_file = None
-    workspace = None
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -78,7 +78,8 @@ class UiMainWindow(object):
             self.loadWorkspace()
 
     def createemptyworkspace(self, name):
-        self.workspace = workspace.Workspace(name, None)
+        ws = workspace.Workspace(name, None)
+        self.appendToWorkspacePool(ws)
 
     def loadWorkspace(self):
         if self.workspace_file == None or self.workspace_file == "":
@@ -86,19 +87,36 @@ class UiMainWindow(object):
             print("[-] " + errmsg)
             self.showErrorMessage(errmsg)
             return
-        wsname = ntpath.basename(self.workspace_file)
-        wspath = ntpath.dirname(self.workspace_file)
         try:
             wsl = workspaceloader.WorkspaceLoader()
-            self.workspace = wsl.loadworkspace(self.workspace_file)
+            ws = wsl.loadworkspace(self.workspace_file)
             self.moveWorkspaceButtonToBottom()
+            self.appendToWorkspacePool(ws)
+            button = self.createWorspaceGenericButton(ws)
+            
         except:
-            errmsg = "Error While loading Workspace"
+            errmsg = "Error While loading Workspace "
             print("[-] " + errmsg)
             self.showErrorMessage(errmsg)
 
+    def appendToWorkspacePool(self, wspace):
+        if wspace is None or type(wspace) != workspace.Workspace:
+            errormsg = "Invalid object type for workspace"
+            print("[-] " + errormsg)
+            self.showErrorMessage(errormsg)
+            return
+        for ws in self.workspace_pool:
+            if wspace.name == ws.name:
+                errormsg = "Workspace " + wspace.name + " already loaded"
+                print("[-] " + errormsg)
+                self.showErrorMessage(errormsg)
+                return
+        self.workspace_pool.append(wspace)
+        print("[+] Workspace " + wspace.name + " added to Workspace pool")
+
     def runWithUnsavedWorkspace(self):
-        self.workspace = workspace.Workspace("untitled", None)
+        ws = workspace.Workspace("untitled", None)
+        self.appendToWorkspacePool(ws)
         self.workspaceLabel.setText("Untitled Workspace*")
         print("[+] Created generic untitled workspace")
         self.moveWorkspaceButtonToBottom()
@@ -148,7 +166,8 @@ class UiMainWindow(object):
         self.workspaceButton.move(point)
 
     def createWorspaceGenericButton(self, wspace):
-        button = QtWidgets.QPushButton()
+        button = WorkspaceButton.WorkspaceButton()
+        button.workspace = wspace
         button.setText(wspace.name)
         self.addContextMenuToWorskpaceGenericButton(button)
         return button
