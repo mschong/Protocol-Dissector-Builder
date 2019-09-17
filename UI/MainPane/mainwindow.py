@@ -90,10 +90,11 @@ class UiMainWindow(object):
         try:
             wsl = workspaceloader.WorkspaceLoader()
             ws = wsl.loadworkspace(self.workspace_file)
-            self.moveWorkspaceButtonToBottom()
             self.appendToWorkspacePool(ws)
+            self.moveWorkspaceButtonToBottom()
             button = self.createWorspaceGenericButton(ws)
-            
+            self.moveGenericWorkspaceButtonToBottom(button)
+
         except:
             errmsg = "Error While loading Workspace "
             print("[-] " + errmsg)
@@ -146,11 +147,13 @@ class UiMainWindow(object):
         configureProjectAction = parent.menu.addAction("Configure Project")
         closeProjectAction = parent.menu.addAction("Close Project [ X ]")
 
+
     def addContextMenuToWorskpaceGenericButton(self, parent):
         parent.menu = QtWidgets.QMenu()
         addWsAction = parent.menu.addAction("Add a Project")
         configureWsAction = parent.menu.addAction("Configure Workspace")
         closeWsAction = parent.menu.addAction("Close Workspace [ X ]")
+        action = parent.menu.exec_(self.getDefaultContextMenuQPointforButton(parent))
 
     def getDefaultContextMenuQPointforButton(self, button):
         point = QtCore.QPoint()
@@ -166,11 +169,19 @@ class UiMainWindow(object):
         self.workspaceButton.move(point)
 
     def createWorspaceGenericButton(self, wspace):
-        button = WorkspaceButton.WorkspaceButton()
+        button = WorkspaceButton.WorkspaceButton(wspace.name, self.centralwidget)
         button.workspace = wspace
-        button.setText(wspace.name)
-        self.addContextMenuToWorskpaceGenericButton(button)
+        button.setGeometry(QtCore.QRect(10, 50, 181, 25))
+        #self.addContextMenuToWorskpaceGenericButton(button)
         return button
+
+    def moveGenericWorkspaceButtonToBottom(self, button):
+        y = self.treeView.rect().top() + 40
+        x = self.workspaceButton.pos().x()
+        point = QtCore.QPoint(x, y)
+        button.move(point)
+        button.show()
+
 
 if __name__ == "__main__":
     print("[+] Initializing GUI")
