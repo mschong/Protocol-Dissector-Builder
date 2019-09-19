@@ -3,8 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from UI.OpenWorkspaceDialog import openworkspacedialog
 sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
-from Backend.Workspace import workspaceloader
-from Backend.Workspace import workspace
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 

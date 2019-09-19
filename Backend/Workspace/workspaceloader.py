@@ -1,8 +1,8 @@
 import sys, os, ntpath
 import xml.etree.ElementTree as ET
 sys.path.append('../..')
-from Backend.Workspace import workspace
-from Backend.Project import project
+from Workspace import workspace
+from Project import project
 #
 # The Workspace class has utility methods to load and save workspaces
 #

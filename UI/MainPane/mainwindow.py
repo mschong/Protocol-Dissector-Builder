@@ -2,16 +2,20 @@ import os, sys, ntpath
 from PyQt5 import QtCore, QtGui, QtWidgets
 sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
-from Backend.Workspace import workspaceloader
-from Backend.Workspace import workspace
+#from Backend.Workspace import workspaceloader
+#from Backend.Workspace import workspace
 from UI.OpenWorkspaceDialog import openworkspacedialog
 from UI.WorkspaceButton import WorkspaceButton
+import Pyro4
+import Pyro4.util
+from Backend.Workspace import workspace
 
 class UiMainWindow(object):
     workspace_pool = []
     workspace_file = None
 
     def setupUi(self, MainWindow):
+        self.pyro = Pyro4.Proxy("PYRONAME:pyro.service")
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1000, 800)
         MainWindow.setMinimumSize(QtCore.QSize(1000, 800))
@@ -88,8 +92,8 @@ class UiMainWindow(object):
             self.showErrorMessage(errmsg)
             return
         try:
-            wsl = workspaceloader.WorkspaceLoader()
-            ws = wsl.loadworkspace(self.workspace_file)
+            #wsl = workspaceloader.WorkspaceLoader()
+            ws = self.pyro.loadworkspace(self.workspace_file)
             self.moveWorkspaceButtonToBottom()
             self.appendToWorkspacePool(ws)
             button = self.createWorspaceGenericButton(ws)
@@ -180,3 +184,4 @@ if __name__ == "__main__":
     ui.setupUi(mainDialog)
     mainDialog.show()
     sys.exit(app.exec_())
+    sys.excepthook = Pyro4.util.excepthook
