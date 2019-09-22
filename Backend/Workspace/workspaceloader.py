@@ -6,7 +6,9 @@ from Project import project
 #
 # The Workspace class has utility methods to load and save workspaces
 #
-class WorkspaceLoader:
+class WorkspaceLoader():
+
+    workspace_pool = []
 
     def saveworkspace(self, file, projects):
         name = ntpath.basename(file)
@@ -43,6 +45,7 @@ class WorkspaceLoader:
             ws = workspace.Workspace(wsname, projects)
             ws.startdate = root.get("startdate")
             ws.editDate = root.get("editdate")
+            print("[+] Parsing complete")
             return ws
         except :
             print("[-] Unable to parse Workspace from XML")
@@ -50,5 +53,27 @@ class WorkspaceLoader:
     def loadworkspace(self, file):
         print("[+] Opening Workspace from " + file)
         ws = self.parsexmltoworkspace(file)
-        print("[+] Parsing complete")
-        return ws
+        try:
+            self.appendToWorkspacePool(ws)
+            return ws.name
+        except Exception as ex:
+            raise ex
+
+    def appendToWorkspacePool(self, wspace):
+        if wspace is None or type(wspace) != workspace.Workspace:
+            errormsg = "Invalid object type for workspace"
+            print("[-] " + errormsg)
+            raise Exception(errormsg)
+        for ws in self.workspace_pool:
+            if wspace.name == ws.name:
+                errormsg = "Workspace " + wspace.name + " already loaded"
+                print("[-] " + errormsg)
+                raise Exception(errormsg)
+        self.workspace_pool.append(wspace)
+        print("[+] Workspace " + wspace.name + " added to Workspace pool")
+
+    def runWithUnsavedWorkspace(self):
+        ws = workspace.Workspace("untitled", None)
+        self.appendToWorkspacePool(ws)
+        print("[+] Created generic untitled workspace")
+        return ws.name
