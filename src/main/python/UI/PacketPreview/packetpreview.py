@@ -54,13 +54,16 @@ class Ui_PackagePreview(object):
             number = pkt.frame_info.get_field_value("number")
             for protocol in (pkt.frame_info.protocols).split(":"):
                 ProtocolToAdd = QtGui.QStandardItem("Protocol #" + str(k))
-                for val in pkt[protocol].field_names:
-                    if(val != "payload" and val !="data"):
-                        ProtocolField = QtGui.QStandardItem(val)
-                        ProtocolValue = QtGui.QStandardItem(pkt[protocol].get_field_value(val))
-                        ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
-                k= k+1
-                branch1.appendRow(ProtocolToAdd)
+                try:
+                    for val in pkt[protocol].field_names:
+                        if(val != "payload" and val !="data"):
+                            ProtocolField = QtGui.QStandardItem(val)
+                            ProtocolValue = QtGui.QStandardItem(pkt[protocol].get_field_value(val))
+                            ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
+                    k= k+1
+                    branch1.appendRow(ProtocolToAdd)
+                except:
+                    pass
             self.model.appendRow([branch1,QtGui.QStandardItem(str(number))])
 
 
