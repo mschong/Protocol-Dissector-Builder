@@ -47,23 +47,22 @@ class Ui_PackagePreview(object):
         fname = QFileDialog.getOpenFileName()
         PCAPFile = PCAP.PCap(fname[0])
         PCAPFile.convertPCAP()
-        useMe = PCAPFile.obtainFilePath()
-        parsePDMLOut = parsePDML.makePackets(useMe)
-        parsePDML.printPackets(parsePDMLOut[0],parsePDMLOut[1])
-        for i in parsePDMLOut[0].keys():
+        i=0
+        for pkt in PCAPFile.pcapFile:
             branch1= QtGui.QStandardItem("Package #")
-            tempPackage = parsePDMLOut[0][i]
             k=0
-            for Protocol in parsePDMLOut[1][tempPackage]:
+            number = pkt.frame_info.get_field_value("number")
+            for protocol in (pkt.frame_info.protocols).split(":"):
                 ProtocolToAdd = QtGui.QStandardItem("Protocol #" + str(k))
-                for ProtocolField,ProtocolValue in Protocol:
-                    ProtocolField = QtGui.QStandardItem(ProtocolField)
-                    ProtocolValue = QtGui.QStandardItem(ProtocolValue)
-                    ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
+                for val in pkt[protocol].field_names:
+                    if(val != "payload" and val !="data"):
+                        ProtocolField = QtGui.QStandardItem(val)
+                        ProtocolValue = QtGui.QStandardItem(pkt[protocol].get_field_value(val))
+                        ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
+                k= k+1
                 branch1.appendRow(ProtocolToAdd)
-                k = k+1
+            self.model.appendRow([branch1,QtGui.QStandardItem(str(number))])
 
-            self.model.appendRow([branch1,QtGui.QStandardItem(str(i))])
 
     def retranslateUi(self, PackagePreview):
         _translate = QtCore.QCoreApplication.translate
