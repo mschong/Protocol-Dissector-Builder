@@ -1,4 +1,4 @@
-import sys, os, ntpath
+import sys, os, ntpath, datetime
 import xml.etree.ElementTree as ET
 sys.path.append('../..')
 from Workspace import workspace
@@ -9,8 +9,9 @@ from Project import project
 class WorkspaceLoader():
 
     workspace_pool = []
+    project_pool = []
 
-    def saveworkspace(self, file, projects):
+    def save_workspace(self, file, projects):
         name = ntpath.basename(file)
         if name is None or name == "":
             print("[-] The name of the workspace cannot be empty")
@@ -43,7 +44,7 @@ class WorkspaceLoader():
                 projects.append(p)
                 print("[+] Parsed Project " + p.name + " from Workspace")
             ws = workspace.Workspace(wsname, projects)
-            ws.startdate = root.get("startdate")
+            ws.startDate = root.get("startdate")
             ws.editDate = root.get("editdate")
             print("[+] Parsing complete")
             return ws
@@ -74,6 +75,53 @@ class WorkspaceLoader():
 
     def runWithUnsavedWorkspace(self):
         ws = workspace.Workspace("untitled", None)
+        ws.startDate = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
+        ws.editDate = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
         self.appendToWorkspacePool(ws)
         print("[+] Created generic untitled workspace")
         return ws.name
+
+    def get_workspace_pool_count(self):
+        return len(self.workspace_pool)
+
+    def print_workspace_pool(self):
+        print(self.workspace_pool)
+
+    def find_workspace(self, wsname):
+        if (wsname == None or wsname == ""):
+            errormsg = "Can't retrieve Workspace from pool because wsname is None or Empty"
+            print ("[-] " + errormsg)
+            raise Exception(errormsg)
+        result = None
+        for workspace in self.workspace_pool:
+            if wsname == workspace.name:
+                result = workspace
+                break
+        return result
+
+    def get_workspace_data_from_pool(self, wsname):
+        if (wsname == None or wsname == ""):
+            errormsg = "Can't retrieve Workspace from pool because wsname is None or Empty"
+            print ("[-] " + errormsg)
+            raise Exception(errormsg)
+        workspace = self.find_workspace(wsname)
+        result = None
+        if workspace != None:
+            result = []
+            result.append(workspace.name)
+            result.append(workspace.startDate)
+            result.append(workspace.editDate)
+        return result
+
+    def update_workspace(self, ws_currentname, ws_newname):
+        if ws_currentname == None or ws_currentname == "":
+            errormsg = "Unable to update Workpace, please provide a valid workspace name"
+            print("[-] " + errormsg)
+            raise Exception (errormsg)
+        if ws_newname == None or ws_newname == None:
+            errormsg = "Unable to update Workpace, please provide a valid NEW workspace name"
+            print("[-] " + errormsg)
+            raise Exception(errormsg)
+        workspace = self.find_workspace(ws_currentname)
+        workspace.name = ws_newname
+        # TODO: write changes to disk

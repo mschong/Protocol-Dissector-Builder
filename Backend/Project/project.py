@@ -5,6 +5,8 @@ import os.path
 class Project:
     attributes = []
     name = None
+    dateCreated = None
+    editDate = None
 
     def __init__(self, name):
         self.name = name
