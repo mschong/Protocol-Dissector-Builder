@@ -38,7 +38,7 @@ class Ui_Dialog(object):
         self.label_3.setGeometry(QtCore.QRect(20, 140, 351, 17))
         self.label_3.setObjectName("label_3")
         self.editDateLabel = QtWidgets.QLabel(Dialog)
-        self.editDateLabel.setGeometry(QtCore.QRect(20, 170, 351, 17))
+        self.editDateLabel.setGeometry(QtCore.QRect(20, 160, 351, 17))
         self.editDateLabel.setText("")
         self.editDateLabel.setObjectName("editDateLabel")
 
