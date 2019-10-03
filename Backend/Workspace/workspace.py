@@ -15,7 +15,7 @@
 class Workspace:
     name = None
     projects = None
-    startdate = None
+    startDate = None
     editDate = None
     isEdited = False
 

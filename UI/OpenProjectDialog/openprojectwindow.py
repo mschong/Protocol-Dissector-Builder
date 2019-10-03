@@ -19,6 +19,7 @@ class Ui_Dialog(object):
         self.browseButton = QtWidgets.QPushButton(Dialog)
         self.browseButton.setGeometry(QtCore.QRect(440, 40, 83, 25))
         self.browseButton.setObjectName("browseButton")
+        self.browseButton.clicked.connect(self.openProject)
         self.addButton = QtWidgets.QPushButton(Dialog)
         self.addButton.setGeometry(QtCore.QRect(440, 70, 83, 25))
         self.addButton.setObjectName("addButton")
@@ -38,3 +39,12 @@ class Ui_Dialog(object):
         self.browseButton.setText(_translate("Dialog", "Browse"))
         self.addButton.setText(_translate("Dialog", "Add"))
         self.label.setText(_translate("Dialog", "Open Existing Project"))
+
+    def openProject(self):
+        title = "Please select Project"
+        directory = "~/"
+        type = "XML files (*.xml)"
+        dialog = QtWidgets.QFileDialog(None, title, directory, type)
+        if dialog.exec_() == QtWidgets.QDialog.Accepted:
+            self.file = str(dialog.selectedFiles()[0])
+            self.linePathEdit.setText(self.file)
