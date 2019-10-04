@@ -9,6 +9,8 @@ from UI.WorkspaceButton import WorkspaceButton
 from UI.WorkspaceConfigDialog import workspaceconfigwindow
 from UI.CloseWorkspaceDialog import closeworkspacewindow
 from UI.OpenProjectDialog import openprojectwindow
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
+
 
 class UiMainWindow(object):
     workspace_file = None
@@ -223,9 +225,11 @@ class UiMainWindow(object):
 
 if __name__ == "__main__":
     print("[+] Initializing GUI")
+    appctxt = ApplicationContext() #required for fbs
     app = QtWidgets.QApplication(sys.argv)
     mainDialog = QtWidgets.QMainWindow()
     ui = UiMainWindow()
     ui.setupUi(mainDialog)
     mainDialog.show()
+    exit_code = appctxt.app.exec_()
     sys.exit(app.exec_())
