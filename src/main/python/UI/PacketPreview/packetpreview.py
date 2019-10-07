@@ -19,20 +19,27 @@ class Ui_PackagePreview(object):
         PackagePreview.setObjectName("PackagePreview")
         PackagePreview.resize(880, 454)
         self.treeView = QtWidgets.QTreeView(PackagePreview)
-        self.treeView.setGeometry(QtCore.QRect(0, 50, 521, 401))
+        self.treeView.setGeometry(QtCore.QRect(0, 50, 400, 401))
         self.treeView.setObjectName("treeView")
 
         self.model = QtGui.QStandardItemModel(0,2)
         self.treeView.setModel(self.model)
 
+        self.pushButton2 = QtWidgets.QPushButton(PackagePreview)
+        self.pushButton2.setGeometry(QtCore.QRect(415, 200, 101, 40))
+        self.pushButton2.setObjectName("pushButton_2")
+        self.pushButton2.clicked.connect(self.dissect)
+
         self.listView = QtWidgets.QListView(PackagePreview)
         self.listView.setEnabled(False)
         self.listView.setGeometry(QtCore.QRect(530, 50, 321, 381))
         self.listView.setObjectName("listView")
+
         self.pushButton = QtWidgets.QPushButton(PackagePreview)
         self.pushButton.setGeometry(QtCore.QRect(0, 0, 83, 25))
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.openFile)
+
         self.label = QtWidgets.QLabel(PackagePreview)
         self.label.setGeometry(QtCore.QRect(530, 30, 131, 17))
         self.label.setObjectName("label")
@@ -63,11 +70,14 @@ class Ui_PackagePreview(object):
                 branch1.appendRow(ProtocolToAdd)
             self.model.appendRow([branch1,QtGui.QStandardItem(str(number))])
 
+    def dissect(self):
+        print("Hello")
 
     def retranslateUi(self, PackagePreview):
         _translate = QtCore.QCoreApplication.translate
         PackagePreview.setWindowTitle(_translate("PackagePreview", "PackagePreview"))
         self.pushButton.setText(_translate("PackagePreview", "File"))
+        self.pushButton2.setText(_translate("PackagePreview", "Dissect >"))
         self.label.setText(_translate("PackagePreview", "Dissected Data"))
         self.label_2.setText(_translate("PackagePreview", "Packet Stream"))
 
