@@ -12,23 +12,29 @@ from StartField import StartField
 from Field import Field
 from Loop import Loop
 from Decision import Decision
+from GraphicsProxyWidget import GraphicsProxyWidget
+from DropGraphicsScene import DropGraphicsScene
+from DragButton import DragButton
 
 
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(619, 300)
+        Form.resize(900, 550)
         self.dba_label = QtWidgets.QLabel(Form)
         self.dba_label.setGeometry(QtCore.QRect(120, 10, 151, 16))
         self.dba_label.setObjectName("dba_label")
         self.graphicsView = QtWidgets.QGraphicsView(Form)
-        self.graphicsView.setGeometry(QtCore.QRect(35, 31, 321, 251))
+        self.graphicsView.setGeometry(QtCore.QRect(35, 31, 600, 500))
         self.graphicsView.setObjectName("graphicsView")
+        self.scene = DropGraphicsScene()
+        self.graphicsView.setSceneRect(0, 0, self.graphicsView.width(), self.graphicsView.height())
+        self.graphicsView.setScene(self.scene)
         self.toolbox_label = QtWidgets.QLabel(Form)
-        self.toolbox_label.setGeometry(QtCore.QRect(480, 10, 64, 17))
+        self.toolbox_label.setGeometry(QtCore.QRect(650, 10, 64, 17))
         self.toolbox_label.setObjectName("toolbox_label")
         self.toolBox = QtWidgets.QToolBox(Form)
-        self.toolBox.setGeometry(QtCore.QRect(400, 30, 201, 251))
+        self.toolBox.setGeometry(QtCore.QRect(650, 30, 201, 251))
         self.toolBox.setObjectName("toolBox")
         self.field_tab = QtWidgets.QWidget()
         self.field_tab.setGeometry(QtCore.QRect(0, 0, 201, 189))
@@ -38,10 +44,10 @@ class Ui_Form(object):
         self.startField_button.setObjectName("startField_button")
         self.startField_button.clicked.connect(self.open_start_field_window)
 
-        self.field_button = QtWidgets.QPushButton(self.field_tab)
+        self.field_button = DragButton('Field', self.field_tab)
         self.field_button.setGeometry(QtCore.QRect(20, 90, 171, 71))
         self.field_button.setObjectName("field_button")
-        self.field_button.clicked.connect(self.open_field_window)
+
 
         self.toolBox.addItem(self.field_tab, "")
         self.construct_tab = QtWidgets.QWidget()
@@ -70,7 +76,7 @@ class Ui_Form(object):
         self.dba_label.setText(_translate("Form", "Dissector Builder Area"))
         self.toolbox_label.setText(_translate("Form", "Toolbox"))
         self.startField_button.setText(_translate("Form", "Start Field"))
-        self.field_button.setText(_translate("Form", "Field"))
+        #self.field_button.setText(_translate("Form", "Field"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.field_tab), _translate("Form", "Field"))
         self.decision_button.setText(_translate("Form", "Decision"))
         self.loop_button.setText(_translate("Form", "Loop"))
