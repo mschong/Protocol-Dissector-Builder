@@ -14,6 +14,7 @@ sys.path.append('../..')
 from Backend.PCAP import PCAP
 from Backend.PCAP import parsePDML
 
+
 class Ui_PackagePreview(object):
     def setupUi(self, PackagePreview):
         PackagePreview.setObjectName("PackagePreview")
@@ -25,10 +26,6 @@ class Ui_PackagePreview(object):
         self.model = QtGui.QStandardItemModel(0,2)
         self.treeView.setModel(self.model)
 
-        self.pushButton2 = QtWidgets.QPushButton(PackagePreview)
-        self.pushButton2.setGeometry(QtCore.QRect(415, 200, 101, 40))
-        self.pushButton2.setObjectName("pushButton_2")
-        self.pushButton2.clicked.connect(self.dissect)
 
         self.listView = QtWidgets.QListView(PackagePreview)
         self.listView.setEnabled(False)
@@ -40,6 +37,11 @@ class Ui_PackagePreview(object):
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.openFile)
 
+        self.pushButton2 = QtWidgets.QPushButton(PackagePreview)
+        self.pushButton2.setGeometry(QtCore.QRect(415, 200, 101, 40))
+        self.pushButton2.setObjectName("pushButton2")
+        self.pushButton2.clicked.connect(self.dissect)
+           
         self.label = QtWidgets.QLabel(PackagePreview)
         self.label.setGeometry(QtCore.QRect(530, 30, 131, 17))
         self.label.setObjectName("label")
@@ -50,8 +52,11 @@ class Ui_PackagePreview(object):
         self.retranslateUi(PackagePreview)
         QtCore.QMetaObject.connectSlotsByName(PackagePreview)
 
+    name = ""
     def openFile(self):
         fname = QFileDialog.getOpenFileName()
+        global name
+        name = fname[0]
         PCAPFile = PCAP.PCap(fname[0])
         PCAPFile.convertPCAP()
         i=0
@@ -72,9 +77,13 @@ class Ui_PackagePreview(object):
                 except:
                     pass
             self.model.appendRow([branch1,QtGui.QStandardItem(str(number))])
-
+    
     def dissect(self):
-        print("Hello")
+        print("MESSAGE")
+        print(name)
+        PCAPFile = PCAP.PCap(name)
+        PCAPFile.dissectPCAP()
+       
 
     def retranslateUi(self, PackagePreview):
         _translate = QtCore.QCoreApplication.translate
