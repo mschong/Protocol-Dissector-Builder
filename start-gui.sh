@@ -4,4 +4,4 @@
 # evazquez 9/9/2019
 
 #python3 ./Backend/pyro_run.py &
-python3 ./UI/MainPane/mainwindow.py
+python3 ./src/main/python/UI/MainPane/mainwindow.py

@@ -1,7 +1,6 @@
 import os, sys, ntpath
 from PyQt5 import QtCore, QtGui, QtWidgets
-import Pyro4
-import Pyro4.util
+import Pyro4, Pyro4.util
 sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
 from UI.OpenWorkspaceDialog import openworkspacedialog
@@ -11,7 +10,6 @@ from UI.CloseWorkspaceDialog import closeworkspacewindow
 from UI.OpenProjectDialog import openprojectwindow
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
-
 class UiMainWindow(object):
     workspace_file = None
     pyro_proxy = None
@@ -19,28 +17,29 @@ class UiMainWindow(object):
     def setupUi(self, MainWindow):
         ns = Pyro4.locateNS()
         uri = ns.lookup("pyro.service")
-        self.pyro_proxy = Pyro4.Proxy(uri)
+        self.pyro_proxy = Pyro4.Proxy(uri)  # Pyro being initilized!!
+
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1000, 800)
-        MainWindow.setMinimumSize(QtCore.QSize(1000, 800))
-        MainWindow.setMaximumSize(QtCore.QSize(1000, 800))
+        MainWindow.resize(1200, 800)
+        MainWindow.setMinimumSize(QtCore.QSize(1200, 800))
+        MainWindow.setMaximumSize(QtCore.QSize(1200, 800))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.treeView = QtWidgets.QTreeView(self.centralwidget)
         self.treeView.setGeometry(QtCore.QRect(0, 30, 211, 521))
         self.treeView.setObjectName("treeView")
         self.toolboxFrame = QtWidgets.QFrame(self.centralwidget)
-        self.toolboxFrame.setGeometry(QtCore.QRect(210, 30, 171, 521))
+        self.toolboxFrame.setGeometry(QtCore.QRect(210, 30, 291, 521))
         self.toolboxFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.toolboxFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.toolboxFrame.setObjectName("toolboxFrame")
         self.canvasFrame = QtWidgets.QFrame(self.centralwidget)
-        self.canvasFrame.setGeometry(QtCore.QRect(380, 30, 611, 521))
+        self.canvasFrame.setGeometry(QtCore.QRect(500, 30, 691, 521))
         self.canvasFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.canvasFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.canvasFrame.setObjectName("canvasFrame")
         self.workspaceLabel = QtWidgets.QLabel(self.centralwidget)
-        self.workspaceLabel.setGeometry(QtCore.QRect(390, 10, 500, 17))
+        self.workspaceLabel.setGeometry(QtCore.QRect(500, 10, 691, 17))
         self.workspaceLabel.setText("")
         self.workspaceLabel.setObjectName("workspaceLabel")
         self.workspaceButton = QtWidgets.QPushButton(self.centralwidget)
@@ -49,7 +48,7 @@ class UiMainWindow(object):
         self.workspaceButton.clicked.connect(self.addContextMenuToSelfWorkspaceOpenButton)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1000, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1200, 22))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -75,6 +74,7 @@ class UiMainWindow(object):
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
         self.menuAbout.setTitle(_translate("MainWindow", "About"))
+
 
     def openworkspace(self):
         dialog = QtWidgets.QDialog()
@@ -222,7 +222,7 @@ class UiMainWindow(object):
 
     def addContextMenuToWSGenButton(self):
         self.RunContextMenuToWorskpaceGenericButton(self.centralwidget.sender())
-
+"""
 if __name__ == "__main__":
     print("[+] Initializing GUI")
     appctxt = ApplicationContext() #required for fbs
@@ -233,3 +233,4 @@ if __name__ == "__main__":
     mainDialog.show()
     exit_code = appctxt.app.exec_()
     sys.exit(app.exec_())
+"""
