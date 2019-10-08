@@ -1,6 +1,11 @@
+
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
+from PyQt5.QtWidgets import QMainWindow
+import Pyro4
+import Pyro4.util
 import os, sys, ntpath
 from PyQt5 import QtCore, QtGui, QtWidgets
-import Pyro4, Pyro4.util
+
 sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
 from UI.OpenWorkspaceDialog import openworkspacedialog
@@ -10,6 +15,9 @@ from UI.CloseWorkspaceDialog import closeworkspacewindow
 from UI.OpenProjectDialog import openprojectwindow
 from UI.SaveDialog import savedialog
 
+
+
+
 class UiMainWindow(object):
     workspace_file = None
     pyro_proxy = None
@@ -17,8 +25,7 @@ class UiMainWindow(object):
     def setupUi(self, MainWindow):
         ns = Pyro4.locateNS()
         uri = ns.lookup("pyro.service")
-        self.pyro_proxy = Pyro4.Proxy(uri)  # Pyro being initilized!!
-
+        self.pyro_proxy = Pyro4.Proxy(uri)
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1200, 800)
         MainWindow.setMinimumSize(QtCore.QSize(1200, 800))
