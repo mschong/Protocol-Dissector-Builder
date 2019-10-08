@@ -19,6 +19,7 @@ class Ui_PackagePreview(object):
     def setupUi(self, PackagePreview):
         PackagePreview.setObjectName("PackagePreview")
         PackagePreview.resize(880, 454)
+        
         self.treeView = QtWidgets.QTreeView(PackagePreview)
         self.treeView.setGeometry(QtCore.QRect(0, 50, 400, 401))
         self.treeView.setObjectName("treeView")
@@ -26,11 +27,18 @@ class Ui_PackagePreview(object):
         self.model = QtGui.QStandardItemModel(0,2)
         self.treeView.setModel(self.model)
 
+        self.treeView2 = QtWidgets.QTreeView(PackagePreview)
+        self.treeView2.setGeometry(QtCore.QRect(530, 50, 321, 381))
+        self.treeView2.setObjectName("treeView")
 
-        self.listView = QtWidgets.QListView(PackagePreview)
-        self.listView.setEnabled(False)
-        self.listView.setGeometry(QtCore.QRect(530, 50, 321, 381))
-        self.listView.setObjectName("listView")
+        self.model2 = QtGui.QStandardItemModel(0,2)
+        self.treeView2.setModel(self.model2)
+
+
+       # self.listView = QtWidgets.QListView(PackagePreview)
+       # self.listView.setEnabled(False)
+       # self.listView.setGeometry(QtCore.QRect(530, 50, 321, 381))
+       # self.listView.setObjectName("listView")
 
         self.pushButton = QtWidgets.QPushButton(PackagePreview)
         self.pushButton.setGeometry(QtCore.QRect(0, 0, 83, 25))
@@ -65,7 +73,8 @@ class Ui_PackagePreview(object):
             k=0
             number = pkt.frame_info.get_field_value("number")
             for protocol in (pkt.frame_info.protocols).split(":"):
-                ProtocolToAdd = QtGui.QStandardItem("Protocol #" + str(k))
+                #ProtocolToAdd = QtGui.QStandardItem("Protocol" + str(k))
+                ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
                 try:
                     for val in pkt[protocol].field_names:
                         if(val != "payload" and val !="data"):
@@ -81,8 +90,28 @@ class Ui_PackagePreview(object):
     def dissect(self):
         print("MESSAGE")
         print(name)
-        PCAPFile = PCAP.PCap(name)
-        PCAPFile.dissectPCAP()
+        PCAPFileD = PCAP.PCap(name)
+        PCAPFileD.dissectPCAP()
+
+        i=0
+        for pkt in PCAPFileD.pcapFile:
+            branch2= QtGui.QStandardItem("Package #")
+            k=0
+            number = pkt.frame_info.get_field_value("number")
+            for protocol in (pkt.frame_info.protocols).split(":"):
+                ProtocolToAdd = QtGui.QStandardItem("Protocol: " + protocol)
+                try:
+                    for val in pkt[protocol].field_names:
+                        if(val != "payload" and val !="data"):
+                            ProtocolField = QtGui.QStandardItem(val)
+                            ProtocolValue = QtGui.QStandardItem(pkt[protocol].get_field_value(val))
+                            ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
+                    k= k+1
+                    branch2.appendRow(ProtocolToAdd)
+                except:
+                    pass
+            self.model2.appendRow([branch2,QtGui.QStandardItem(str(number))])
+
        
 
     def retranslateUi(self, PackagePreview):
