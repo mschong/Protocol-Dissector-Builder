@@ -9,6 +9,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtGui import QBrush, QColor
 import sys
 sys.path.append('../..')
 from Backend.PCAP import PCAP
@@ -24,14 +25,15 @@ class Ui_PackagePreview(object):
         self.treeView.setGeometry(QtCore.QRect(0, 50, 400, 401))
         self.treeView.setObjectName("treeView")
 
-        self.model = QtGui.QStandardItemModel(0,2)
+        self.model = QtGui.QStandardItemModel(0,1)
         self.treeView.setModel(self.model)
 
         self.treeView2 = QtWidgets.QTreeView(PackagePreview)
         self.treeView2.setGeometry(QtCore.QRect(530, 50, 321, 381))
         self.treeView2.setObjectName("treeView")
+        # self.treeView2.setStyleSheet("text-color: green")
 
-        self.model2 = QtGui.QStandardItemModel(0,2)
+        self.model2 = QtGui.QStandardItemModel(0,1)
         self.treeView2.setModel(self.model2)
 
 
@@ -93,6 +95,9 @@ class Ui_PackagePreview(object):
         PCAPFileD = PCAP.PCap(name)
         PCAPFileD.dissectPCAP()
         PCAPFileD.colorFilter()
+        color = QColor(255,0,0) #red
+        if PCAPFileD.getColor():
+            color = QColor(0,255,0)
         i=0
         for pkt in PCAPFileD.pcapFile:
             branch2= QtGui.QStandardItem("Package #")
@@ -100,17 +105,27 @@ class Ui_PackagePreview(object):
             number = pkt.frame_info.get_field_value("number")
             for protocol in (pkt.frame_info.protocols).split(":"):
                 ProtocolToAdd = QtGui.QStandardItem("Protocol: " + protocol)
+                ProtocolToAdd.setData(QBrush(color), QtCore.Qt.BackgroundRole)
                 try:
                     for val in pkt[protocol].field_names:
                         if(val != "payload" and val !="data"):
                             ProtocolField = QtGui.QStandardItem(val)
                             ProtocolValue = QtGui.QStandardItem(pkt[protocol].get_field_value(val))
                             ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
+                            # Color rows
+                            # ProtocolToAdd.setData(QBrush(QColor(255,0,0)), QtCore.Qt.BackgroundRole)
+                            ProtocolValue.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+                            ProtocolField.setData(QBrush(color), QtCore.Qt.BackgroundRole)
                     k= k+1
                     branch2.appendRow(ProtocolToAdd)
+                    branch2.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+                    
                 except:
                     pass
-            self.model2.appendRow([branch2,QtGui.QStandardItem(str(number))])
+            numberCol = QtGui.QStandardItem(str(number))
+            self.model2.appendRow([branch2,numberCol])
+            numberCol.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+        
 
        
 

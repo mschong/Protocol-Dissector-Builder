@@ -7,6 +7,7 @@ class PCap:
     def __init__(self,PCAPLocation):
         self.fileLocation = PCAPLocation
         self.pcapFile =""
+        self.colorFlag = False
     def convertPCAP(self):
         print("Opening file with PyShark")
         try:
@@ -47,13 +48,16 @@ class PCap:
 
     def colorFilter(self):
         tw = py.io.TerminalWriter()
-        flag= False
+        # self.colorFlag= False
         for pkt in self.pcapFile:
             for prot in pkt.frame_info.protocols.split(":"):
                 if prot=='mydns':
-                    flag=True
+                    self.colorFlag=True
             for prot in pkt:
-                if flag:
+                if self.colorFlag:
                     tw.write("%s" % prot, green=True, bold=True )
                 else:
                     tw.write("%s" % prot, red=True, bold=True )
+
+    def getColor(self):
+        return self.colorFlag
