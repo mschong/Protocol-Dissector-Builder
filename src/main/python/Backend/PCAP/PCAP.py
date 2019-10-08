@@ -26,6 +26,12 @@ class PCap:
         self.pcapFile = pyshark.FileCapture(self.fileLocation)
         print("Done")
 
+    def dissectPCAP(self):
+        param = {"-X": 'lua_script:/root/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
+        self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
+
+
+
     def createObjects(self):
         print("Done")
 

@@ -92,7 +92,7 @@ class Ui_PackagePreview(object):
         print(name)
         PCAPFileD = PCAP.PCap(name)
         PCAPFileD.dissectPCAP()
-
+        PCAPFileD.printPackets()
         i=0
         for pkt in PCAPFileD.pcapFile:
             branch2= QtGui.QStandardItem("Package #")
