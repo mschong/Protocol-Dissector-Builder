@@ -10,7 +10,8 @@ class PCap:
         print("Opening file with PyShark")
         try:
             varSize= os.path.getsize(self.fileLocation)
-        except:
+        except Exception as e:
+            print(str(e))
             print("File doesnt exist! ")
             return
         if(varSize >= 50e7):
@@ -18,6 +19,10 @@ class PCap:
             answer = input()
             if(not answer) or (answer.lower()[0] != 'y'):
                 return
+        # How 2 dissect using MyDNS
+        # param = {"-X": 'lua_script:/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
+        # self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
+
         self.pcapFile = pyshark.FileCapture(self.fileLocation)
         print("Done")
 
