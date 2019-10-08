@@ -1,0 +1,52 @@
+# Python package
+# Create and test a Python package on multiple Python versions.
+# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+strategy:
+  matrix:
+  
+    Python36:
+      python.version: '3.6'
+   
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements/base.txt
+  displayName: 'Install dependencies'
+
+- script: |
+    sudo apt-get remove ruby
+    sudo apt-get install ruby ruby-dev rubygems build-essential
+    sudo gem install --no-ri --no-rdoc fpm
+  displayName: 'Ubuntu specific dependencies'
+
+#will be used for testing later
+#- script: |
+#    pip install pytest pytest-azurepipelines
+#    pytest
+#  displayName: 'pytest'
+
+
+- script: |
+    fbs freeze
+    fbs installer
+  displayName: 'freeze app and build installer'
+
+
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(System.DefaultWorkingDirectory)/target'
+    artifact: 'linux installer'
