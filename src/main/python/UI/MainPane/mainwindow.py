@@ -1,15 +1,13 @@
-import os, sys, ntpath
-from PyQt5 import QtCore, QtGui, QtWidgets
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
+from PyQt5.QtWidgets import QMainWindow
 import Pyro4
 import Pyro4.util
+import os, sys, ntpath
+from PyQt5 import QtCore, QtGui, QtWidgets
 sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
-from UI.OpenWorkspaceDialog import openworkspacedialog
-from UI.WorkspaceButton import WorkspaceButton
-from UI.WorkspaceConfigDialog import workspaceconfigwindow
-from UI.CloseWorkspaceDialog import closeworkspacewindow
-from UI.OpenProjectDialog import openprojectwindow
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
+
+
 
 
 class UiMainWindow(object):
@@ -17,9 +15,9 @@ class UiMainWindow(object):
     pyro_proxy = None
 
     def setupUi(self, MainWindow):
-        ns = Pyro4.locateNS()
-        uri = ns.lookup("pyro.service")
-        self.pyro_proxy = Pyro4.Proxy(uri)
+        #ns = Pyro4.locateNS()
+        #uri = ns.lookup("pyro.service")
+        #self.pyro_proxy = Pyro4.Proxy(uri)
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1000, 800)
         MainWindow.setMinimumSize(QtCore.QSize(1000, 800))
@@ -232,4 +230,4 @@ if __name__ == "__main__":
     ui.setupUi(mainDialog)
     mainDialog.show()
     exit_code = appctxt.app.exec_()
-    sys.exit(app.exec_())
+    sys.exit(exit_code)
