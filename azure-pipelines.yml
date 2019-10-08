@@ -1,0 +1,144 @@
+
+
+trigger:
+  - master
+  - project-navigator-pane
+  - packet-preview-pane
+  - dissector-builder-pane
+pr:
+  - master
+
+jobs:
+- job: Linux
+  pool:
+    vmImage: 'ubuntu-latest'
+  strategy:
+    matrix:
+    
+      Python36:
+        python.version: '3.6'
+  steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(python.version)'
+      displayName: 'Use Python $(python.version)'
+
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements/base.txt
+      displayName: 'Install dependencies'
+
+    - script: |
+        sudo apt-get remove ruby
+        sudo apt-get install ruby ruby-dev rubygems build-essential
+        sudo gem install --no-ri --no-rdoc fpm
+      displayName: 'Ubuntu specific dependencies'
+
+    #will be used for testing later
+    #- script: |
+    #    pip install pytest pytest-azurepipelines
+    #    pytest
+    #  displayName: 'pytest'
+
+
+    - script: |
+        fbs freeze
+        fbs installer
+      displayName: 'freeze app and build installer'
+
+
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/target'
+        artifact: 'debian installer'
+
+- job: macOS
+  pool:
+    vmImage: 'macos-latest'
+  strategy:
+      matrix:
+      
+        Python36:
+          python.version: '3.6'
+  steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(python.version)'
+      displayName: 'Use Python $(python.version)'
+
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements/base.txt
+      displayName: 'Install dependencies'
+
+  
+
+    #will be used for testing later
+    #- script: |
+    #    pip install pytest pytest-azurepipelines
+    #    pytest
+    #  displayName: 'pytest'
+
+
+    - script: |
+        fbs freeze
+        fbs installer
+      displayName: 'freeze app and build installer'
+
+
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/target'
+        artifact: 'macOS installer'
+
+
+- job: Windows
+  pool:
+    vmImage: 'windows-latest'
+  strategy:
+      matrix:
+        Python36:
+          python.version: '3.6'
+  steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(python.version)'
+      displayName: 'Use Python $(python.version)'
+
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements/base.txt
+      displayName: 'Install dependencies'
+
+  
+
+    #will be used for testing later
+    #- script: |
+    #    pip install pytest pytest-azurepipelines
+    #    pytest
+    #  displayName: 'pytest'
+
+    - task: nsis@1
+      inputs:
+        scriptFile: 'install.nsi'
+        justInclude: 'yes'
+        includeMorePlugins: 'no'
+    - script: |
+        fbs freeze
+        fbs installer
+      displayName: 'freeze app and build installer'
+
+ 
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/target'
+        artifact: 'windows installer'
+
+
+
+   
+
+
