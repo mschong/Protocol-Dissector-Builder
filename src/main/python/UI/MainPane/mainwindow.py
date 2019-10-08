@@ -8,7 +8,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
-
+from UI.OpenWorkspaceDialog import openworkspacedialog
+from UI.WorkspaceButton import WorkspaceButton
+from UI.WorkspaceConfigDialog import workspaceconfigwindow
+from UI.CloseWorkspaceDialog import closeworkspacewindow
+from UI.OpenProjectDialog import openprojectwindow
 
 
 class UiMainWindow(object):
@@ -16,9 +20,9 @@ class UiMainWindow(object):
     pyro_proxy = None
 
     def setupUi(self, MainWindow):
-        #ns = Pyro4.locateNS()
-        #uri = ns.lookup("pyro.service")
-        #self.pyro_proxy = Pyro4.Proxy(uri)
+        ns = Pyro4.locateNS()
+        uri = ns.lookup("pyro.service")
+        self.pyro_proxy = Pyro4.Proxy(uri)
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1200, 800)
         MainWindow.setMinimumSize(QtCore.QSize(1200, 800))
@@ -223,16 +227,16 @@ class UiMainWindow(object):
     def addContextMenuToWSGenButton(self):
         self.RunContextMenuToWorskpaceGenericButton(self.centralwidget.sender())
 
-if __name__ == "__main__":
-    print("[+] Initializing GUI")
-    appctxt = ApplicationContext() #required for fbs
-    app = QtWidgets.QApplication(sys.argv)
-    mainDialog = QtWidgets.QMainWindow()
-    ui = UiMainWindow()
-    ui.setupUi(mainDialog)
-    mainDialog.show()
-    exit_code = appctxt.app.exec_()
+# if __name__ == "__main__":
+#     print("[+] Initializing GUI")
+#     appctxt = ApplicationContext() #required for fbs
+#     app = QtWidgets.QApplication(sys.argv)
+#     mainDialog = QtWidgets.QMainWindow()
+#     ui = UiMainWindow()
+#     ui.setupUi(mainDialog)
+#     mainDialog.show()
+#     exit_code = appctxt.app.exec_()
 
-    sys.exit(exit_code)
+#     sys.exit(exit_code)
 
 
