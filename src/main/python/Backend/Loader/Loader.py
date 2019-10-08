@@ -1,12 +1,17 @@
-import sys, os, ntpath, datetime
+import datetime
+import ntpath
+import sys
 import xml.etree.ElementTree as ET
-sys.path.append('../..')
-from Workspace import workspace
+sys.path.insert(1, "./")
+sys.path.insert(1, "../../")
+sys.path.insert(1, "../../../../")
 from Project import project
+from Workspace import workspace
+
 #
 # The Workspace class has utility methods to load and save workspaces
 #
-class WorkspaceLoader():
+class Loader():
 
     workspace_pool = []
     project_pool = []
