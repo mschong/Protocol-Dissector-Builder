@@ -13,6 +13,7 @@ from Workspace import workspace
 #
 class Loader():
 
+    allowed_workspaces_num = 1
     workspace_pool = []
     project_pool = []
 
@@ -68,6 +69,10 @@ class Loader():
     def appendToWorkspacePool(self, wspace):
         if wspace is None or type(wspace) != workspace.Workspace:
             errormsg = "Invalid object type for workspace"
+            print("[-] " + errormsg)
+            raise Exception(errormsg)
+        if self.get_workspace_pool_count() >= self.allowed_workspaces_num:
+            errormsg = "Workspace pool is  already full, please close a workspace"
             print("[-] " + errormsg)
             raise Exception(errormsg)
         for ws in self.workspace_pool:
@@ -130,3 +135,10 @@ class Loader():
         workspace = self.find_workspace(ws_currentname)
         workspace.name = ws_newname
         # TODO: write changes to disk
+
+    def get_first_workspacename_from_pool(self):
+        if (self.get_workspace_pool_count() < 1):
+            errormsg = "Unable to get Workspace name, Workspace pool is empty"
+            print("[-] " + errormsg)
+            raise Exception(errormsg)
+        return self.workspace_pool[0].name

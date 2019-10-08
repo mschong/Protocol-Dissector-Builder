@@ -30,6 +30,12 @@ class Pyro_Run():
     def update_workspace_name(self, ws_currentname, ws_newname):
         self.loader.update_workspace(ws_currentname, ws_newname)
 
+    def get_allowed_workspace_number(self):
+        return self.loader.allowed_workspaces_num
+
+    def get_first_workspacename_from_pool(self):
+        return self.loader.get_first_workspacename_from_pool()
+
 def main():
     daemon = Pyro4.Daemon()
     Popen("pyro4-ns")

@@ -8,7 +8,7 @@ from UI.WorkspaceButton import WorkspaceButton
 from UI.WorkspaceConfigDialog import workspaceconfigwindow
 from UI.CloseWorkspaceDialog import closeworkspacewindow
 from UI.OpenProjectDialog import openprojectwindow
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
+from UI.SaveDialog import savedialog
 
 class UiMainWindow(object):
     workspace_file = None
@@ -77,6 +77,16 @@ class UiMainWindow(object):
 
 
     def openworkspace(self):
+        if (self.pyro_proxy.get_workspace_pool_count() >= self.pyro_proxy.get_allowed_workspace_number()):
+           if self.pyro_proxy.get_allowed_workspace_number() <= 1:
+                wsname = self.pyro_proxy.get_first_workspacename_from_pool()
+                result = self.saveWorkspace(wsname)
+                if (result == True):
+                    self.closeWorkspace(wsname)
+                else:
+                    return
+           else:
+               self.showErrorMessage("Workspace Pool is already full, please close one Workpsace before continuing")
         dialog = QtWidgets.QDialog()
         openWorkspaceUi = openworkspacedialog.Ui_OpenWorkspaceDialog()
         openWorkspaceUi.setupUi(dialog)
@@ -84,6 +94,24 @@ class UiMainWindow(object):
             self.workspace_file = openWorkspaceUi.linePath.text()
             self.loadWorkspace()
             self.workspaceLabel.setText(self.workspace_file)
+
+    def saveWorkspace(self, wsname):
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setIcon(QtWidgets.QMessageBox.Critical)
+        msgBox.setText("Do you want to save your changes to workspace " + wsname + " ?")
+        msgBox.setWindowTitle("Save")
+        msgBox.setStandardButtons(
+            QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel)
+        result = msgBox.exec_()
+        if result == QtWidgets.QMessageBox.Cancel:
+            return False
+        elif result == QtWidgets.QMessageBox.Discard:
+            return True
+        elif result == QtWidgets.QMessageBox.Save:
+            return True
+
+    def closeWorkspace(self, wsname):
+        pass
 
     def loadWorkspace(self):
         if self.workspace_file == None or self.workspace_file == "":
@@ -222,15 +250,3 @@ class UiMainWindow(object):
 
     def addContextMenuToWSGenButton(self):
         self.RunContextMenuToWorskpaceGenericButton(self.centralwidget.sender())
-"""
-if __name__ == "__main__":
-    print("[+] Initializing GUI")
-    appctxt = ApplicationContext() #required for fbs
-    app = QtWidgets.QApplication(sys.argv)
-    mainDialog = QtWidgets.QMainWindow()
-    ui = UiMainWindow()
-    ui.setupUi(mainDialog)
-    mainDialog.show()
-    exit_code = appctxt.app.exec_()
-    sys.exit(app.exec_())
-"""
