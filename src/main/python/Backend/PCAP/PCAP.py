@@ -1,6 +1,7 @@
 from subprocess import call
 import pyshark
 import os
+import py
 
 class PCap:
     def __init__(self,PCAPLocation):
@@ -27,8 +28,9 @@ class PCap:
         print("Done")
 
     def dissectPCAP(self):
-        param = {"-X": 'lua_script:/root/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
+        param = {"-X": 'lua_script:/root/Documents/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
         self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
+        
 
 
 
@@ -41,3 +43,17 @@ class PCap:
             print("Packet #: " + str(i))
             print(pkt.pretty_print())
             i = i+1
+
+
+    def colorFilter(self):
+        tw = py.io.TerminalWriter()
+        flag= False
+        for pkt in self.pcapFile:
+            for prot in pkt.frame_info.protocols.split(":"):
+                if prot=='mydns':
+                    flag=True
+            for prot in pkt:
+                if flag:
+                    tw.write("%s" % prot, green=True, bold=True )
+                else:
+                    tw.write("%s" % prot, red=True, bold=True )
