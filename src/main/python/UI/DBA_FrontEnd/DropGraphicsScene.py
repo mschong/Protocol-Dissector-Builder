@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QGraphicsWidget, QGraphicsScene, QGraphicsItem
 from PyQt5.QtCore import * #Qt, QMimeData, QRect
 from PyQt5.QtGui import *
-from Field import Field
-from GraphicsProxyWidget  import GraphicsProxyWidget
+from UI.DBA_FrontEnd import Field
+from UI.DBA_FrontEnd  import GraphicsProxyWidget
 import sys
 
 class DropGraphicsScene(QGraphicsScene):
@@ -18,7 +18,7 @@ class DropGraphicsScene(QGraphicsScene):
     # In this function is where we will drop the field to the canvas
     def dropEvent(self, event):
         # We create a field
-        field = Field()
+        field = Field.Field()
         """ A QGraphicsWidget is a QGraphicsItem and A QGraphicsItem is movable. So I will create
         a parent over the field widget so the field can be movable"""
         parent = QGraphicsWidget()
@@ -31,7 +31,7 @@ class DropGraphicsScene(QGraphicsScene):
         self.addItem(parent)
 
         # This Proxy will allows us to add the child to the parent and drip the field widget to the
-        proxy = GraphicsProxyWidget()
+        proxy = GraphicsProxyWidget.GraphicsProxyWidget()
         proxy.setWidget(field)
         proxy.setParentItem(parent)
 

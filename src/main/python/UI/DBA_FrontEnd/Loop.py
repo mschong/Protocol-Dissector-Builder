@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPainter, QPen, QPolygon
 from PyQt5.QtCore import Qt, QPoint
-from DBA_BackEnd.While import While
+from UI.DBA_FrontEnd.DBA_BackEnd import While
 
 class Loop(QWidget):
     def __init__(self):
@@ -51,7 +51,7 @@ class Loop(QWidget):
     def clickMethod(self):
         loopDict = dict({'part_a': self.part_a.text(), 'logical': self.logical_op.text(), 'part_b': self.part_b.text()})
 
-        whileLoop = While(loopDict['part_a'], loopDict['logical'], loopDict['part_b'])
+        whileLoop = While.While(loopDict['part_a'], loopDict['logical'], loopDict['part_b'])
         print(whileLoop.__dict__)
 
 if __name__ == '__main__':

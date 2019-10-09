@@ -6,15 +6,17 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-
+import sys, os
 from PyQt5 import QtCore, QtGui, QtWidgets
-from StartField import StartField
-from Field import Field
-from Loop import Loop
-from Decision import Decision
-from GraphicsProxyWidget import GraphicsProxyWidget
-from DropGraphicsScene import DropGraphicsScene
-from DragButton import DragButton
+sys.path.insert(1, "./")
+sys.path.insert(1, "../../")
+from UI.DBA_FrontEnd.DBA_BackEnd import StartField
+from UI.DBA_FrontEnd.DBA_BackEnd  import Field
+from UI.DBA_FrontEnd import Loop
+from UI.DBA_FrontEnd import Decision
+from UI.DBA_FrontEnd import GraphicsProxyWidget
+from UI.DBA_FrontEnd import DropGraphicsScene
+from UI.DBA_FrontEnd import DragButton
 
 
 class Ui_Form(object):
@@ -27,7 +29,7 @@ class Ui_Form(object):
         self.graphicsView = QtWidgets.QGraphicsView(Form)
         self.graphicsView.setGeometry(QtCore.QRect(35, 31, 600, 500))
         self.graphicsView.setObjectName("graphicsView")
-        self.scene = DropGraphicsScene()
+        self.scene = DropGraphicsScene.DropGraphicsScene()
         self.graphicsView.setSceneRect(0, 0, self.graphicsView.width(), self.graphicsView.height())
         self.graphicsView.setScene(self.scene)
         self.toolbox_label = QtWidgets.QLabel(Form)
@@ -44,7 +46,7 @@ class Ui_Form(object):
         self.startField_button.setObjectName("startField_button")
         self.startField_button.clicked.connect(self.open_start_field_window)
 
-        self.field_button = DragButton('Field', self.field_tab)
+        self.field_button = DragButton.DragButton('Field', self.field_tab)
         self.field_button.setGeometry(QtCore.QRect(20, 90, 171, 71))
         self.field_button.setObjectName("field_button")
 
@@ -84,19 +86,19 @@ class Ui_Form(object):
         self.toolBox.setItemText(self.toolBox.indexOf(self.construct_tab), _translate("Form", "Construct"))
 
     def open_field_window(self):
-        self.field_win = Field()
+        self.field_win = Field.Field()
         self.field_win.show()
 
     def open_start_field_window(self):
-        self.start_field_win = StartField()
+        self.start_field_win = StartField.StartField()
         self.start_field_win.show()
 
     def open_loop_window(self):
-        self.loop_win = Loop()
+        self.loop_win = Loop.Loop()
         self.loop_win.show()
 
     def open_decision_window(self):
-        self.decision_win = Decision()
+        self.decision_win = Decision.Decision()
         self.decision_win.show()
 
 

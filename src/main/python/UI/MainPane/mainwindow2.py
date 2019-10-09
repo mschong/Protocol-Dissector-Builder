@@ -52,7 +52,7 @@ class UiMainWindow(object):
         self.canvasFrame.setLayout(canvas_layout)
 
         self.workspaceLabel = QtWidgets.QLabel(self.centralwidget)
-        self.workspaceLabel.setGeometry(QtCore.QRect(390, 10, 300, 17))
+        self.workspaceLabel.setGeometry(QtCore.QRect(390, 10, 64, 17))
         self.workspaceLabel.setText("")
         self.workspaceLabel.setObjectName("workspaceLabel")
         self.workspaceButton = QtWidgets.QPushButton(self.centralwidget)

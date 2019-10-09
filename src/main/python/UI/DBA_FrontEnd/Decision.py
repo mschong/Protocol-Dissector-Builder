@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPainter, QPen, QPolygon
 from PyQt5.QtCore import Qt, QPoint
-from DBA_BackEnd.Condition import Condition
+from UI.DBA_FrontEnd.DBA_BackEnd import Condition
 
 class Decision(QWidget):
     def __init__(self):
@@ -51,7 +51,7 @@ class Decision(QWidget):
     def clickMethod(self):
         decisionDict = dict({'part_a': self.part_a.text(), 'logical': self.logical_op.text(), 'part_b': self.part_b.text()})
 
-        condition = Condition(decisionDict['part_a'], decisionDict['logical'], decisionDict['part_b'])
+        condition = Condition.Condition(decisionDict['part_a'], decisionDict['logical'], decisionDict['part_b'])
         print(condition.__dict__)
 
 
