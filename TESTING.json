@@ -1,1 +1,25 @@
-{"name": "TESTING", "projects": null, "created": "10/09/2019 13:32:53", "edited": "10/09/2019 13:32:53"}
+{
+"name": "TESTING",
+"projects": 
+    {
+        "0" : 
+        {
+            "name" : "prpo",
+            "created" : "10/09/2019 13:32:53",
+            "edited" : "10/09/2019 13:32:53",
+            "description" : "SOME PROJECT",
+            "author" : "DANIEL"
+        },
+        "1" : 
+        {
+            "name" : "prpoddd",
+            "created" : "10/09/2019 13:32:53",
+            "edited" : "10/09/2019 13:32:53",
+            "description" : "SOME PROJECT",
+            "author" : "DANIEL"
+        }
+        
+    },
+"created": "10/09/2019 13:32:53",
+"edited": "10/09/2019 13:32:53"
+}

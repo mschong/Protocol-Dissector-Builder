@@ -18,21 +18,28 @@ class Project:
         'author' : author
     }
 
-    def __init__(self, name):
-        self.name = name
-
-    def save_project(self,filename,file_contents=None):
-    
-        f = open(filename ,"w+")
-        f.write(json.dumps(self.JSON))
-        f.close()
-
-    def open_project(self,filename):
-        if os.path.isfile(filename):
-            f = open(filename,"r")
-            if f.mode == 'r':
-                content = f.read()
-                print(content)
+    def __init__(self, name = None, JSON = None):
+        if JSON == None:
+            self.name = name
         else:
-            print("File not found - {0}".format(filename))
+           self.JSON = JSON
+           self.name = JSON['name']
+           self.projects = JSON['projects']
+           self.startDate = JSON['created']
+           self.editDate = JSON['edited']
+
+ 
+
+     
+   
+    def get_JSON(self):
+        self.JSON['name'] = self.name
+        self.JSON['created'] = self.startDate
+        self.JSON['edited'] = self.editDate
+        self.JSON['description'] = self.description
+        self.JSON['author'] = self.author
+        return self.JSON
+
+
+
 
