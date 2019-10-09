@@ -37,7 +37,7 @@ class DragButton(QPushButton):
     def mousePressEvent(self, e):
 
         if e.button() == Qt.LeftButton:
-            print('press')
+            print('Practicum 2019')
 
         return QPushButton.mousePressEvent(self, e)
 
