@@ -33,16 +33,19 @@ class Ui_OpenWorkspaceDialog(object):
 
     def openworkspace(self):
         title = "Please select Workspace"
-        directory = "~/"
-        type = "XML files (*.xml)"
-        dialog = QtWidgets.QFileDialog(None, title, directory, type)
+        directory = "./"
+        ftype = "JSON files (*.json)"
+        dialog = QtWidgets.QFileDialog(None, title, directory, ftype)
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
-            self.file = str(dialog.selectedFiles()[0])
-            self.linePath.setText(self.file)
+      
+            self.filename = str(dialog.selectedFiles()[0])
+            print(self.filename)
+            self.linePath.setText(self.filename)
 
     def retranslateUi(self, OpenWorkspaceDialog):
         _translate = QtCore.QCoreApplication.translate
         self.label.setText(_translate("OpenWorkspaceDialog", "Create a New Workspace / Open New Workspace"))
         self.browseButton.setText(_translate("OpenWorkspaceDialog", "Browse"))
         self.addButton.setStandardButtons(QtWidgets.QDialogButtonBox.Ok)
+        
 

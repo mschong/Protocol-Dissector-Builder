@@ -12,34 +12,22 @@ class Pyro_Run():
     def __init__(self):
         self.loader = Loader.Loader()
 
-    def parse_XML_to_workspace(self,file):
-        self.loader.parsexmltoworkspace(file)
 
     def load_workspace(self, file):
         return self.loader.loadworkspace(file)
 
-    def load_empty_worspace(self):
-        return self.loader.runWithUnsavedWorkspace()
+  
+    def new_workspace(self,ws_name,ws_created,ws_edited):
+        return self.loader.new_workspace(ws_name,ws_created,ws_edited)
+   
+    def save_workspace(self):
+        return self.loader.save_workspace()
 
-    def get_workspace_pool_count(self):
-        return self.loader.get_workspace_pool_count()
-
-    def get_workspace_data_from_pool(self, wsname):
-        return self.loader.get_workspace_data_from_pool(wsname)
-
-    def update_workspace_name(self, ws_currentname, ws_newname):
-        self.loader.update_workspace(ws_currentname, ws_newname)
-
-    def get_allowed_workspace_number(self):
-        return self.loader.allowed_workspaces_num
-
-    def get_first_workspacename_from_pool(self):
-        return self.loader.get_first_workspacename_from_pool()
 
 def main():
     daemon = Pyro4.Daemon()
     Popen("pyro4-ns")
-    time.sleep(8)
+    time.sleep(5)
     ns = Pyro4.locateNS()
     uri = daemon.register(Pyro_Run)
     ns.register("pyro.service",uri)

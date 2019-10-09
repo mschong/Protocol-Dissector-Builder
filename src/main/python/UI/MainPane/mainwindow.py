@@ -5,6 +5,7 @@ import Pyro4
 import Pyro4.util
 import os, sys, ntpath
 from PyQt5 import QtCore, QtGui, QtWidgets
+import datetime
 
 sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
@@ -105,23 +106,15 @@ class UiMainWindow(object):
         self.menuAbout.setTitle(_translate("MainWindow", "About"))
 
     def openworkspace(self):
-        if (self.pyro_proxy.get_workspace_pool_count() >= self.pyro_proxy.get_allowed_workspace_number()):
-           if self.pyro_proxy.get_allowed_workspace_number() <= 1:
-                wsname = self.pyro_proxy.get_first_workspacename_from_pool()
-                result = self.saveWorkspace(wsname)
-                if (result == True):
-                    self.closeWorkspace(wsname)
-                else:
-                    pass
-           else:
-               self.showErrorMessage("Workspace Pool is already full, please close one Workpsace before continuing")
+
         dialog = QtWidgets.QDialog()
         openWorkspaceUi = openworkspacedialog.Ui_OpenWorkspaceDialog()
         openWorkspaceUi.setupUi(dialog)
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
-            self.workspace_file = openWorkspaceUi.linePath.text()
+            self.workspace_file = openWorkspaceUi.filename
+           
             self.loadWorkspace()
-            self.workspaceLabel.setText(self.workspace_file)
+            self.workspaceLabel.setText(openWorkspaceUi.filename)
 
     def saveWorkspace(self, wsname):
         msgBox = QtWidgets.QMessageBox()
@@ -136,18 +129,20 @@ class UiMainWindow(object):
         elif result == QtWidgets.QMessageBox.Discard:
             return True
         elif result == QtWidgets.QMessageBox.Save:
-            return True
+            return self.pyro_proxy.save_workspace()
 
     def closeWorkspace(self, wsname):
         pass
 
     def loadWorkspace(self):
+        
         if self.workspace_file == None or self.workspace_file == "":
             errmsg = "Error While loading Workspace: Workspace cannot be None or Empty"
             print("[-] " + errmsg)
             self.showErrorMessage(errmsg)
             return
         try:
+            
             wsname = self.pyro_proxy.load_workspace(self.workspace_file)
             self.moveWorkspaceButtonToBottom()
             button = self.createWorspaceGenericButton(wsname)
@@ -157,15 +152,7 @@ class UiMainWindow(object):
             print("[-] " + errmsg)
             self.showErrorMessage(errmsg)
 
-    def runWithUnsavedWorkspace(self):
-        try:
-            wsname = self.pyro_proxy.load_empty_worspace()
-            self.workspaceLabel.setText("Untitled Workspace*")
-            self.moveWorkspaceButtonToBottom()
-            button = self.createWorspaceGenericButton(wsname)
-            self.moveGenericWorkspaceButtonToBottom(button)
-        except Exception as ex:
-            self.showErrorMessage(ex)
+
 
     def showErrorMessage(self, errostr):
         msgBox = QtWidgets.QMessageBox()
@@ -181,7 +168,7 @@ class UiMainWindow(object):
         openWsAction = self.workspaceButton.menu.addAction("Open Workspace ...")
         action = self.workspaceButton.menu.exec_(self.getDefaultContextMenuQPointforButton(self.workspaceButton))
         if action == newWsAction:
-            self.runWithUnsavedWorkspace()
+            self.openWorkpaceConfigDialog()
         elif action == openWsAction:
             self.openworkspace()
 
@@ -213,7 +200,7 @@ class UiMainWindow(object):
         return button
 
     def moveGenericWorkspaceButtonToBottom(self, button):
-        y = self.treeView.rect().top() + (20 * (self.pyro_proxy.get_workspace_pool_count() + 1))
+        y = self.treeView.rect().top() + (20)
         x = self.workspaceButton.pos().x()
         point = QtCore.QPoint(x, y)
         button.move(point)
@@ -247,7 +234,7 @@ class UiMainWindow(object):
         else:
             pass
 
-    def openWorkpaceConfigDialog(self, wsName, wsStartDate, wsEditDate):
+    def openWorkpaceConfigDialog(self, wsName=None, wsStartDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), wsEditDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         dialog = QtWidgets.QDialog()
         wcUi = workspaceconfigwindow.Ui_Dialog()
         wcUi.setupUi(dialog)
@@ -256,8 +243,13 @@ class UiMainWindow(object):
         wcUi.editDateLabel.setText(wsEditDate)
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             if wcUi.workspaceFileLineEdit.text() != wsName:
-                # TODO: write code to save workspace
-                pass
+                wsName = wcUi.workspaceFileLineEdit.text()
+                self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate)
+                self.workspaceLabel.setText(wsName)
+                self.moveWorkspaceButtonToBottom()
+                button = self.createWorspaceGenericButton(wsName)
+                self.moveGenericWorkspaceButtonToBottom(button)
+        
 
     def openProjectDialog(self, wsname):
         dialog = QtWidgets.QDialog()
