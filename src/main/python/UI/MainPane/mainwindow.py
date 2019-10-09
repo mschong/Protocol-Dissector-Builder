@@ -20,6 +20,8 @@ class UiMainWindow(object):
 
     workspace_file = None
     pyro_proxy = None
+    dba_form = None
+
 
     def setupUi(self, MainWindow):
 
@@ -44,11 +46,11 @@ class UiMainWindow(object):
         self.canvasFrame.setObjectName("canvasFrame")
 
         ## Dissector Builder Area (DBA)
-        dba_form = QtWidgets.QWidget()
+        self.dba_form = QtWidgets.QWidget()
         dba_ui = DBA.Ui_Form()
-        dba_ui.setupUi(dba_form)
+        dba_ui.setupUi(self.dba_form)
         canvas_layout = QtWidgets.QVBoxLayout()
-        canvas_layout.addWidget(dba_form)
+        canvas_layout.addWidget(self.dba_form)
         self.canvasFrame.setLayout(canvas_layout)
 
         self.workspaceLabel = QtWidgets.QLabel(self.centralwidget)
