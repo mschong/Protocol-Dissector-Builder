@@ -22,6 +22,7 @@ class UiMainWindow(object):
     workspace_file = None
     pyro_proxy = None
     dba_form = None
+    packetpreview_form = None
 
 
     def setupUi(self, MainWindow):
@@ -45,6 +46,7 @@ class UiMainWindow(object):
         self.canvasFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.canvasFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.canvasFrame.setObjectName("canvasFrame")
+     
 
         ## Dissector Builder Area (DBA)
         self.dba_form = QtWidgets.QWidget()
@@ -69,11 +71,11 @@ class UiMainWindow(object):
         self.packetPreviewFrame.setFrameShadow(QtWidgets.QFrame.Raised)
 
         ## Packet Preview Pane
-        packetpreview_form = QtWidgets.QWidget()
+        self.packetpreview_form = QtWidgets.QWidget()
         packetpreview_ui = packetpreview.Ui_PackagePreview()
-        packetpreview_ui.setupUi(packetpreview_form)
+        packetpreview_ui.setupUi(self.packetpreview_form)
         ppreview_layout = QtWidgets.QVBoxLayout()
-        ppreview_layout.addWidget(packetpreview_form)
+        ppreview_layout.addWidget(self.packetpreview_form)
         self.packetPreviewFrame.setLayout(ppreview_layout)
        
 
@@ -184,7 +186,7 @@ class UiMainWindow(object):
     def createWorspaceGenericButton(self, wsname,spacing):
         button = WorkspaceButton.WorkspaceButton(wsname, self.centralwidget)
         button.setGeometry(QtCore.QRect(10, 50+spacing, 181, 25))
-        button.clicked.connect(self.displayProject())
+        button.clicked.connect(self.displayProject)
         button.workspace_name = wsname
         return button
 
