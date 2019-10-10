@@ -60,20 +60,26 @@ class Loader():
 
    
     #Project functions
-    def new_project(self,p_name):
+    def new_project(self,p_name,p_author,p_desc,p_created,p_edited,):
         
-     
         p = project.Project(p_name)
-       
-      
+        p.description = p_desc
+        p.dateCreated = p_created
+        p.editDate =p_edited
+        p.author = p_author
         self.workspace.addProjectToWorkspace(p.get_JSON())
-       
         self.save_project(p_name)
     
 
     def save_project(self,p_name):
        
         JSON = self.workspace.projects
+        print(JSON)
+        for project in JSON:
+            print(project)
+            if JSON[project]['name'] == p_name:
+                JSON = JSON[project]
+         
        
         f = open("{}.json".format(p_name) ,"w+")
         f.write(json.dumps(JSON))

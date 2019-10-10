@@ -17,7 +17,7 @@ class Pyro_Run():
         return self.loader.loadworkspace(file)
 
     def get_current_workspace(self):
-     return self.loader.workspace.JSON
+        return self.loader.workspace.JSON
 
     def new_workspace(self,ws_name,ws_created,ws_edited):
         return self.loader.new_workspace(ws_name,ws_created,ws_edited)
@@ -29,7 +29,9 @@ class Pyro_Run():
 
     def import_project(self,file):
         return self.loader.import_project(file)
-
+    
+    def new_project(self,name,author,desc,created,edited):
+        return self.loader.new_project(name,author,desc,created,edited)
     
   
 

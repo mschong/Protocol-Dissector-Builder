@@ -16,6 +16,7 @@ from UI.CloseWorkspaceDialog import closeworkspacewindow
 from UI.OpenProjectDialog import openprojectwindow
 from UI.DBA_FrontEnd import DBA
 from UI.PacketPreview import packetpreview
+from UI.ProjectConfigDialog import projectconfig
 
 class UiMainWindow(object):
 
@@ -213,8 +214,25 @@ class UiMainWindow(object):
                 self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate)
                 self.workspaceLabel.setText(wsName)
                 self.moveWorkspaceButtonToBottom()
-                button = self.createWorspaceGenericButton(wsName)
+                button = self.createWorspaceGenericButton(wsName,0)
                 self.moveGenericWorkspaceButtonToBottom(button)
+    
+    def openProjectConfigDialog(self,pname=None,pauthor = None,pdesc=None,created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
+        dialog = QtWidgets.QDialog()
+        pUi = projectconfig.P_Dialog()
+        pUi.setupUi(dialog)
+        pUi.lineEdit.setText(pname)
+        pUi.lineEdit_2.setText(pauthor)
+        pUi.lineEdit_3.setText(pdesc)
+        pUi.label_6.setText(created)
+        pUi.label_7.setText(edited)
+        if dialog.exec_() == QtWidgets.QDialog.Accepted:
+            if pUi.lineEdit.text() != pname:
+                pname = pUi.lineEdit.text()
+                pauthor = pUi.lineEdit_2.text()
+                pdesc = pUi.lineEdit_3.text()
+                self.pyro_proxy.new_project(pname,pauthor,pdesc,created,edited)
+                self.loadWorkspace()
    
     def addContextMenuToSelfWorkspaceOpenButton(self):
         self.workspaceButton.menu = QtWidgets.QMenu()
@@ -246,7 +264,7 @@ class UiMainWindow(object):
             except Exception as ex:
                 self.showErrorMessage("Unable to close Workspace " + str(ex))
         elif action == addProject:
-            pass
+            self.openProjectConfigDialog()
         elif action == importProject:
             self.openProjectDialog()
 
