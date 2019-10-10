@@ -8,6 +8,7 @@ class PCap:
         self.fileLocation = PCAPLocation
         self.pcapFile =""
         self.colorFlag = False
+        self.yellowFlag = False
         self.colorList = {}
     def convertPCAP(self):
         print("Opening file with PyShark")
@@ -50,14 +51,23 @@ class PCap:
     def colorFilter(self):
         tw = py.io.TerminalWriter()
         i = 0
+        j = 0
+        if os.listdir('/root/Documents/Protocol-Dissector-Builder/src/main/python/Backend/Lua/') == []:
+            self.yellowFlag = True
+            for x in self.pcapFile:
+                self.colorList[j] = "Yellow"
+                j+=1
         for pkt in self.pcapFile:
-            self.colorList[i] = False
+            if self.yellowFlag == False:
+                self.colorList[i] = "Red"
             for prot in pkt.frame_info.protocols.split(":"):
-                if prot=='mydns':
+                if prot=='mydns' and self.yellowFlag == False:
                     self.colorFlag=True
-                    self.colorList[i] = True
+                    self.colorList[i] = "Green"
                     break
-            if self.colorList[i] == False:
+            if self.yellowFlag == True:
+                tw.write("%s : %s" %( str(i+1), pkt), yellow=True, bold=True)
+            elif self.colorFlag == False:
                 tw.write("%s : %s" %( str(i+1), pkt), red=True, bold=True)
             else:
                 tw.write("%s : %s" %( str(i+1), pkt), green=True, bold=True)
