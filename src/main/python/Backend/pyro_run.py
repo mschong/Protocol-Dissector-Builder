@@ -26,6 +26,10 @@ class Pyro_Run():
         return self.loader.save_workspace()
     def close_workspace(self):
         return self.loader.close_workspace()
+
+    def import_project(self,file):
+        return self.loader.import_project(file)
+
     
   
 

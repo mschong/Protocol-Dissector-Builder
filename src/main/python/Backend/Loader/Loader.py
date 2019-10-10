@@ -13,7 +13,7 @@ import json
 class Loader():
 
     workspace = None
-    project_pool = []
+    
 
     #WORKSAPCE FUNCTIONS
 
@@ -23,6 +23,8 @@ class Loader():
     '''
     def save_workspace(self):
             JSON = self.workspace.get_JSON()
+            
+            print(JSON)
             f = open("{}.json".format(self.workspace.name) ,"w+")
             f.write(json.dumps(JSON))
             f.close()
@@ -36,6 +38,7 @@ class Loader():
         with open(filename) as f:
             data = json.loads(f.read())
         self.workspace = workspace.Workspace(JSON=data)
+        self.project_pool = self.workspace.JSON['projects']
         return self.workspace.JSON
     '''
     Creates a new workspace object with the given name. saves the workspace afterwards.
@@ -51,28 +54,43 @@ class Loader():
     '''
     def close_workspace(self):
         self.workspace = None
-        self.project_pool = []
+        self.project_pool = {}
   
        
 
    
     #Project functions
     def new_project(self,p_name):
+        
+     
         p = project.Project(p_name)
-        project_pool['p_name'] = p
+       
+      
         self.workspace.addProjectToWorkspace(p.get_JSON())
+       
         self.save_project(p_name)
     
 
     def save_project(self,p_name):
-        JSON = project_pool['p_name'].get_JSON()
-        
-        f = open("{}.json".format(self.p_name) ,"w+")
+       
+        JSON = self.workspace.projects
+       
+        f = open("{}.json".format(p_name) ,"w+")
         f.write(json.dumps(JSON))
         f.close()
+        self.save_workspace()
 
-    def import_project(self,p_name):
-        pass
+    def import_project(self,filename):
+        
+     
+        with open(filename) as f:
+            data = json.loads(f.read())
+     
+        p = project.Project(JSON = data)
+      
+        self.workspace.addProjectToWorkspace(p.get_JSON())
+        self.save_project(p.name)
+
             
     def open_project(self,p_name):
         pass

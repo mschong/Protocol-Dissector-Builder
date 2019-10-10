@@ -56,8 +56,16 @@ class Workspace:
   
 
     def addProjectToWorkspace(self,project):
-       
-        self.workspace['projects'] = project
+        if self.projects == None:
+            self.projects = {}
+           
+            self.JSON['projects'] = {}
+            self.JSON['projects'][0] = project
+        else:
+           
+            size = len(self.projects)
+            self.JSON['projects'][size] = project
+        self.projects = self.JSON['projects']
 
         
     

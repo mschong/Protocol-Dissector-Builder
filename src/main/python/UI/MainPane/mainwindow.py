@@ -104,7 +104,7 @@ class UiMainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Protocol Dissector Window"))
-        self.workspaceButton.setText(_translate("MainWindow", "Add Workspace +"))
+        self.workspaceButton.setText(_translate("MainWindow", "Options"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
         self.menuAbout.setTitle(_translate("MainWindow", "About"))
@@ -248,7 +248,7 @@ class UiMainWindow(object):
         elif action == addProject:
             pass
         elif action == importProject:
-            pass
+            self.openProjectDialog()
 
    
 
@@ -279,12 +279,13 @@ class UiMainWindow(object):
     
         
 
-    def openProjectDialog(self, wsname):
+    def openProjectDialog(self):
         dialog = QtWidgets.QDialog()
         opUi = openprojectwindow.Ui_Dialog()
         opUi.setupUi(dialog)
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
-            pass
+             self.pyro_proxy.import_project(opUi.filename)
+             self.loadWorkspace()
 
    
 

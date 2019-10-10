@@ -24,7 +24,7 @@ class Project:
         else:
            self.JSON = JSON
            self.name = JSON['name']
-           self.projects = JSON['projects']
+        
            self.startDate = JSON['created']
            self.editDate = JSON['edited']
 
@@ -34,7 +34,7 @@ class Project:
    
     def get_JSON(self):
         self.JSON['name'] = self.name
-        self.JSON['created'] = self.startDate
+        self.JSON['created'] = self.dateCreated
         self.JSON['edited'] = self.editDate
         self.JSON['description'] = self.description
         self.JSON['author'] = self.author
