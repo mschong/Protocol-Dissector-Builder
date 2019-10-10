@@ -214,8 +214,8 @@ class UiMainWindow(object):
                 self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate)
                 self.workspaceLabel.setText(wsName)
                 self.moveWorkspaceButtonToBottom()
-                button = self.createWorspaceGenericButton(wsName,0)
-                self.moveGenericWorkspaceButtonToBottom(button)
+                self.workspace_file = "{}.json".format(wsName)
+                self.loadWorkspace()
     
     def openProjectConfigDialog(self,pname=None,pauthor = None,pdesc=None,created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         dialog = QtWidgets.QDialog()
