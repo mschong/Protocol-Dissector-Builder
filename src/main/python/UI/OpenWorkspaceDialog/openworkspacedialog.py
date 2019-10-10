@@ -37,7 +37,6 @@ class Ui_OpenWorkspaceDialog(object):
         ftype = "JSON files (*.json)"
         dialog = QtWidgets.QFileDialog(None, title, directory, ftype)
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
-      
             self.filename = str(dialog.selectedFiles()[0])
             print(self.filename)
             self.linePath.setText(self.filename)

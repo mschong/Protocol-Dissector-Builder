@@ -53,13 +53,19 @@ class Workspace:
         return self.JSON
 
 
-    def updateworkspace(self):
-        print("[+] Updating workspace " + self.name)
+  
 
     def addProjectToWorkspace(self,project):
-        num_projects = len(self.workspace['projects'])
-        
-        self.workspace['projects']
+        if self.projects == None:
+            self.projects = {}
+           
+            self.JSON['projects'] = {}
+            self.JSON['projects'][0] = project
+        else:
+           
+            size = len(self.projects)
+            self.JSON['projects'][size] = project
+        self.projects = self.JSON['projects']
 
         
     

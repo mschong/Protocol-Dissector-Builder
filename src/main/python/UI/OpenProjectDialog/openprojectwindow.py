@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
-        Dialog.setObjectName("Dialog")
+        Dialog.setObjectName("Import an existing project")
         Dialog.resize(576, 121)
         Dialog.setMinimumSize(QtCore.QSize(576, 121))
         Dialog.setMaximumSize(QtCore.QSize(576, 121))
@@ -20,9 +20,10 @@ class Ui_Dialog(object):
         self.browseButton.setGeometry(QtCore.QRect(440, 40, 83, 25))
         self.browseButton.setObjectName("browseButton")
         self.browseButton.clicked.connect(self.openProject)
-        self.addButton = QtWidgets.QPushButton(Dialog)
+        self.addButton = QtWidgets.QDialogButtonBox(Dialog)
         self.addButton.setGeometry(QtCore.QRect(440, 70, 83, 25))
         self.addButton.setObjectName("addButton")
+        self.addButton.accepted.connect(Dialog.accept)
         self.linePathEdit = QtWidgets.QLineEdit(Dialog)
         self.linePathEdit.setGeometry(QtCore.QRect(30, 40, 391, 25))
         self.linePathEdit.setObjectName("linePathEdit")
@@ -37,14 +38,14 @@ class Ui_Dialog(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.browseButton.setText(_translate("Dialog", "Browse"))
-        self.addButton.setText(_translate("Dialog", "Add"))
         self.label.setText(_translate("Dialog", "Open Existing Project"))
+        self.addButton.setStandardButtons(QtWidgets.QDialogButtonBox.Ok)
 
     def openProject(self):
         title = "Please select Project"
-        directory = "~/"
-        type = "XML files (*.xml)"
-        dialog = QtWidgets.QFileDialog(None, title, directory, type)
+        directory = "./"
+        ftype = "JSON files (*.json)"
+        dialog = QtWidgets.QFileDialog(None, title, directory, ftype)
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
-            self.file = str(dialog.selectedFiles()[0])
-            self.linePathEdit.setText(self.file)
+            self.filename = str(dialog.selectedFiles()[0])
+            self.linePathEdit.setText(self.filename)

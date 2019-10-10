@@ -16,12 +16,24 @@ class Pyro_Run():
     def load_workspace(self, file):
         return self.loader.loadworkspace(file)
 
-  
+    def get_current_workspace(self):
+        return self.loader.workspace.JSON
+
     def new_workspace(self,ws_name,ws_created,ws_edited):
         return self.loader.new_workspace(ws_name,ws_created,ws_edited)
    
     def save_workspace(self):
         return self.loader.save_workspace()
+    def close_workspace(self):
+        return self.loader.close_workspace()
+
+    def import_project(self,file):
+        return self.loader.import_project(file)
+    
+    def new_project(self,name,author,desc,created,edited):
+        return self.loader.new_project(name,author,desc,created,edited)
+    
+  
 
 
 def main():
