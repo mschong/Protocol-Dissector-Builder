@@ -12,7 +12,7 @@ class Field(QWidget):
     def initUI(self):
 
         self.setWindowTitle("Field")
-        self.setGeometry(20,20,396,307)
+        self.setGeometry(0,0,396,307)
         # Setting up the window
         self.draw_field_table()
         self.layout = QVBoxLayout()
