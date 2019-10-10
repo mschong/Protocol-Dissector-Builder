@@ -9,12 +9,12 @@
 import sys, os
 from PyQt5 import QtCore, QtGui, QtWidgets
 #from StartField import StartField
-from Field import Field
-from Loop import Loop
-from Decision import Decision
-from GraphicsProxyWidget import GraphicsProxyWidget
-from DropGraphicsScene import DropGraphicsScene
-from DragButton import DragButton
+from UI.DBA_FrontEnd.Field import Field
+from UI.DBA_FrontEnd.Loop import Loop
+from UI.DBA_FrontEnd.Decision import Decision
+from UI.DBA_FrontEnd.GraphicsProxyWidget import GraphicsProxyWidget
+from UI.DBA_FrontEnd.DropGraphicsScene import DropGraphicsScene
+from UI.DBA_FrontEnd.DragButton import DragButton
 
 
 class Ui_Form(object):
@@ -27,7 +27,7 @@ class Ui_Form(object):
         self.graphicsView = QtWidgets.QGraphicsView(Form)
         self.graphicsView.setGeometry(QtCore.QRect(35, 31, 600, 500))
         self.graphicsView.setObjectName("graphicsView")
-        self.scene = DropGraphicsScene.DropGraphicsScene()
+        self.scene = DropGraphicsScene()
         self.graphicsView.setSceneRect(0, 0, self.graphicsView.width(), self.graphicsView.height())
         self.graphicsView.setScene(self.scene)
         self.toolbox_label = QtWidgets.QLabel(Form)
@@ -53,12 +53,12 @@ class Ui_Form(object):
         self.construct_tab = QtWidgets.QWidget()
         self.construct_tab.setGeometry(QtCore.QRect(0, 0, 201, 189))
         self.construct_tab.setObjectName("construct_tab")
-        self.decision_button = DragButton.DragButton('Decision', self.construct_tab)
+        self.decision_button = DragButton('Decision', self.construct_tab)
         self.decision_button.setGeometry(QtCore.QRect(0, 0, 83, 25))
         self.decision_button.setObjectName("decision_button")
         #self.decision_button.clicked.connect(self.open_decision_window)
 
-        self.loop_button = DragButton.DragButton('Loop', self.construct_tab)
+        self.loop_button = DragButton('Loop', self.construct_tab)
         self.loop_button.setGeometry(QtCore.QRect(0, 30, 83, 25))
         self.loop_button.setObjectName("loop_button")
         #self.loop_button.clicked.connect(self.open_loop_window)
