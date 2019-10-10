@@ -21,8 +21,8 @@ class UiMainWindow(object):
 
     workspace_file = None
     pyro_proxy = None
-    dba_form = None
-
+    dba_ui = None
+    packetpreview_ui = None
 
     def setupUi(self, MainWindow):
 
@@ -47,11 +47,11 @@ class UiMainWindow(object):
         self.canvasFrame.setObjectName("canvasFrame")
 
         ## Dissector Builder Area (DBA)
-        self.dba_form = QtWidgets.QWidget()
-        dba_ui = DBA.Ui_Form()
-        dba_ui.setupUi(self.dba_form)
+        dba_form = QtWidgets.QWidget()
+        self.dba_ui = DBA.Ui_Form()
+        self.dba_ui.setupUi(dba_form)
         canvas_layout = QtWidgets.QVBoxLayout()
-        canvas_layout.addWidget(self.dba_form)
+        canvas_layout.addWidget(dba_form)
         self.canvasFrame.setLayout(canvas_layout)
 
         self.workspaceLabel = QtWidgets.QLabel(self.centralwidget)
@@ -69,8 +69,8 @@ class UiMainWindow(object):
 
         ## Packet Preview Pane
         packetpreview_form = QtWidgets.QWidget()
-        packetpreview_ui = packetpreview.Ui_PackagePreview()
-        packetpreview_ui.setupUi(packetpreview_form)
+        self.packetpreview_ui = packetpreview.Ui_PackagePreview()
+        self.packetpreview_ui.setupUi(packetpreview_form)
         ppreview_layout = QtWidgets.QVBoxLayout()
         ppreview_layout.addWidget(packetpreview_form)
         self.packetPreviewFrame.setLayout(ppreview_layout)
