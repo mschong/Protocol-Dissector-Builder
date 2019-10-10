@@ -8,15 +8,13 @@
 
 import sys, os
 from PyQt5 import QtCore, QtGui, QtWidgets
-sys.path.insert(1, "./")
-sys.path.insert(1, "../../")
-from UI.DBA_FrontEnd.DBA_BackEnd import StartField
-from UI.DBA_FrontEnd.DBA_BackEnd  import Field
-from UI.DBA_FrontEnd import Loop
-from UI.DBA_FrontEnd import Decision
-from UI.DBA_FrontEnd import GraphicsProxyWidget
-from UI.DBA_FrontEnd import DropGraphicsScene
-from UI.DBA_FrontEnd import DragButton
+#from StartField import StartField
+from Field import Field
+from Loop import Loop
+from Decision import Decision
+from GraphicsProxyWidget import GraphicsProxyWidget
+from DropGraphicsScene import DropGraphicsScene
+from DragButton import DragButton
 
 
 class Ui_Form(object):
@@ -39,15 +37,15 @@ class Ui_Form(object):
         self.toolBox.setGeometry(QtCore.QRect(650, 30, 201, 251))
         self.toolBox.setObjectName("toolBox")
         self.field_tab = QtWidgets.QWidget()
-        self.field_tab.setGeometry(QtCore.QRect(0, 0, 201, 189))
+        self.field_tab.setGeometry(QtCore.QRect(0, 0, 201, 50))
         self.field_tab.setObjectName("field_tab")
-        #self.startField_button = QtWidgets.QPushButton(self.field_tab)
-        #self.startField_button.setGeometry(QtCore.QRect(20, 10, 171, 71))
-        #self.startField_button.setObjectName("startField_button")
-        #self.startField_button.clicked.connect(self.open_start_field_window)
+        """self.startField_button = QtWidgets.QPushButton(self.field_tab)
+        self.startField_button.setGeometry(QtCore.QRect(20, 10, 171, 71))
+        self.startField_button.setObjectName("startField_button")
+        self.startField_button.clicked.connect(self.open_start_field_window)"""
 
-        self.field_button = DragButton.DragButton('Field', self.field_tab)
-        self.field_button.setGeometry(QtCore.QRect(20, 90, 171, 71))
+        self.field_button = DragButton('Field', self.field_tab)
+        self.field_button.setGeometry(QtCore.QRect(20, 30, 171, 71))
         self.field_button.setObjectName("field_button")
 
 
@@ -78,7 +76,7 @@ class Ui_Form(object):
         self.dba_label.setText(_translate("Form", "Dissector Builder Area"))
         self.toolbox_label.setText(_translate("Form", "Toolbox"))
         #self.startField_button.setText(_translate("Form", "Start Field"))
-        #self.field_button.setText(_translate("Form", "Field"))
+        self.field_button.setText(_translate("Form", "Field"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.field_tab), _translate("Form", "Field"))
         self.decision_button.setText(_translate("Form", "Decision"))
         self.loop_button.setText(_translate("Form", "Loop"))
