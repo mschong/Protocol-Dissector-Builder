@@ -22,14 +22,8 @@ class UiMainWindow(object):
 
     workspace_file = None
     pyro_proxy = None
-<<<<<<< HEAD
     dba_ui = None
     packetpreview_ui = None
-=======
-    dba_form = None
-    packetpreview_form = None
-
->>>>>>> 1e31a3988fb34e23476cab24ebc6f68e3e74ca56
 
     def setupUi(self, MainWindow):
 
@@ -77,19 +71,12 @@ class UiMainWindow(object):
         self.packetPreviewFrame.setFrameShadow(QtWidgets.QFrame.Raised)
 
         ## Packet Preview Pane
-<<<<<<< HEAD
         packetpreview_form = QtWidgets.QWidget()
         self.packetpreview_ui = packetpreview.Ui_PackagePreview()
         self.packetpreview_ui.setupUi(packetpreview_form)
-=======
-        self.packetpreview_form = QtWidgets.QWidget()
-        packetpreview_ui = packetpreview.Ui_PackagePreview()
-        packetpreview_ui.setupUi(self.packetpreview_form)
->>>>>>> 1e31a3988fb34e23476cab24ebc6f68e3e74ca56
         ppreview_layout = QtWidgets.QVBoxLayout()
-        ppreview_layout.addWidget(self.packetpreview_form)
+        ppreview_layout.addWidget(packetpreview_form)
         self.packetPreviewFrame.setLayout(ppreview_layout)
-       
 
         self.packetPreviewFrame.setObjectName("packetPreviewFrame")
         MainWindow.setCentralWidget(self.centralwidget)
