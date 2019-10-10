@@ -8,7 +8,7 @@ class DragButton(QPushButton):
         super(DragButton, self).__init__(title, parent)
 
     def mouseMoveEvent(self, e):
-        if e.buttons() != Qt.RightButton:
+        if e.buttons() != Qt.LeftButton:
             return QPushButton.mouseMoveEvent(self, e)
 
         # The MimeData has the position of the button
@@ -34,12 +34,6 @@ class DragButton(QPushButton):
 
         return QPushButton.mouseMoveEvent(self, e)
 
-    def mousePressEvent(self, e):
-
-        if e.button() == Qt.LeftButton:
-            print('press')
-
-        return QPushButton.mousePressEvent(self, e)
 
     def dragEnterEvent(self, e):
         e.accept()
