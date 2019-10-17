@@ -41,8 +41,19 @@ class Pyro_Run():
         self.child.expect("Done",timeout=None)
 
     def savePackets(self):
+        print("saving")
         self.child.sendline("save")
-        self.child.expect("saved",timeout=1000)
+        self.child.expect("saved",timeout=None)
+
+    def dissectPackets(self):
+        print("dissecting")
+        self.child.sendline("dissect")
+        self.child.expect("dissected")
+
+    def colorCode(self):
+        print("Coloring")
+        self.child.sendline("colorcode")
+        self.child.expect("colored")
 
     def printPackets(self):
         self.child.sendline("print")

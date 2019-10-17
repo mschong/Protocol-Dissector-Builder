@@ -18,7 +18,10 @@ while(1):
         print("saved")
     elif currCommand[0] == "dissect":
         PCAPFile.dissectPCAP()
+        print("dissected")
+    elif currCommand[0] == "colorcode":
         PCAPFile.colorFilter()
+        print("colored")
     elif currCommand[0] == "debug":
         print(currCommand)
     else:

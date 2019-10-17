@@ -68,10 +68,9 @@ class Ui_PackagePreview(object):
         self.retranslateUi(PackagePreview)
         QtCore.QMetaObject.connectSlotsByName(PackagePreview)
 
-    name = ""
     def openFile(self):
-        fname = QFileDialog.getOpenFileName()
-        self.pyro_proxy.createPackets(fname[0])
+        self.name = QFileDialog.getOpenFileName()
+        self.pyro_proxy.createPackets(self.name[0])
         self.pyro_proxy.savePackets()
         self.pyro_proxy.printPackets()
         fileToRead = open("dict.log","r")
@@ -90,47 +89,91 @@ class Ui_PackagePreview(object):
             self.model.appendRow([branch1,QtGui.QStandardItem(str(number))])
 
     def dissect(self):
-        PCAPFileD = PCAP.PCap(name)
-        PCAPFileD.dissectPCAP()
-        PCAPFileD.colorFilter()
+        self.pyro_proxy.createPackets(self.name[0])
+        self.pyro_proxy.dissectPackets()
+        self.pyro_proxy.colorCode()
+        self.pyro_proxy.savePackets()
+        self.pyro_proxy.printPackets()
+
+        fileToRead = open("dictColor.log","r")
+        vars = json.loads(fileToRead.read().strip())
+        packetDict = vars[0]
+        protocolDict = vars[1]
+        colorList = vars[2]
         color = QColor(255,0,0) #red
         i=0
         j=0
-        for pkt in PCAPFileD.pcapFile:
-            if PCAPFileD.colorList[j] == "Green":
+        print(colorList)
+        for pkt in colorList:
+            if colorList[str(j)] == "Green":
                 color = QColor(0,255,0)#green
-            elif PCAPFileD.colorList[j] == "Red":
+            elif colorList[str(j)] == "Red":
                 color = QColor(255,0,0) #red
             else:
                 color = QColor(255,255,0) #yellow
+            # branch2= QtGui.QStandardItem("Packet #")
+            # number = pkt.frame_info.get_field_value("number")
+        for number,packet in packetDict.items():
             branch2= QtGui.QStandardItem("Packet #")
-            k=0
-            number = pkt.frame_info.get_field_value("number")
-            for protocol in (pkt.frame_info.protocols).split(":"):
-                ProtocolToAdd = QtGui.QStandardItem("Protocol: " + protocol)
-
+            for protocol,fields in protocolDict.items():
+                ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
                 ProtocolToAdd.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-                try:
-                    for val in pkt[protocol].field_names:
-                        if(val != "payload" and val !="data"):
-                            ProtocolField = QtGui.QStandardItem(val)
-                            ProtocolValue = QtGui.QStandardItem(pkt[protocol].get_field_value(val))
-                            ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
 
-                            ProtocolValue.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-                            ProtocolField.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-                    k= k+1
-                    branch2.appendRow(ProtocolToAdd)
+                for name,value in fields.items():
+                    ProtocolField = QtGui.QStandardItem(name)
+                    ProtocolValue = QtGui.QStandardItem(value)
+                    ProtocolValue.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+                    ProtocolField.setData(QBrush(color), QtCore.Qt.BackgroundRole)
 
-                    branch2.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-
-                except:
-                    pass
+                    ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
+                branch2.appendRow(ProtocolToAdd)
+                branch2.setData(QBrush(color), QtCore.Qt.BackgroundRole)
             numberCol = QtGui.QStandardItem(str(number))
             self.model2.appendRow([branch2,numberCol])
-
             numberCol.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-            j+=1
+
+    # def dissect(self):
+    #     PCAPFileD = PCAP.PCap(name)
+    #     PCAPFileD.dissectPCAP()
+    #     PCAPFileD.colorFilter()
+    #     color = QColor(255,0,0) #red
+    #     i=0
+    #     j=0
+    #     for pkt in PCAPFileD.pcapFile:
+    #         if PCAPFileD.colorList[j] == "Green":
+    #             color = QColor(0,255,0)#green
+    #         elif PCAPFileD.colorList[j] == "Red":
+    #             color = QColor(255,0,0) #red
+    #         else:
+    #             color = QColor(255,255,0) #yellow
+    #         branch2= QtGui.QStandardItem("Packet #")
+    #         k=0
+    #         number = pkt.frame_info.get_field_value("number")
+    #         for protocol in (pkt.frame_info.protocols).split(":"):
+    #             ProtocolToAdd = QtGui.QStandardItem("Protocol: " + protocol)
+    #
+    #             ProtocolToAdd.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+    #             try:
+    #                 for val in pkt[protocol].field_names:
+    #                     if(val != "payload" and val !="data"):
+    #                         ProtocolField = QtGui.QStandardItem(val)
+    #                         ProtocolValue = QtGui.QStandardItem(pkt[protocol].get_field_value(val))
+    #                         ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
+    #
+    #                         ProtocolValue.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+    #                         ProtocolField.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+    #                 k= k+1
+    #                 branch2.appendRow(ProtocolToAdd)
+    #
+    #                 branch2.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+    #
+    #             except:
+    #                 pass
+    #         numberCol = QtGui.QStandardItem(str(number))
+    #         self.model2.appendRow([branch2,numberCol])
+    #
+    #         numberCol.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+    #         j+=1
 
 
 

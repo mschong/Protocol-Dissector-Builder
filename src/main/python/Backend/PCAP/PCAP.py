@@ -7,6 +7,7 @@ class PCap:
     def __init__(self,PCAPLocation):
         self.fileLocation = PCAPLocation
         self.pcapFile =""
+        self.pcapDissectedFile=""
         self.colorFlag = False
         self.yellowFlag = False
         self.colorList = {}
@@ -31,8 +32,8 @@ class PCap:
         print("Done")
 
     def dissectPCAP(self):
-        param = {"-X": 'lua_script:/root/Documents/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
-        self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
+        param = {"-X": 'lua_script:/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
+        self.pcapDissectedFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
 
 
     def savePackets(self):
@@ -40,7 +41,6 @@ class PCap:
         protocols = {}
         fields = {}
         output = []
-        writeFile = open("../UI/PacketPreview/dict.log","w")
         for pkt in self.pcapFile:
             number = pkt.frame_info.get_field_value("number")
             protocols = {}
@@ -53,8 +53,12 @@ class PCap:
                     pass
                 protocols[protocol] = fields
             packets[number] = protocols
-        # output = [json.dump(packets),json.dump(protocols)]
-        output = [packets,protocols]
+        if self.colorList:
+            writeFile = open("../UI/PacketPreview/dictColor.log","w")
+            output = [packets,protocols,self.colorList]
+        else:
+            writeFile = open("../UI/PacketPreview/dict.log","w")
+            output = [packets,protocols]
         json.dump(output,writeFile)
         writeFile.close()
 
@@ -69,12 +73,12 @@ class PCap:
         tw = py.io.TerminalWriter()
         i = 0
         j = 0
-        if os.listdir('/root/Documents/Protocol-Dissector-Builder/src/main/python/Backend/Lua/') == []:
+        if os.listdir('/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/Lua/') == []:
             self.yellowFlag = True
-            for x in self.pcapFile:
+            for x in self.pcapDissectedFile:
                 self.colorList[j] = "Yellow"
                 j+=1
-        for pkt in self.pcapFile:
+        for pkt in self.pcapDissectedFile:
             if self.yellowFlag == False:
                 self.colorList[i] = "Red"
             for prot in pkt.frame_info.protocols.split(":"):
