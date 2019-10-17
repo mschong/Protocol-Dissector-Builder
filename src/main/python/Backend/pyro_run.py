@@ -3,13 +3,16 @@ import logging
 import sys, traceback
 import time
 import os
-from subprocess import Popen
+import asyncio
+from PCAP.PCAP import PCap
+from subprocess import Popen,PIPE
+import pexpect
+import subprocess
 from Workspace.workspaceloader import WorkspaceLoader
 
 
 @Pyro4.expose
 class Pyro_Run():
-
     def __init__(self):
         self.workspace_loader = WorkspaceLoader()
 
@@ -27,15 +30,29 @@ class Pyro_Run():
 
     def get_workspace_data_from_pool(self, wsname):
         return self.workspace_loader.get_workspace_data_from_pool(wsname)
-
     def update_workspace_name(self, ws_currentname, ws_newname):
         self.workspace_loader.update_workspace(ws_currentname, ws_newname)
 
+    def createPackets(self,fileName):
+        self.child = pexpect.spawn("python3.6 PCAP/PCAPServices.py",encoding='utf-8')
+        self.child.expect("loop",timeout=None)
+        print("Creating")
+        self.child.sendline("create " + fileName)
+        self.child.expect("Done",timeout=None)
+
+    def savePackets(self):
+        self.child.sendline("save")
+        self.child.expect("saved",timeout=1000)
+
+    def printPackets(self):
+        self.child.sendline("print")
+        print(self.child.read())
+
+
 def main():
     daemon = Pyro4.Daemon()
-    
+
     Popen("pyro4-ns")
-    time.sleep(8)
     ns = Pyro4.locateNS()
     uri = daemon.register(Pyro_Run)
     ns.register("pyro.service",uri)

@@ -12,15 +12,21 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtGui import QBrush, QColor
 import sys
 sys.path.append('../..')
+import json
+import Pyro4
+import Pyro4.util
 from Backend.PCAP import PCAP
 from Backend.PCAP import parsePDML
 
 
 class Ui_PackagePreview(object):
     def setupUi(self, PackagePreview):
+        ns = Pyro4.locateNS()
+        uri = ns.lookup("pyro.service")
+        self.pyro_proxy = Pyro4.Proxy(uri)
         PackagePreview.setObjectName("PackagePreview")
         PackagePreview.resize(880, 454)
-        
+
         self.treeView = QtWidgets.QTreeView(PackagePreview)
         self.treeView.setGeometry(QtCore.QRect(0, 50, 400, 401))
         self.treeView.setObjectName("treeView")
@@ -51,7 +57,7 @@ class Ui_PackagePreview(object):
         self.pushButton2.setGeometry(QtCore.QRect(415, 200, 101, 40))
         self.pushButton2.setObjectName("pushButton2")
         self.pushButton2.clicked.connect(self.dissect)
-           
+
         self.label = QtWidgets.QLabel(PackagePreview)
         self.label.setGeometry(QtCore.QRect(530, 30, 131, 17))
         self.label.setObjectName("label")
@@ -65,33 +71,25 @@ class Ui_PackagePreview(object):
     name = ""
     def openFile(self):
         fname = QFileDialog.getOpenFileName()
-        global name
-        name = fname[0]
-        PCAPFile = PCAP.PCap(fname[0])
-        PCAPFile.convertPCAP()
-        i=0
-        for pkt in PCAPFile.pcapFile:
+        self.pyro_proxy.createPackets(fname[0])
+        self.pyro_proxy.savePackets()
+        self.pyro_proxy.printPackets()
+        fileToRead = open("dict.log","r")
+        vars = json.loads(fileToRead.read().strip())
+        packetDict = vars[0]
+        protocolDict = vars[1]
+        for number,packet in packetDict.items():
             branch1= QtGui.QStandardItem("Packet #")
-            k=0
-            number = pkt.frame_info.get_field_value("number")
-            for protocol in (pkt.frame_info.protocols).split(":"):
-                #ProtocolToAdd = QtGui.QStandardItem("Protocol" + str(k))
+            for protocol,fields in protocolDict.items():
                 ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
-                try:
-                    for val in pkt[protocol].field_names:
-                        if(val != "payload" and val !="data"):
-                            ProtocolField = QtGui.QStandardItem(val)
-                            ProtocolValue = QtGui.QStandardItem(pkt[protocol].get_field_value(val))
-                            ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
-                    k= k+1
-                    branch1.appendRow(ProtocolToAdd)
-                except:
-                    pass
+                for name,value in fields.items():
+                    ProtocolField = QtGui.QStandardItem(name)
+                    ProtocolValue = QtGui.QStandardItem(value)
+                    ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
+                branch1.appendRow(ProtocolToAdd)
             self.model.appendRow([branch1,QtGui.QStandardItem(str(number))])
-    
+
     def dissect(self):
-        print("MESSAGE")
-        print(name)
         PCAPFileD = PCAP.PCap(name)
         PCAPFileD.dissectPCAP()
         PCAPFileD.colorFilter()
@@ -118,14 +116,14 @@ class Ui_PackagePreview(object):
                             ProtocolField = QtGui.QStandardItem(val)
                             ProtocolValue = QtGui.QStandardItem(pkt[protocol].get_field_value(val))
                             ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
-                            
+
                             ProtocolValue.setData(QBrush(color), QtCore.Qt.BackgroundRole)
                             ProtocolField.setData(QBrush(color), QtCore.Qt.BackgroundRole)
                     k= k+1
                     branch2.appendRow(ProtocolToAdd)
 
                     branch2.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-                    
+
                 except:
                     pass
             numberCol = QtGui.QStandardItem(str(number))
@@ -133,9 +131,9 @@ class Ui_PackagePreview(object):
 
             numberCol.setData(QBrush(color), QtCore.Qt.BackgroundRole)
             j+=1
-        
 
-       
+
+
 
     def retranslateUi(self, PackagePreview):
         _translate = QtCore.QCoreApplication.translate

@@ -2,7 +2,7 @@ from subprocess import call
 import pyshark
 import os
 import py
-
+import json
 class PCap:
     def __init__(self,PCAPLocation):
         self.fileLocation = PCAPLocation
@@ -33,12 +33,30 @@ class PCap:
     def dissectPCAP(self):
         param = {"-X": 'lua_script:/root/Documents/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
         self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
-        
 
 
-
-    def createObjects(self):
-        print("Done")
+    def savePackets(self):
+        packets = {}
+        protocols = {}
+        fields = {}
+        output = []
+        writeFile = open("../UI/PacketPreview/dict.log","w")
+        for pkt in self.pcapFile:
+            number = pkt.frame_info.get_field_value("number")
+            protocols = {}
+            for protocol in (pkt.frame_info.protocols).split(":"):
+                fields = {}
+                try:
+                    for val in pkt[protocol].field_names:
+                        fields[val] = pkt[protocol].get_field_value(val)
+                except:
+                    pass
+                protocols[protocol] = fields
+            packets[number] = protocols
+        # output = [json.dump(packets),json.dump(protocols)]
+        output = [packets,protocols]
+        json.dump(output,writeFile)
+        writeFile.close()
 
     def printPackets(self):
         i=0
@@ -46,7 +64,6 @@ class PCap:
             print("Packet #: " + str(i))
             print(pkt.pretty_print())
             i = i+1
-
 
     def colorFilter(self):
         tw = py.io.TerminalWriter()
@@ -72,4 +89,3 @@ class PCap:
             else:
                 tw.write("%s : %s" %( str(i+1), pkt), green=True, bold=True)
             i+=1
-
