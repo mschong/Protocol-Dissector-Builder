@@ -23,7 +23,7 @@ class DropGraphicsScene(QGraphicsScene):
         a parent over the field widget so the field can be movable"""
         parent = QGraphicsWidget()
         parent.setCursor(Qt.SizeAllCursor);
-        parent.setGeometry((event.pos().x()+10), (event.pos().y()+10), field.width(), field.height())
+        parent.setGeometry((event.scenePos().x()), (event.scenePos().y()), field.width(), field.height())
         parent.setFlags(QGraphicsItem.ItemIsMovable)
         """ Here we are 'dropping' the item to the scene.
          We needed to create a parent over the widget because if would add the widget to scene 
