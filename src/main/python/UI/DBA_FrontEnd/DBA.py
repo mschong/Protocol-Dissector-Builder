@@ -81,7 +81,12 @@ class Ui_Form(object):
         self.loop_button.setObjectName("loop_button")
         #self.loop_button.clicked.connect(self.open_loop_window)
 
-        
+        self.connector_button = QtWidgets.QPushButton('Connector', self.construct_tab)
+        self.connector_button.setGeometry(QtCore.QRect(0,60,83,25))
+        self.connector_button.setObjectName("connector_button")
+        self.connector_button.clicked.connect(self.connector_button_clicked)
+
+
         self.toolBox.addItem(self.construct_tab, "")
 
         self.retranslateUi(Form)
@@ -112,6 +117,9 @@ class Ui_Form(object):
     def open_decision_window(self):
         self.decision_win = Decision()
         self.decision_win.show()
+
+    def connector_button_clicked(self):
+        self.scene.setMode(self.scene.InsertLine)
 
 
 if __name__ == "__main__":
