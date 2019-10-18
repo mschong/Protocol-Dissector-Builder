@@ -5,9 +5,9 @@ from PyQt5.QtGui import *
 import math
 
 
-class Arrow(QGraphicsLineItem):
+class Connector(QGraphicsLineItem):
     def __init__(self, startItem, endItem, parent=None, scene=None):
-        super(Arrow, self).__init__(scene)
+        super(Connector, self).__init__(scene)
 
         self.arrowHead = QPolygonF()
 
@@ -34,7 +34,7 @@ class Arrow(QGraphicsLineItem):
         return QRectF(p1, QSizeF(p2.x() - p1.x(), p2.y() - p1.y())).normalized().adjusted(-extra, -extra, extra, extra)
 
     def shape(self):
-        path = super(Arrow, self).shape()
+        path = super(Connector, self).shape()
         path.addPolygon(self.arrowHead)
         return path
 

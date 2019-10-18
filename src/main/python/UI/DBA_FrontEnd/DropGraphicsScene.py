@@ -2,14 +2,14 @@ from PyQt5.QtWidgets import QGraphicsWidget, QGraphicsScene, QGraphicsItem, QAct
 from PyQt5.QtCore import * 
 from PyQt5.QtGui import *
 from Field import Field
-from Arrow import Arrow
+from Connector import Connector
 from Loop import Loop
 from Decision import Decision
 from GraphicsProxyWidget  import GraphicsProxyWidget
 import sys
 
 class DropGraphicsScene(QGraphicsScene):
-    InsertLine = range(4)
+    InsertLine_ON, InsertLine_OFF = range(2)
 
     def __init__(self, parent = None):
         super(DropGraphicsScene, self).__init__(parent)
@@ -87,7 +87,7 @@ class DropGraphicsScene(QGraphicsScene):
         self.myMode = mode
 
     def mousePressEvent(self, event):
-        if self.myMode == self.InsertLine:
+        if self.myMode == self.InsertLine_ON:
             self.line = QGraphicsLineItem(QLineF(event.scenePos(), event.scenePos()))
             self.line.setPen(QPen(self.myLineColor, 2))
             self.addItem(self.line)
@@ -95,12 +95,12 @@ class DropGraphicsScene(QGraphicsScene):
         super(DropGraphicsScene, self).mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        if self.myMode == self.InsertLine and self.line:
+        if self.myMode == self.InsertLine_ON and self.line:
             newLine = QLineF(self.line.line().p1(), event.scenePos())
             self.line.setLine(newLine)
 
     def mouseReleaseEvent(self, event):
-        if self.line and self.myMode == self.InsertLine:
+        if self.line and self.myMode == self.InsertLine_ON:
             startItems = self.items(self.line.line().p1())
             if len(startItems) and startItems[0] == self.line:
                 startItems.pop(0)
@@ -114,13 +114,13 @@ class DropGraphicsScene(QGraphicsScene):
             if len(startItems) and len(endItems) and isinstance(startItems[0], GraphicsProxyWidget) and isinstance(endItems[0], GraphicsProxyWidget) and startItems[0] != endItems[0]:
                 startItem = startItems[0]
                 endItem = endItems[0]
-                arrow = Arrow(startItem, endItem)
-                arrow.setColor(self.myLineColor)
-                startItem.addArrow(arrow)
-                endItem.addArrow(arrow)
-                arrow.setZValue(-1000.0)
-                self.addItem(arrow)
-                arrow.updatePosition()
+                connector = Connector(startItem, endItem)
+                connector.setColor(self.myLineColor)
+                startItem.addConnector(connector)
+                endItem.addConnector(connector)
+                connector.setZValue(-1000.0)
+                self.addItem(connector)
+                connector.updatePosition()
 
 
         self.line = None
@@ -128,7 +128,7 @@ class DropGraphicsScene(QGraphicsScene):
 
     def setLineColor(self, color):
         self.myLineColor = color
-        if self.isItemChange(Arrow):
+        if self.isItemChange(Connector):
             item = self.selectedItems()[0]
             item.setColor(self.myLineColor)
             self.update()

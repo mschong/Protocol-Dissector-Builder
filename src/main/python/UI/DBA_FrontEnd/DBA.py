@@ -84,6 +84,7 @@ class Ui_Form(object):
         self.connector_button = QtWidgets.QPushButton('Connector', self.construct_tab)
         self.connector_button.setGeometry(QtCore.QRect(0,60,83,25))
         self.connector_button.setObjectName("connector_button")
+        self.connector_button.setCheckable(True)
         self.connector_button.clicked.connect(self.connector_button_clicked)
 
 
@@ -119,7 +120,10 @@ class Ui_Form(object):
         self.decision_win.show()
 
     def connector_button_clicked(self):
-        self.scene.setMode(self.scene.InsertLine)
+        if(self.connector_button.isChecked()):
+            self.scene.setMode(self.scene.InsertLine_ON)
+        else:
+            self.scene.setMode(self.scene.InsertLine_OFF)
 
 
 if __name__ == "__main__":

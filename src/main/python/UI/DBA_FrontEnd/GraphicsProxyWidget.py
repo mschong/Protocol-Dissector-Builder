@@ -7,7 +7,7 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 
 	def __init__(self):
 		super().__init__()
-		self.arrows = []
+		self.connectors = []
 
 	def dragEnterEvent(self, e):
 		e.acceptProposedAction()
@@ -39,24 +39,24 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 		self.polygon.setPolygon(polyVector)
 		self.polygon.setPos(self.sceneBoundingRect().center())
 
-	def deleteArrow(self, arrow):
+	def removeConnector(self, connector):
 		try:
-			self.arrows.remove(arrow)
+			self.connectors.remove(connector)
 		except ValueError:
 			pass
 
 
-	def deleteArrows(self):
-		for arrow in self.arrows[:]:
-			arrow.startItem().removeArrow(arrow)
-			arrow.endItem().remove(arrow)
-			self.scene().removeArrow(arrow)
+	def removeConnectors(self):
+		for connector in self.connectors[:]:
+			connector.startItem().removeConnector(connector)
+			connector.endItem().remove(connector)
+			self.scene().removeConnector(connector)
 
-	def addArrow(self, arrow):
-		self.arrows.append(arrow)
+	def addConnector(self, connector):
+		self.connectors.append(connector)
 
 	def itemChange(self, change, value):
 		if change == QGraphicsItem.ItemPositionChange:
-			for arrow in self.arrows:
-				arrow.updatePosition()
+			for connector in self.connectors:
+				connector.updatePosition()
 		return value
