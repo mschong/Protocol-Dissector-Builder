@@ -87,7 +87,6 @@ class Ui_Form(object):
         self.connector_button.setCheckable(True)
         self.connector_button.clicked.connect(self.connector_button_clicked)
 
-
         self.toolBox.addItem(self.construct_tab, "")
 
         self.retranslateUi(Form)

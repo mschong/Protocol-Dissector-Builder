@@ -49,8 +49,8 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 	def removeConnectors(self):
 		for connector in self.connectors[:]:
 			connector.startItem().removeConnector(connector)
-			connector.endItem().remove(connector)
-			self.scene().removeConnector(connector)
+			connector.endItem().removeConnector(connector)
+			self.scene().removeItem(connector)
 
 	def addConnector(self, connector):
 		self.connectors.append(connector)

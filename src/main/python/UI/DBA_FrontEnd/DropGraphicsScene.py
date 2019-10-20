@@ -6,6 +6,7 @@ from Connector import Connector
 from Loop import Loop
 from Decision import Decision
 from GraphicsProxyWidget  import GraphicsProxyWidget
+from Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
 import sys
 
 class DropGraphicsScene(QGraphicsScene):
@@ -18,14 +19,52 @@ class DropGraphicsScene(QGraphicsScene):
         self.myLineColor = Qt.black
 
     def contextMenuEvent(self, event):
-        menu = QMenu()
-        deleteAction = QAction()
-        deleteAction = menu.addAction("Delete")
-        if menu.exec(event.screenPos()) == deleteAction:
-            itemToRemove = QGraphicsWidget()
-            for item in self.items(event.scenePos()):
-                if item.scene():
-                    self.removeItem(item)
+        if(len(self.items(event.scenePos()))):
+            menu = QMenu()
+
+            deleteAction = QAction()
+            
+
+            if isinstance(self.items(event.scenePos())[0], Connector):
+                change_type_action = QAction()
+                change_type_action = menu.addAction("Change Type")
+
+                deleteAction = menu.addAction("Delete")
+
+                action = menu.exec_(event.screenPos())
+                
+                if action == deleteAction:
+                    itemToRemove = QGraphicsWidget()
+                    for item in self.items(event.scenePos()):
+                        if item.scene():
+                            # Following two if statements remove field's connectors
+                            if isinstance(item, GraphicsProxyWidget):
+                                item.removeConnectors()
+                            elif isinstance(item, Connector):
+                                item.startItem().removeConnector(item)
+                                item.endItem().removeConnector(item)
+                            self.removeItem(item)
+                elif action == change_type_action:
+                    dialog = ConnectorTypeDialog(self.items(event.scenePos())[0])
+                    dialog.setModal(True)
+                    dialog.exec()
+            else:
+                deleteAction = menu.addAction("Delete")
+
+                action = menu.exec_(event.screenPos())
+                
+                if action == deleteAction:
+                    itemToRemove = QGraphicsWidget()
+                    for item in self.items(event.scenePos()):
+                        if item.scene():
+                            # Following two if statements remove field's connectors
+                            if isinstance(item, GraphicsProxyWidget):
+                                item.removeConnectors()
+                            elif isinstance(item, Connector):
+                                item.startItem().removeConnector(item)
+                                item.endItem().removeConnector(item)
+                            self.removeItem(item)
+    
     # The following two functions are only preparing the scene to accept any drag movements
 
     def dragEnterEvent(self, event):
@@ -67,11 +106,12 @@ class DropGraphicsScene(QGraphicsScene):
          We needed to create a parent over the widget because if would add the widget to scene 
          the widget would be be positioned at (0,0) and we wouldn't be able o move it"""
         self.addItem(parent)
-        
+
         # This Proxy will allows us to add the child to the parent and drop the  widget to the canvas
         proxy = GraphicsProxyWidget()
         proxy.setWidget(widget)
         proxy.setParentItem(parent)
+
         return proxy
         
 
@@ -87,7 +127,7 @@ class DropGraphicsScene(QGraphicsScene):
         self.myMode = mode
 
     def mousePressEvent(self, event):
-        if self.myMode == self.InsertLine_ON:
+        if self.myMode == self.InsertLine_ON and event.button() == Qt.LeftButton:
             self.line = QGraphicsLineItem(QLineF(event.scenePos(), event.scenePos()))
             self.line.setPen(QPen(self.myLineColor, 2))
             self.addItem(self.line)

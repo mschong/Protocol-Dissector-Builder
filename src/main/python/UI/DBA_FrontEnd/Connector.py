@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 import math
 
-
 class Connector(QGraphicsLineItem):
     def __init__(self, startItem, endItem, parent=None, scene=None):
         super(Connector, self).__init__(scene)
@@ -13,6 +12,7 @@ class Connector(QGraphicsLineItem):
 
         self.myStartItem = startItem
         self.myEndItem = endItem
+        self.connectorType = "Normal"
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.myColor = Qt.black
         self.setPen(QPen(self.myColor, 2, Qt.SolidLine, Qt.RoundCap,
@@ -20,6 +20,24 @@ class Connector(QGraphicsLineItem):
 
     def setColor(self, color):
         self.myColor = color
+        self.update()
+
+    def setType(self, connectorType):
+        if(connectorType == "Loop"):
+            self.connectorType = "Loop"
+            self.setColor(Qt.blue)
+        elif(connectorType == "True"):
+            self.connectorType = "True"
+            self.setColor(Qt.green)
+        elif(connectorType == "False"):
+            self.connectorType = "False"
+            self.setColor(Qt.red)
+        else:
+            self.connectorType = "Normal"
+            self.setColor(Qt.black)
+
+    def getType(self):
+        return self.connectorType
 
     def startItem(self):
         return self.myStartItem
