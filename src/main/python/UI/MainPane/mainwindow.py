@@ -61,10 +61,14 @@ class UiMainWindow(object):
         self.workspaceLabel.setGeometry(QtCore.QRect(390, 10, 300, 17))
         self.workspaceLabel.setText("")
         self.workspaceLabel.setObjectName("workspaceLabel")
+
+
+        #TODO DELETE when treeview is complete
         self.workspaceButton = QtWidgets.QPushButton(self.centralwidget)
         self.workspaceButton.setGeometry(QtCore.QRect(10, 50, 181, 25))
         self.workspaceButton.setObjectName("workspaceButton")
-        self.workspaceButton.clicked.connect(self.addContextMenuToSelfWorkspaceOpenButton)
+       
+      
         self.packetPreviewFrame = QtWidgets.QFrame(self.centralwidget)
         self.packetPreviewFrame.setGeometry(QtCore.QRect(0, 560, 1201, 201))
         self.packetPreviewFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -97,13 +101,38 @@ class UiMainWindow(object):
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuAbout.menuAction())
 
+        #Workspace Options
+        self.new_ws = QtWidgets.QAction("New Workspace", self.menubar)
+        self.open_ws = QtWidgets.QAction("Open Workspace",self.menubar)
+        self.close_ws = QtWidgets.QAction("Close Workspace",self.menubar)
+        self.config_ws = QtWidgets.QAction("Configure Workspace",self.menubar)
+        #Workspace Options functions
+      
+        self.new_ws.triggered.connect(self.openWorkpaceConfigDialog)
+        self.open_ws.triggered.connect(self.openworkspace)
+        self.close_ws.triggered.connect(self.closeWorkspaceDialog)
+        self.config_ws.triggered.connect(self.openWorkpaceConfigDialog)
+        #Project Options
+        self.new_proj = QtWidgets.QAction("New Project",self.menubar)
+        self.import_proj =  QtWidgets.QAction("Import Project",self.menubar)
+        #Project options functions
+        self.new_proj.triggered.connect(self.openProjectConfigDialog)
+        self.import_proj.triggered.connect(self.openProjectDialog)
+
+
+        self.options = [self.new_ws,self.open_ws,self.close_ws,self.config_ws,self.new_proj,self.import_proj]
+        self.menuFile.addActions(self.options)
+      
+        MainWindow.setMenuBar(self.menubar)
+       
+
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Protocol Dissector Window"))
-        self.workspaceButton.setText(_translate("MainWindow", "Options"))
+        self.workspaceButton.setText(_translate("MainWindow", " "))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
         self.menuAbout.setTitle(_translate("MainWindow", "About"))
@@ -200,25 +229,45 @@ class UiMainWindow(object):
         pass
 
     def openWorkpaceConfigDialog(self, wsName=None, wsStartDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), wsEditDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
-        dialog = QtWidgets.QDialog()
-        wcUi = workspaceconfigwindow.Ui_Dialog()
-        wcUi.setupUi(dialog)
-        wcUi.workspaceFileLineEdit.setText(wsName)
-        wcUi.startDateLabel.setText(wsStartDate)
-        wcUi.editDateLabel.setText(wsEditDate)
-        if dialog.exec_() == QtWidgets.QDialog.Accepted:
-            if wcUi.workspaceFileLineEdit.text() != wsName:
-                wsName = wcUi.workspaceFileLineEdit.text()
-                self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate)
-                self.workspaceLabel.setText(wsName)
-                self.moveWorkspaceButtonToBottom()
-                self.workspace_file = "{}.json".format(wsName)
-                self.loadWorkspace()
+        try:
+            wsdata = self.pyro_proxy.get_current_workspace()
+            if (wsdata != None):
+                wsName = wsdata['name']
+                
+                wsStartDate = wsdata['created']
+                wsEditDate = wsdata['edited']
+        finally:   
+            if wsName is False:
+                    wsName = " "
+            dialog = QtWidgets.QDialog()
+            wcUi = workspaceconfigwindow.Ui_Dialog()
+            wcUi.setupUi(dialog)
+            wcUi.workspaceFileLineEdit.setText(str(wsName))
+            wcUi.startDateLabel.setText(wsStartDate)
+            wcUi.editDateLabel.setText(wsEditDate)
+            if dialog.exec_() == QtWidgets.QDialog.Accepted:
+                if wcUi.workspaceFileLineEdit.text() != wsName:
+                    wsName = wcUi.workspaceFileLineEdit.text()
+                    self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate)
+                    self.workspaceLabel.setText(wsName)
+                    self.moveWorkspaceButtonToBottom()
+                    self.workspace_file = "{}.json".format(wsName)
+                    self.loadWorkspace()
+ 
+   
     
+
+   
+
+    #PROJECT FUNCTIONS
+
+       
     def openProjectConfigDialog(self,pname=None,pauthor = None,pdesc=None,created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         dialog = QtWidgets.QDialog()
         pUi = projectconfig.P_Dialog()
         pUi.setupUi(dialog)
+        if pname is False:
+            pname = " "
         pUi.lineEdit.setText(pname)
         pUi.lineEdit_2.setText(pauthor)
         pUi.lineEdit_3.setText(pdesc)
@@ -231,44 +280,7 @@ class UiMainWindow(object):
                 pdesc = pUi.lineEdit_3.text()
                 self.pyro_proxy.new_project(pname,pauthor,pdesc,created,edited)
                 self.loadWorkspace()
-   
-    def addContextMenuToSelfWorkspaceOpenButton(self):
-        self.workspaceButton.menu = QtWidgets.QMenu()
-        newWsAction = self.workspaceButton.menu.addAction("New Workspace")
-        openWsAction = self.workspaceButton.menu.addAction("Open Workspace")
-        #ADD CONFIGURE
-        configureWsAction = self.workspaceButton.menu.addAction("Configure Workspace")
-        closeWsAction = self.workspaceButton.menu.addAction("Close Workspace [X]")
-        addProject = self.workspaceButton.menu.addAction("Add project")
-        importProject = self.workspaceButton.menu.addAction("Import project")
-        action = self.workspaceButton.menu.exec_(self.getDefaultContextMenuQPointforButton(self.workspaceButton))
-        if action == newWsAction:
-            self.openWorkpaceConfigDialog()
-        elif action == openWsAction:
-            self.openworkspace()
-        elif action == configureWsAction:
-            try:
-                wsdata = self.pyro_proxy.get_current_workspace()
-                if (wsdata == None):
-                    self.showErrorMessage("Unable to retrieve Worskpace Information. Workspace data returned empty")
-                    return
-                self.openWorkpaceConfigDialog(wsdata['name'], wsdata['created'], wsdata['edited'])
-            except Exception as ex:
-                self.showErrorMessage("Unable to retrieve Worskpace Information: " + str(ex))
-        
-        elif action == closeWsAction:
-            try:
-                self.closeWorkspaceDialog()
-            except Exception as ex:
-                self.showErrorMessage("Unable to close Workspace " + str(ex))
-        elif action == addProject:
-            self.openProjectConfigDialog()
-        elif action == importProject:
-            self.openProjectDialog()
 
-   
-
-    #PROJECT FUNCTIONS
     def showErrorMessage(self, errostr):
         msgBox = QtWidgets.QMessageBox()
         msgBox.setIcon(QtWidgets.QMessageBox.Critical)
@@ -277,22 +289,6 @@ class UiMainWindow(object):
         msgBox.setWindowTitle("Error")
         msgBox.exec_()
 
-    
-    def addContextMenuToProject(self, parent):
-        parent.menu = QtWidgets.QMenu()
-        saveProjectAction = parent.menu.addAction("Save Project")
-        exportProjectAction = parent.menu.addAction("Export Dissector [ -> ]")
-        configureProjectAction = parent.menu.addAction("Configure Project")
-        closeProjectAction = parent.menu.addAction("Close Project [X]")
-
-
-    def getDefaultContextMenuQPointforButton(self, button):
-        point = QtCore.QPoint()
-        point.setX(button.pos().x())
-        point.setY(button.pos().y() + 70)
-        return point
-
-    
         
 
     def openProjectDialog(self):
