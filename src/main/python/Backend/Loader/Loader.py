@@ -7,126 +7,105 @@ sys.path.insert(1, "../../")
 sys.path.insert(1, "../../../../")
 from Project import project
 from Workspace import workspace
+import json
 
-#
-# The Workspace class has utility methods to load and save workspaces
-#
+
 class Loader():
 
-    workspace_pool = []
-    project_pool = []
+    workspace = None
 
-    def save_workspace(self, file, projects):
-        name = ntpath.basename(file)
-        if name is None or name == "":
-            print("[-] The name of the workspace cannot be empty")
-            exit(1)
-        print("[+] Creating Workspace " + name)
-        xml = "<?xml version=\"1.0\"?>"
-        if projects is not None and len(projects) > 0:
-            for prj in projects:
-                xml += "<project name=\"" + prj.name + "\">"
-                ## TODO: missing project attributes implementation
-                xml += "</project>"
-        xml += "<workspace name=\"" + name + "\"></workspace>"
-        try:
-            with open(file, "w") as text_file:
-                text_file.write(xml)
-        except:
-            print("[-] Unable to create file")
+    def __init__(self):
+        self.workspace = workspace.Workspace()
 
-    def parsexmltoworkspace(self, file):
-        print("[+] Parsing Workspace from " + file)
-        try:
-            tree = ET.parse(file)
-            root = tree.getroot()
-            wsname = root.get("name")
-            projects = []
-            for prj in root.findall("project"):
-                p = project.Project(prj.get("name"))
-                # TODO:missing implementation to parse the attributes of each project xml
-                #  like bytes, multi bytes, etc
-                projects.append(p)
-                print("[+] Parsed Project " + p.name + " from Workspace")
-            ws = workspace.Workspace(wsname, projects)
-            ws.startDate = root.get("startdate")
-            ws.editDate = root.get("editdate")
-            print("[+] Parsing complete")
-            return ws
-        except :
-            print("[-] Unable to parse Workspace from XML")
+    #WORKSAPCE FUNCTIONS
 
-    def loadworkspace(self, file):
-        print("[+] Opening Workspace from " + file)
-        ws = self.parsexmltoworkspace(file)
-        try:
-            self.appendToWorkspacePool(ws)
-            return ws.name
-        except Exception as ex:
-            raise ex
+    '''
+    save workspace information
+    get JSON from current workspace and update json file
+    '''
+    def save_workspace(self):
+            JSON = self.workspace.get_JSON()
+            
+            print(JSON)
+            f = open("{}.json".format(self.workspace.name) ,"w+")
+            f.write(json.dumps(JSON))
+            f.close()
+    '''
+    load a workspace already created
+    Receives json filename, loads into JSON object and updates the current workspace object
+    returns the name of the workspace
+    '''
+    def loadworkspace(self, filename):
+        print("[+] Opening Workspace from {}".format(filename) )
+        with open(filename) as f:
+            data = json.loads(f.read())
+        self.workspace = workspace.Workspace(JSON=data)
+        self.project_pool = self.workspace.JSON['projects']
+        return self.workspace.JSON
+    '''
+    Creates a new workspace object with the given name. saves the workspace afterwards.
+    '''
+    def new_workspace(self,ws_name,ws_created,ws_edited):
+        self.workspace = workspace.Workspace(ws_name, None)
+        self.workspace.startDate = ws_created
+        self.workspace.editDate = ws_edited
+        self.save_workspace()
 
-    def appendToWorkspacePool(self, wspace):
-        if wspace is None or type(wspace) != workspace.Workspace:
-            errormsg = "Invalid object type for workspace"
-            print("[-] " + errormsg)
-            raise Exception(errormsg)
-        for ws in self.workspace_pool:
-            if wspace.name == ws.name:
-                errormsg = "Workspace " + wspace.name + " already loaded"
-                print("[-] " + errormsg)
-                raise Exception(errormsg)
-        self.workspace_pool.append(wspace)
-        print("[+] Workspace " + wspace.name + " added to Workspace pool")
+    '''
+    Close a workspace
+    '''
+    def close_workspace(self):
+        self.workspace = None
+        self.project_pool = {}
+  
+       
 
-    def runWithUnsavedWorkspace(self):
-        ws = workspace.Workspace("untitled", None)
-        ws.startDate = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
-        ws.editDate = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
-        self.appendToWorkspacePool(ws)
-        print("[+] Created generic untitled workspace")
-        return ws.name
+   
+    #Project functions
+    def new_project(self,p_name,p_author,p_desc,p_created,p_edited,):
+        
+        p = project.Project(p_name)
+        p.description = p_desc
+        p.dateCreated = p_created
+        p.editDate =p_edited
+        p.author = p_author
+        self.workspace.addProjectToWorkspace(p.get_JSON())
+        self.save_project(p_name)
+    
 
-    def get_workspace_pool_count(self):
-        return len(self.workspace_pool)
+    def save_project(self,p_name):
+       
+        JSON = self.workspace.projects
+        print(JSON)
+        for project in JSON:
+            print(project)
+            if JSON[project]['name'] == p_name:
+                JSON = JSON[project]
+         
+       
+        f = open("{}.json".format(p_name) ,"w+")
+        f.write(json.dumps(JSON))
+        f.close()
+        self.save_workspace()
 
-    def print_workspace_pool(self):
-        print(self.workspace_pool)
+    def import_project(self,filename):
+        
+     
+        with open(filename) as f:
+            data = json.loads(f.read())
+     
+        p = project.Project(JSON = data)
+      
+        self.workspace.addProjectToWorkspace(p.get_JSON())
+        self.save_project(p.name)
 
-    def find_workspace(self, wsname):
-        if (wsname == None or wsname == ""):
-            errormsg = "Can't retrieve Workspace from pool because wsname is None or Empty"
-            print ("[-] " + errormsg)
-            raise Exception(errormsg)
-        result = None
-        for workspace in self.workspace_pool:
-            if wsname == workspace.name:
-                result = workspace
-                break
-        return result
+            
+    def open_project(self,p_name):
+        pass
 
-    def get_workspace_data_from_pool(self, wsname):
-        if (wsname == None or wsname == ""):
-            errormsg = "Can't retrieve Workspace from pool because wsname is None or Empty"
-            print ("[-] " + errormsg)
-            raise Exception(errormsg)
-        workspace = self.find_workspace(wsname)
-        result = None
-        if workspace != None:
-            result = []
-            result.append(workspace.name)
-            result.append(workspace.startDate)
-            result.append(workspace.editDate)
-        return result
 
-    def update_workspace(self, ws_currentname, ws_newname):
-        if ws_currentname == None or ws_currentname == "":
-            errormsg = "Unable to update Workpace, please provide a valid workspace name"
-            print("[-] " + errormsg)
-            raise Exception (errormsg)
-        if ws_newname == None or ws_newname == None:
-            errormsg = "Unable to update Workpace, please provide a valid NEW workspace name"
-            print("[-] " + errormsg)
-            raise Exception(errormsg)
-        workspace = self.find_workspace(ws_currentname)
-        workspace.name = ws_newname
-        # TODO: write changes to disk
+  
+
+
+
+  
