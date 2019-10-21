@@ -15,7 +15,7 @@ class Loader():
     workspace = None
 
     def __init__(self):
-        self.workspace = 0
+        self.workspace = workspace.Workspace()
 
     #WORKSAPCE FUNCTIONS
 

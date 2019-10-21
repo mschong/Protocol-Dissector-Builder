@@ -245,7 +245,7 @@ class UiMainWindow(object):
                 wsStartDate = wsdata['created']
                 wsEditDate = wsdata['edited']
         finally:   
-            if wsName is False:
+            if wsName is None:
                     wsName = " "
             dialog = QtWidgets.QDialog()
             wcUi = workspaceconfigwindow.Ui_Dialog()
