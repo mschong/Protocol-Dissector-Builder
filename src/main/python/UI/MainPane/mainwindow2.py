@@ -17,16 +17,15 @@ from UI.DBA_FrontEnd import DBA
 from UI.PacketPreview import packetpreview
 from UI.ProjectConfigDialog import projectconfig
 
-class UiMainWindow(object):
 
+class UiMainWindow(object):
     workspace_file = None
     pyro_proxy = None
     dba_ui = None
     packetpreview_ui = None
-    treeview_model = None
-    MAX_PROJECTS = 10
 
     def setupUi(self, MainWindow):
+
         ## Pyro
         ns = Pyro4.locateNS()
         uri = ns.lookup("pyro.service")
@@ -39,14 +38,10 @@ class UiMainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.treeView = QtWidgets.QTreeView(self.centralwidget)
-        self.treeView.setGeometry(QtCore.QRect(0, 40, 211, 511))
-        self.treeView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        self.treeView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.treeView.setGeometry(QtCore.QRect(0, 30, 211, 521))
         self.treeView.setObjectName("treeView")
-        self.treeview_model = self.createProjectTreeViewModel(self.treeView)
-        self.treeView.setModel(self.treeview_model)
         self.canvasFrame = QtWidgets.QFrame(self.centralwidget)
-        self.canvasFrame.setGeometry(QtCore.QRect(210, 40, 981, 511))
+        self.canvasFrame.setGeometry(QtCore.QRect(210, 30, 991, 521))
         self.canvasFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.canvasFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.canvasFrame.setObjectName("canvasFrame")
@@ -59,19 +54,19 @@ class UiMainWindow(object):
         canvas_layout.addWidget(dba_form)
         self.canvasFrame.setLayout(canvas_layout)
 
+        # Project navigator
         self.workspaceLabel = QtWidgets.QLabel(self.centralwidget)
-        self.workspaceLabel.setGeometry(QtCore.QRect(213, 10, 971, 20))
+        self.workspaceLabel.setGeometry(QtCore.QRect(390, 10, 300, 17))
         self.workspaceLabel.setText("")
         self.workspaceLabel.setObjectName("workspaceLabel")
         self.workspaceButton = QtWidgets.QPushButton(self.centralwidget)
-        self.workspaceButton.setGeometry(QtCore.QRect(10, 10, 181, 25))
+        self.workspaceButton.setGeometry(QtCore.QRect(10, 50, 181, 25))
         self.workspaceButton.setObjectName("workspaceButton")
         self.workspaceButton.clicked.connect(self.addContextMenuToSelfWorkspaceOpenButton)
         self.packetPreviewFrame = QtWidgets.QFrame(self.centralwidget)
-        self.packetPreviewFrame.setGeometry(QtCore.QRect(0, 560, 1191, 211))
+        self.packetPreviewFrame.setGeometry(QtCore.QRect(0, 560, 1201, 201))
         self.packetPreviewFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.packetPreviewFrame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.packetPreviewFrame.setObjectName("packetPreviewFrame")
 
         ## Packet Preview Pane
         packetpreview_form = QtWidgets.QWidget()
@@ -81,6 +76,7 @@ class UiMainWindow(object):
         ppreview_layout.addWidget(packetpreview_form)
         self.packetPreviewFrame.setLayout(ppreview_layout)
 
+        self.packetPreviewFrame.setObjectName("packetPreviewFrame")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1200, 22))
@@ -155,12 +151,10 @@ class UiMainWindow(object):
                 # print(projects[str(0)])
                 spacing = 0
                 for project in projects:
-                    print(projects[str(project)]['name'])
-                    self.addProjectToTreeView(self.treeview_model, projects[str(project)]['name'])
-                    #print(project)
-                    #button = self.createWorspaceGenericButton(projects[str(project)]['name'], spacing)
-                    #self.moveGenericWorkspaceButtonToBottom(button, spacing)
-                    #spacing += 30
+                    print(project)
+                    button = self.createWorspaceGenericButton(projects[str(project)]['name'], spacing)
+                    self.moveGenericWorkspaceButtonToBottom(button, spacing)
+                    spacing += 30
 
             return JSON['name']
         except Exception as ex:
@@ -198,7 +192,7 @@ class UiMainWindow(object):
         button.move(point)
         button.show()
 
-    def displayProject(self):
+    def displayProject():
         pass
 
     def openWorkpaceConfigDialog(self, wsName=None, wsStartDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"),
@@ -301,11 +295,6 @@ class UiMainWindow(object):
             self.pyro_proxy.import_project(opUi.filename)
             self.loadWorkspace()
 
-    def createProjectTreeViewModel(self, treeView):
-        model = QtGui.QStandardItemModel(0, 1, treeView)
-        model.setHeaderData(0, QtCore.Qt.Horizontal, "Projects")
-        return model
 
-    def addProjectToTreeView(self, model, project_name):
-        model.insertRow(0)
-        model.setData(model.index(0, 0), project_name)
+
+

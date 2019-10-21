@@ -13,7 +13,6 @@ import json
 class Loader():
 
     workspace = None
-    
 
     #WORKSAPCE FUNCTIONS
 

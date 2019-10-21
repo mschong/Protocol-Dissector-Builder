@@ -30,19 +30,25 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>30</y>
+      <y>40</y>
       <width>211</width>
-      <height>521</height>
+      <height>511</height>
      </rect>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOn</enum>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOn</enum>
     </property>
    </widget>
    <widget class="QFrame" name="canvasFrame">
     <property name="geometry">
      <rect>
       <x>210</x>
-      <y>30</y>
-      <width>991</width>
-      <height>521</height>
+      <y>40</y>
+      <width>981</width>
+      <height>511</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -55,10 +61,10 @@
    <widget class="QLabel" name="workspaceLabel">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>213</x>
       <y>10</y>
-      <width>64</width>
-      <height>17</height>
+      <width>971</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
@@ -69,13 +75,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>50</y>
+      <y>10</y>
       <width>181</width>
       <height>25</height>
      </rect>
     </property>
     <property name="text">
-     <string>Add Workspace +</string>
+     <string>Options</string>
     </property>
    </widget>
    <widget class="QFrame" name="packetPreviewFrame">
@@ -83,8 +89,8 @@
      <rect>
       <x>0</x>
       <y>560</y>
-      <width>1201</width>
-      <height>201</height>
+      <width>1191</width>
+      <height>211</height>
      </rect>
     </property>
     <property name="frameShape">
