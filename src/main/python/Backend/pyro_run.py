@@ -26,7 +26,12 @@ class Pyro_Run():
     def close_workspace(self):
         return self.loader.close_workspace()
 
-
+    def import_project(self,file):
+        return self.loader.import_project(file)
+    
+    def new_project(self,name,author,desc,created,edited):
+        return self.loader.new_project(name,author,desc,created,edited)
+    
 
     def createPackets(self,fileName):
         self.child = pexpect.spawn("python3.6 PCAP/PCAPServices.py",encoding='utf-8')
