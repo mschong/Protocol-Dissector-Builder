@@ -48,54 +48,37 @@ class UiMainWindow(object):
         self.treeView.setObjectName("treeView")
         self.treeview_model = self.createProjectTreeViewModel(self.treeView)
         self.treeView.setModel(self.treeview_model)
-        self.canvasFrame = QtWidgets.QFrame(self.centralwidget)
+        self.canvasFrame = QtWidgets.QScrollArea(self.centralwidget)
         self.canvasFrame.setGeometry(QtCore.QRect(210, 40, 981, 511))
         self.canvasFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.canvasFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.canvasFrame.setObjectName("canvasFrame")
-
+        self.canvasFrame.setWidgetResizable(True)
         ## Dissector Builder Area (DBA)
 
         dba_form = QtWidgets.QWidget()
         dba_ui = DBA.Ui_Form()
         dba_ui.setupUi(dba_form)
+        self.canvasFrame.setWidget(dba_form)
         self.dba_pool.append(dba_ui)
-
-        dba_scrollarea = QtWidgets.QScrollArea()
-        dba_scrollarea.setWidget(dba_form)
-        dba_scrollarea.setWidgetResizable(True)
-        dba_scrollarea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        dba_scrollarea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-
-        canvas_layout = QtWidgets.QVBoxLayout()
-        canvas_layout.addWidget(dba_scrollarea)
-        self.canvasFrame.setLayout(canvas_layout)
 
         self.workspaceLabel = QtWidgets.QLabel(self.centralwidget)
         self.workspaceLabel.setGeometry(QtCore.QRect(213, 10, 971, 20))
         self.workspaceLabel.setText("")
         self.workspaceLabel.setObjectName("workspaceLabel")
       
-        self.packetPreviewFrame = QtWidgets.QFrame(self.centralwidget)
+        self.packetPreviewFrame = QtWidgets.QScrollArea(self.centralwidget)
         self.packetPreviewFrame.setGeometry(QtCore.QRect(0, 560, 1191, 211))
         self.packetPreviewFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.packetPreviewFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.packetPreviewFrame.setObjectName("packetPreviewFrame")
+        self.packetPreviewFrame.setWidgetResizable(True)
 
         ## Packet Preview Pane
         packetpreview_form = QtWidgets.QWidget()
         self.packetpreview_ui = packetpreview.Ui_PackagePreview()
         self.packetpreview_ui.setupUi(packetpreview_form)
-
-        packetpreview_scrollarea = QtWidgets.QScrollArea()
-        packetpreview_scrollarea.setWidget(packetpreview_form)
-        packetpreview_scrollarea.setWidgetResizable(True)
-        packetpreview_scrollarea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        packetpreview_scrollarea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-
-        ppreview_layout = QtWidgets.QVBoxLayout()
-        ppreview_layout.addWidget(packetpreview_scrollarea)
-        self.packetPreviewFrame.setLayout(ppreview_layout)
+        self.packetPreviewFrame.setWidget(packetpreview_form)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
