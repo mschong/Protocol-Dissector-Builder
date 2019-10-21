@@ -5,57 +5,60 @@ sys.path.insert(1, "../../")
 from subprocess import Popen
 from Loader import Loader
 
-
-def __init__(self):
-    self.loader = Loader.Loader()
-
-
-def load_workspace(self, file):
-    return self.loader.loadworkspace(file)
-
-def get_current_workspace(self):
-    return self.loader.workspace.JSON
-
-def new_workspace(self,ws_name,ws_created,ws_edited):
-    return self.loader.new_workspace(ws_name,ws_created,ws_edited)
-
-def save_workspace(self):
-    return self.loader.save_workspace()
-def close_workspace(self):
-    return self.loader.close_workspace()
+@Pyro4.expose
+class Pyro_Run():
+    loader = None
+    def __init__(self):
+        self.loader = Loader.Loader()
 
 
+    def load_workspace(self, file):
+        return self.loader.loadworkspace(file)
 
-def createPackets(self,fileName):
-    self.child = pexpect.spawn("python3.6 PCAP/PCAPServices.py",encoding='utf-8')
-    self.child.expect("loop",timeout=None)
-    print("Creating")
-    self.child.sendline("create " + fileName)
-    self.child.expect("Done",timeout=None)
+    def get_current_workspace(self):
+        return self.loader.workspace.JSON
 
-def savePackets(self):
-    print("saving")
-    self.child.sendline("save")
-    self.child.expect("saved",timeout=None)
+    def new_workspace(self,ws_name,ws_created,ws_edited):
+        return self.loader.new_workspace(ws_name,ws_created,ws_edited)
 
-def dissectPackets(self):
-    print("dissecting")
-    self.child.sendline("dissect")
-    self.child.expect("dissected")
+    def save_workspace(self):
+        return self.loader.save_workspace()
+    def close_workspace(self):
+        return self.loader.close_workspace()
 
-def colorCode(self):
-    print("Coloring")
-    self.child.sendline("colorcode")
-    self.child.expect("colored")
 
-def printPackets(self):
-    self.child.sendline("print")
-    print(self.child.read())
+
+    def createPackets(self,fileName):
+        self.child = pexpect.spawn("python3.6 PCAP/PCAPServices.py",encoding='utf-8')
+        self.child.expect("loop",timeout=None)
+        print("Creating")
+        self.child.sendline("create " + fileName)
+        self.child.expect("Done",timeout=None)
+
+    def savePackets(self):
+        print("saving")
+        self.child.sendline("save")
+        self.child.expect("saved",timeout=None)
+
+    def dissectPackets(self):
+        print("dissecting")
+        self.child.sendline("dissect")
+        self.child.expect("dissected")
+
+    def colorCode(self):
+        print("Coloring")
+        self.child.sendline("colorcode")
+        self.child.expect("colored")
+
+    def printPackets(self):
+        self.child.sendline("print")
+        print(self.child.read())
 
 
 def main():
     daemon = Pyro4.Daemon()
     Popen("pyro4-ns")
+    time.sleep(5)
     ns = Pyro4.locateNS()
     uri = daemon.register(Pyro_Run)
     ns.register("pyro.service",uri)

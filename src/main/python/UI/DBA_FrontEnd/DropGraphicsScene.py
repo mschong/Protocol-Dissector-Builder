@@ -1,12 +1,12 @@
 from PyQt5.QtWidgets import QGraphicsWidget, QGraphicsScene, QGraphicsItem, QAction, QMenu, QGraphicsLineItem
 from PyQt5.QtCore import * 
 from PyQt5.QtGui import *
-from Field import Field
-from Connector import Connector
-from Loop import Loop
-from Decision import Decision
-from GraphicsProxyWidget  import GraphicsProxyWidget
-from Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
+from UI.DBA_FrontEnd.Field import Field
+from UI.DBA_FrontEnd.Connector import Connector
+from UI.DBA_FrontEnd.Loop import Loop
+from UI.DBA_FrontEnd.Decision import Decision
+from UI.DBA_FrontEnd.GraphicsProxyWidget  import GraphicsProxyWidget
+from UI.DBA_FrontEnd.Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
 import sys
 
 class DropGraphicsScene(QGraphicsScene):

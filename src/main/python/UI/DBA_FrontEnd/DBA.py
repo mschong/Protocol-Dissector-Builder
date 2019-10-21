@@ -9,13 +9,13 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 #from StartField import StartField
-from Field import Field
-from Loop import Loop
-from Decision import Decision
-from GraphicsProxyWidget import GraphicsProxyWidget
-from DropGraphicsScene import DropGraphicsScene
-from DragButton import DragButton
 
+from UI.DBA_FrontEnd.Field import Field
+from UI.DBA_FrontEnd.Loop import Loop
+from UI.DBA_FrontEnd.Decision import Decision
+from UI.DBA_FrontEnd.GraphicsProxyWidget import GraphicsProxyWidget
+from UI.DBA_FrontEnd.DropGraphicsScene import DropGraphicsScene
+from UI.DBA_FrontEnd.DragButton import DragButton
 class QGraphicsView(QtWidgets.QGraphicsView):
     def __init__(self, parent=None):
         super(QGraphicsView, self).__init__(parent)
