@@ -5,10 +5,22 @@ sys.path.insert(1, "../../")
 from subprocess import Popen
 from Loader import Loader
 
+
+
+import logging
+import sys, traceback
+import time
+import os
+import asyncio
+from PCAP.PCAP import PCap
+from subprocess import Popen,PIPE
+import pexpect
+import subprocess
+from Workspace.workspaceloader import WorkspaceLoader
+
+
 @Pyro4.expose
 class Pyro_Run():
-    loader = None
-
     def __init__(self):
         self.loader = Loader.Loader()
 
@@ -36,10 +48,37 @@ class Pyro_Run():
   
 
 
+    def createPackets(self,fileName):
+        self.child = pexpect.spawn("python3.6 PCAP/PCAPServices.py",encoding='utf-8')
+        self.child.expect("loop",timeout=None)
+        print("Creating")
+        self.child.sendline("create " + fileName)
+        self.child.expect("Done",timeout=None)
+
+    def savePackets(self):
+        print("saving")
+        self.child.sendline("save")
+        self.child.expect("saved",timeout=None)
+
+    def dissectPackets(self):
+        print("dissecting")
+        self.child.sendline("dissect")
+        self.child.expect("dissected")
+
+    def colorCode(self):
+        print("Coloring")
+        self.child.sendline("colorcode")
+        self.child.expect("colored")
+
+    def printPackets(self):
+        self.child.sendline("print")
+        print(self.child.read())
+
+
 def main():
     daemon = Pyro4.Daemon()
+
     Popen("pyro4-ns")
-    time.sleep(5)
     ns = Pyro4.locateNS()
     uri = daemon.register(Pyro_Run)
     ns.register("pyro.service",uri)

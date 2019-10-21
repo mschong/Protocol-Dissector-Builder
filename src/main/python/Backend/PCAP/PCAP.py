@@ -2,11 +2,12 @@ from subprocess import call
 import pyshark
 import os
 import py
-
+import json
 class PCap:
     def __init__(self,PCAPLocation):
         self.fileLocation = PCAPLocation
         self.pcapFile =""
+        self.pcapDissectedFile=""
         self.colorFlag = False
         self.yellowFlag = False
         self.colorList = {}
@@ -31,14 +32,35 @@ class PCap:
         print("Done")
 
     def dissectPCAP(self):
-        param = {"-X": 'lua_script:/root/Documents/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
-        self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
-        
+        param = {"-X": 'lua_script:/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
+        self.pcapDissectedFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
 
 
-
-    def createObjects(self):
-        print("Done")
+    def savePackets(self):
+        packets = {}
+        protocols = {}
+        fields = {}
+        output = []
+        for pkt in self.pcapFile:
+            number = pkt.frame_info.get_field_value("number")
+            protocols = {}
+            for protocol in (pkt.frame_info.protocols).split(":"):
+                fields = {}
+                try:
+                    for val in pkt[protocol].field_names:
+                        fields[val] = pkt[protocol].get_field_value(val)
+                except:
+                    pass
+                protocols[protocol] = fields
+            packets[number] = protocols
+        if self.colorList:
+            writeFile = open("../UI/PacketPreview/dictColor.log","w")
+            output = [packets,protocols,self.colorList]
+        else:
+            writeFile = open("../UI/PacketPreview/dict.log","w")
+            output = [packets,protocols]
+        json.dump(output,writeFile)
+        writeFile.close()
 
     def printPackets(self):
         i=0
@@ -47,17 +69,16 @@ class PCap:
             print(pkt.pretty_print())
             i = i+1
 
-
     def colorFilter(self):
         tw = py.io.TerminalWriter()
         i = 0
         j = 0
-        if os.listdir('/root/Documents/Protocol-Dissector-Builder/src/main/python/Backend/Lua/') == []:
+        if os.listdir('/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/Lua/') == []:
             self.yellowFlag = True
-            for x in self.pcapFile:
+            for x in self.pcapDissectedFile:
                 self.colorList[j] = "Yellow"
                 j+=1
-        for pkt in self.pcapFile:
+        for pkt in self.pcapDissectedFile:
             if self.yellowFlag == False:
                 self.colorList[i] = "Red"
             for prot in pkt.frame_info.protocols.split(":"):
@@ -72,4 +93,3 @@ class PCap:
             else:
                 tw.write("%s : %s" %( str(i+1), pkt), green=True, bold=True)
             i+=1
-
