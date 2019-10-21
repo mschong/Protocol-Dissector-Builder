@@ -43,6 +43,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(900, 550)
+        Form.setMinimumSize(QtCore.QSize(900, 550))
         self.dba_label = QtWidgets.QLabel(Form)
         self.dba_label.setGeometry(QtCore.QRect(120, 10, 151, 16))
         self.dba_label.setObjectName("dba_label")
