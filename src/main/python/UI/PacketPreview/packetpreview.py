@@ -20,6 +20,7 @@ class Ui_PackagePreview(object):
     def setupUi(self, PackagePreview):
         PackagePreview.setObjectName("PackagePreview")
         PackagePreview.resize(880, 454)
+        PackagePreview.setMinimumSize(QtCore.QSize(880, 454))
         
         self.treeView = QtWidgets.QTreeView(PackagePreview)
         self.treeView.setGeometry(QtCore.QRect(0, 50, 400, 401))
