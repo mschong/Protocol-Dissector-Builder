@@ -230,7 +230,7 @@ class UiMainWindow(object):
     def displayProject(self):
         pass
 
-<<<<<<< HEAD
+
     def openWorkpaceConfigDialog(self, wsName=None, wsStartDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"),
                                  wsEditDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         dialog = QtWidgets.QDialog()
@@ -251,7 +251,8 @@ class UiMainWindow(object):
     def openProjectConfigDialog(self, pname=None, pauthor=None, pdesc=None,
                                 created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"),
                                 edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
-=======
+        pass
+
     def openWorkpaceConfigDialog(self, wsName=None, wsStartDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), wsEditDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         try:
             wsdata = self.pyro_proxy.get_current_workspace()
@@ -287,7 +288,6 @@ class UiMainWindow(object):
 
        
     def openProjectConfigDialog(self,pname=None,pauthor = None,pdesc=None,created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
->>>>>>> 0449aabf4599e27630c01f592dcb490e1de09819
         dialog = QtWidgets.QDialog()
         pUi = projectconfig.P_Dialog()
         pUi.setupUi(dialog)
@@ -306,7 +306,6 @@ class UiMainWindow(object):
                 self.pyro_proxy.new_project(pname, pauthor, pdesc, created, edited)
                 self.loadWorkspace()
 
-<<<<<<< HEAD
     def addContextMenuToSelfWorkspaceOpenButton(self):
         self.workspaceButton.menu = QtWidgets.QMenu()
         newWsAction = self.workspaceButton.menu.addAction("New Workspace")
@@ -342,8 +341,6 @@ class UiMainWindow(object):
             self.openProjectDialog()
 
     # PROJECT FUNCTIONS
-=======
->>>>>>> 0449aabf4599e27630c01f592dcb490e1de09819
     def showErrorMessage(self, errostr):
         msgBox = QtWidgets.QMessageBox()
         msgBox.setIcon(QtWidgets.QMessageBox.Critical)
@@ -352,7 +349,6 @@ class UiMainWindow(object):
         msgBox.setWindowTitle("Error")
         msgBox.exec_()
 
-<<<<<<< HEAD
     def addContextMenuToProject(self, parent):
         parent.menu = QtWidgets.QMenu()
         saveProjectAction = parent.menu.addAction("Save Project")
@@ -365,9 +361,6 @@ class UiMainWindow(object):
         point.setX(button.pos().x())
         point.setY(button.pos().y() + 70)
         return point
-=======
-        
->>>>>>> 0449aabf4599e27630c01f592dcb490e1de09819
 
     def openProjectDialog(self):
         dialog = QtWidgets.QDialog()
