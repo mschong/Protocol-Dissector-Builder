@@ -8,12 +8,12 @@ class DragButton(QPushButton):
         super(DragButton, self).__init__(title, parent)
 
     def mouseMoveEvent(self, e):
-        if e.buttons() != Qt.RightButton:
+        if e.buttons() != Qt.LeftButton:
             return QPushButton.mouseMoveEvent(self, e)
 
         # The MimeData has the position of the button
         mimeData = QMimeData()
-        mimeData.setText('%d,%d' % (e.x(), e.y()))
+        mimeData.setText(self.text())
 
 
         # This makes the button to be transparent when its dragged.
@@ -33,13 +33,6 @@ class DragButton(QPushButton):
         drag.exec_(Qt.MoveAction)
 
         return QPushButton.mouseMoveEvent(self, e)
-
-    def mousePressEvent(self, e):
-
-        if e.button() == Qt.LeftButton:
-            print('press')
-
-        return QPushButton.mousePressEvent(self, e)
 
     def dragEnterEvent(self, e):
         e.accept()
