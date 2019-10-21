@@ -64,9 +64,10 @@ class UiMainWindow(object):
         dba_scrollarea = QtWidgets.QScrollArea()
         dba_scrollarea.setWidget(dba_form)
         dba_scrollarea.setWidgetResizable(True)
+        dba_scrollarea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        dba_scrollarea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
 
         canvas_layout = QtWidgets.QVBoxLayout()
-        #canvas_layout.addWidget(dba_form)
         canvas_layout.addWidget(dba_scrollarea)
         self.canvasFrame.setLayout(canvas_layout)
 
@@ -85,8 +86,15 @@ class UiMainWindow(object):
         packetpreview_form = QtWidgets.QWidget()
         self.packetpreview_ui = packetpreview.Ui_PackagePreview()
         self.packetpreview_ui.setupUi(packetpreview_form)
+
+        packetpreview_scrollarea = QtWidgets.QScrollArea()
+        packetpreview_scrollarea.setWidget(packetpreview_form)
+        packetpreview_scrollarea.setWidgetResizable(True)
+        packetpreview_scrollarea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        packetpreview_scrollarea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+
         ppreview_layout = QtWidgets.QVBoxLayout()
-        ppreview_layout.addWidget(packetpreview_form)
+        ppreview_layout.addWidget(packetpreview_scrollarea)
         self.packetPreviewFrame.setLayout(ppreview_layout)
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -188,10 +196,6 @@ class UiMainWindow(object):
                 for project in projects:
                     print(projects[str(project)]['name'])
                     self.addProjectToTreeView(self.treeview_model, projects[str(project)]['name'])
-                    #print(project)
-                    #button = self.createWorspaceGenericButton(projects[str(project)]['name'], spacing)
-                    #self.moveGenericWorkspaceButtonToBottom(button, spacing)
-                    #spacing += 30
 
             return JSON['name']
         except Exception as ex:
