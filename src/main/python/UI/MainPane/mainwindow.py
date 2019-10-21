@@ -21,9 +21,12 @@ class UiMainWindow(object):
 
     workspace_file = None
     pyro_proxy = None
-    dba_ui = None
+
     packetpreview_ui = None
+
+    dba_scrollarea = None
     treeview_model = None
+    dba_pool = []
     MAX_PROJECTS = 10
 
     def setupUi(self, MainWindow):
@@ -52,24 +55,25 @@ class UiMainWindow(object):
         self.canvasFrame.setObjectName("canvasFrame")
 
         ## Dissector Builder Area (DBA)
+
         dba_form = QtWidgets.QWidget()
-        self.dba_ui = DBA.Ui_Form()
-        self.dba_ui.setupUi(dba_form)
+        dba_ui = DBA.Ui_Form()
+        dba_ui.setupUi(dba_form)
+        self.dba_pool.append(dba_ui)
+
+        dba_scrollarea = QtWidgets.QScrollArea()
+        dba_scrollarea.setWidget(dba_form)
+        dba_scrollarea.setWidgetResizable(True)
+
         canvas_layout = QtWidgets.QVBoxLayout()
-        canvas_layout.addWidget(dba_form)
+        #canvas_layout.addWidget(dba_form)
+        canvas_layout.addWidget(dba_scrollarea)
         self.canvasFrame.setLayout(canvas_layout)
 
         self.workspaceLabel = QtWidgets.QLabel(self.centralwidget)
         self.workspaceLabel.setGeometry(QtCore.QRect(213, 10, 971, 20))
         self.workspaceLabel.setText("")
         self.workspaceLabel.setObjectName("workspaceLabel")
-
-
-        #TODO DELETE when treeview is complete
-        self.workspaceButton = QtWidgets.QPushButton(self.centralwidget)
-        self.workspaceButton.setGeometry(QtCore.QRect(10, 10, 181, 25))
-        self.workspaceButton.setObjectName("workspaceButton")
-       
       
         self.packetPreviewFrame = QtWidgets.QFrame(self.centralwidget)
         self.packetPreviewFrame.setGeometry(QtCore.QRect(0, 560, 1191, 211))
@@ -134,7 +138,6 @@ class UiMainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Protocol Dissector Window"))
-        self.workspaceButton.setText(_translate("MainWindow", " "))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
         self.menuAbout.setTitle(_translate("MainWindow", "About"))
@@ -178,7 +181,6 @@ class UiMainWindow(object):
         try:
 
             JSON = self.pyro_proxy.load_workspace(self.workspace_file)
-            self.moveWorkspaceButtonToBottom()
             if JSON['projects'] != None:
                 projects = JSON['projects']
                 # print(projects[str(0)])
@@ -206,27 +208,6 @@ class UiMainWindow(object):
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.closeWorkspace()
 
-    def moveWorkspaceButtonToBottom(self):
-        currentPos = self.workspaceButton.pos()
-        x = currentPos.x()
-        y = self.treeView.rect().bottom()
-        point = QtCore.QPoint(x, y)
-        self.workspaceButton.move(point)
-
-    def createWorspaceGenericButton(self, wsname, spacing):
-        button = WorkspaceButton.WorkspaceButton(wsname, self.centralwidget)
-        button.setGeometry(QtCore.QRect(10, 50 + spacing, 181, 25))
-        button.clicked.connect(self.displayProject)
-        button.workspace_name = wsname
-        return button
-
-    def moveGenericWorkspaceButtonToBottom(self, button, spacing):
-        y = self.treeView.rect().top() + (20 + spacing)
-        x = self.workspaceButton.pos().x()
-        point = QtCore.QPoint(x, y)
-        button.move(point)
-        button.show()
-
     def displayProject(self):
         pass
 
@@ -244,7 +225,6 @@ class UiMainWindow(object):
                 wsName = wcUi.workspaceFileLineEdit.text()
                 self.pyro_proxy.new_workspace(wsName, wsStartDate, wsEditDate)
                 self.workspaceLabel.setText(wsName)
-                self.moveWorkspaceButtonToBottom()
                 self.workspace_file = "{}.json".format(wsName)
                 self.loadWorkspace()
 
@@ -258,7 +238,6 @@ class UiMainWindow(object):
             wsdata = self.pyro_proxy.get_current_workspace()
             if (wsdata != None):
                 wsName = wsdata['name']
-                
                 wsStartDate = wsdata['created']
                 wsEditDate = wsdata['edited']
         finally:   
@@ -275,7 +254,6 @@ class UiMainWindow(object):
                     wsName = wcUi.workspaceFileLineEdit.text()
                     self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate)
                     self.workspaceLabel.setText(wsName)
-                    self.moveWorkspaceButtonToBottom()
                     self.workspace_file = "{}.json".format(wsName)
                     self.loadWorkspace()
  
@@ -285,7 +263,6 @@ class UiMainWindow(object):
    
 
     #PROJECT FUNCTIONS
-
        
     def openProjectConfigDialog(self,pname=None,pauthor = None,pdesc=None,created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         dialog = QtWidgets.QDialog()
@@ -305,40 +282,6 @@ class UiMainWindow(object):
                 pdesc = pUi.lineEdit_3.text()
                 self.pyro_proxy.new_project(pname, pauthor, pdesc, created, edited)
                 self.loadWorkspace()
-
-    def addContextMenuToSelfWorkspaceOpenButton(self):
-        self.workspaceButton.menu = QtWidgets.QMenu()
-        newWsAction = self.workspaceButton.menu.addAction("New Workspace")
-        openWsAction = self.workspaceButton.menu.addAction("Open Workspace")
-        # ADD CONFIGURE
-        configureWsAction = self.workspaceButton.menu.addAction("Configure Workspace")
-        closeWsAction = self.workspaceButton.menu.addAction("Close Workspace [X]")
-        addProject = self.workspaceButton.menu.addAction("Add project")
-        importProject = self.workspaceButton.menu.addAction("Import project")
-        action = self.workspaceButton.menu.exec_(self.getDefaultContextMenuQPointforButton(self.workspaceButton))
-        if action == newWsAction:
-            self.openWorkpaceConfigDialog()
-        elif action == openWsAction:
-            self.openworkspace()
-        elif action == configureWsAction:
-            try:
-                wsdata = self.pyro_proxy.get_current_workspace()
-                if (wsdata == None):
-                    self.showErrorMessage("Unable to retrieve Worskpace Information. Workspace data returned empty")
-                    return
-                self.openWorkpaceConfigDialog(wsdata['name'], wsdata['created'], wsdata['edited'])
-            except Exception as ex:
-                self.showErrorMessage("Unable to retrieve Worskpace Information: " + str(ex))
-
-        elif action == closeWsAction:
-            try:
-                self.closeWorkspaceDialog()
-            except Exception as ex:
-                self.showErrorMessage("Unable to close Workspace " + str(ex))
-        elif action == addProject:
-            self.openProjectConfigDialog()
-        elif action == importProject:
-            self.openProjectDialog()
 
     # PROJECT FUNCTIONS
     def showErrorMessage(self, errostr):
