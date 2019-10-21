@@ -72,7 +72,7 @@ class Ui_PackagePreview(object):
         PCAPFile.convertPCAP()
         i=0
         for pkt in PCAPFile.pcapFile:
-            branch1= QtGui.QStandardItem("Package #")
+            branch1= QtGui.QStandardItem("Packet #")
             k=0
             number = pkt.frame_info.get_field_value("number")
             for protocol in (pkt.frame_info.protocols).split(":"):
@@ -100,11 +100,13 @@ class Ui_PackagePreview(object):
         i=0
         j=0
         for pkt in PCAPFileD.pcapFile:
-            if PCAPFileD.colorList[j]:
+            if PCAPFileD.colorList[j] == "Green":
                 color = QColor(0,255,0)#green
-            else:
+            elif PCAPFileD.colorList[j] == "Red":
                 color = QColor(255,0,0) #red
-            branch2= QtGui.QStandardItem("Package #")
+            else:
+                color = QColor(255,255,0) #yellow
+            branch2= QtGui.QStandardItem("Packet #")
             k=0
             number = pkt.frame_info.get_field_value("number")
             for protocol in (pkt.frame_info.protocols).split(":"):
