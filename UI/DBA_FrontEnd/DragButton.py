@@ -13,7 +13,7 @@ class DragButton(QPushButton):
 
         # The MimeData has the position of the button
         mimeData = QMimeData()
-        mimeData.setText('%d,%d' % (e.x(), e.y()))
+        mimeData.setText(self.text())
 
 
         # This makes the button to be transparent when its dragged.
@@ -33,7 +33,6 @@ class DragButton(QPushButton):
         drag.exec_(Qt.MoveAction)
 
         return QPushButton.mouseMoveEvent(self, e)
-
 
     def dragEnterEvent(self, e):
         e.accept()
