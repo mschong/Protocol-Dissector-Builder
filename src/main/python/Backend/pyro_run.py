@@ -16,7 +16,7 @@ from PCAP.PCAP import PCap
 from subprocess import Popen,PIPE
 import pexpect
 import subprocess
-from Workspace.workspaceloader import WorkspaceLoader
+
 
 
 @Pyro4.expose
