@@ -38,4 +38,12 @@ class DragButton(QPushButton):
         e.accept()
         return QPushButton.dragEnterEvent(self, e)
 
-    
+    def dropEvent(self, e):
+
+        mime = e.mimeData().text()
+        x, y = map(int, mime.split(','))
+        print(e.pos())
+        e.setDropAction(Qt.MoveAction)
+        e.accept()
+
+        return QPushButton.dropEvent(self,QDropEvent(QPoint(e.pos().x(), e.pos().y()), e.possibleActions(), e.mimeData(), e.buttons(), e.modifiers()))

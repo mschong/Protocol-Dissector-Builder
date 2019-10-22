@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
+    <width>1200</width>
     <height>800</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>1000</width>
+    <width>1200</width>
     <height>800</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>1000</width>
+    <width>1200</width>
     <height>800</height>
    </size>
   </property>
@@ -30,35 +30,25 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>30</y>
+      <y>40</y>
       <width>211</width>
-      <height>521</height>
+      <height>511</height>
      </rect>
     </property>
-   </widget>
-   <widget class="QFrame" name="toolboxFrame">
-    <property name="geometry">
-     <rect>
-      <x>210</x>
-      <y>30</y>
-      <width>171</width>
-      <height>521</height>
-     </rect>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOn</enum>
     </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOn</enum>
     </property>
    </widget>
    <widget class="QFrame" name="canvasFrame">
     <property name="geometry">
      <rect>
-      <x>380</x>
-      <y>30</y>
-      <width>611</width>
-      <height>521</height>
+      <x>210</x>
+      <y>40</y>
+      <width>981</width>
+      <height>511</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -71,10 +61,10 @@
    <widget class="QLabel" name="workspaceLabel">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>213</x>
       <y>10</y>
-      <width>64</width>
-      <height>17</height>
+      <width>971</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
@@ -85,13 +75,29 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>50</y>
+      <y>10</y>
       <width>181</width>
       <height>25</height>
      </rect>
     </property>
     <property name="text">
-     <string>Add Workspace +</string>
+     <string>Options</string>
+    </property>
+   </widget>
+   <widget class="QFrame" name="packetPreviewFrame">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>560</y>
+      <width>1191</width>
+      <height>211</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
     </property>
    </widget>
   </widget>
@@ -100,7 +106,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
+     <width>1200</width>
      <height>22</height>
     </rect>
    </property>

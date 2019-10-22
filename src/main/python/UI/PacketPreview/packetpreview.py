@@ -26,7 +26,6 @@ class Ui_PackagePreview(object):
         self.pyro_proxy = Pyro4.Proxy(uri)
         PackagePreview.setObjectName("PackagePreview")
         PackagePreview.resize(880, 454)
-
         self.treeView = QtWidgets.QTreeView(PackagePreview)
         self.treeView.setGeometry(QtCore.QRect(0, 50, 400, 401))
         self.treeView.setObjectName("treeView")

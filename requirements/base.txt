@@ -1,0 +1,5 @@
+PyQt5==5.9.2
+Pyro4
+fbs
+pyshark
+pexpect
