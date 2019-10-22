@@ -4,7 +4,7 @@ sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
 from subprocess import Popen
 from Loader import Loader
-
+import pexpect
 @Pyro4.expose
 class Pyro_Run():
     loader = None
@@ -43,8 +43,7 @@ class Pyro_Run():
     def dissectPackets(self):
         print("dissecting")
         self.child.sendline("dissect")
-        self.child.expect("dissected")
-
+        print(self.child.read())
     def colorCode(self):
         print("Coloring")
         self.child.sendline("colorcode")

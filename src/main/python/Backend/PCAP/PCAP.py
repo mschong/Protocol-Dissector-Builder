@@ -8,7 +8,7 @@ class PCap:
         self.fileLocation = PCAPLocation
         self.pcapFile =""
         self.pcapDissectedFile=""
-        self.colorFlag = False
+        # self.colorFlag = False
         self.yellowFlag = False
         self.colorList = {}
     def convertPCAP(self):
@@ -32,8 +32,8 @@ class PCap:
         print("Done")
 
     def dissectPCAP(self):
-        param = {"-X": 'lua_script:/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
-        self.pcapDissectedFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
+        param = {"-X": 'lua_script:/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/Lua/dissector.lua'}
+        self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
 
 
     def savePackets(self):
@@ -75,20 +75,20 @@ class PCap:
         j = 0
         if os.listdir('/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/Lua/') == []:
             self.yellowFlag = True
-            for x in self.pcapDissectedFile:
+            for x in self.pcapFile:
                 self.colorList[j] = "Yellow"
                 j+=1
-        for pkt in self.pcapDissectedFile:
+        for pkt in self.pcapFile:
             if self.yellowFlag == False:
                 self.colorList[i] = "Red"
             for prot in pkt.frame_info.protocols.split(":"):
-                if prot=='mydns' and self.yellowFlag == False:
-                    self.colorFlag=True
+                if prot=='mydns':
+                    # self.colorFlag=True
                     self.colorList[i] = "Green"
                     break
             if self.yellowFlag == True:
                 tw.write("%s : %s" %( str(i+1), pkt), yellow=True, bold=True)
-            elif self.colorFlag == False:
+            elif self.colorList[i] == "Red":
                 tw.write("%s : %s" %( str(i+1), pkt), red=True, bold=True)
             else:
                 tw.write("%s : %s" %( str(i+1), pkt), green=True, bold=True)
