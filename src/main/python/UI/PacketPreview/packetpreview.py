@@ -70,6 +70,7 @@ class Ui_PackagePreview(object):
 
     def openFile(self):
         self.name = QFileDialog.getOpenFileName()
+        print(self.name)
         self.pyro_proxy.createPackets(self.name[0])
         self.pyro_proxy.savePackets()
         self.pyro_proxy.printPackets()

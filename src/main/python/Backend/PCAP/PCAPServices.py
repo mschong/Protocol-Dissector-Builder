@@ -6,7 +6,7 @@ while(1):
     print("loop")
     currCommand = input().split(" ")
     if currCommand[0] == "create":
-        PCAPFile = PCAP.PCap("dns_port.pcap")
+        PCAPFile = PCAP.PCap(currCommand[1])
         PCAPFile.convertPCAP()
     elif currCommand[0] =="print":
         print("Printing")
