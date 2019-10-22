@@ -41,6 +41,12 @@ class PCap:
         protocols = {}
         fields = {}
         output = []
+        try: 
+            os.remove("../UI/PacketPreview/dictColor.log")
+            os.remove("../UI/PacketPreview/dict.log")
+        except:
+            pass
+        
         for pkt in self.pcapFile:
             number = pkt.frame_info.get_field_value("number")
             protocols = {}

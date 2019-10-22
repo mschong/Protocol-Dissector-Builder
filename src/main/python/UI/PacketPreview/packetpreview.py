@@ -67,6 +67,7 @@ class Ui_PackagePreview(object):
         QtCore.QMetaObject.connectSlotsByName(PackagePreview)
 
     def openFile(self):
+        self.model.removeRows(0,self.model.rowCount())
         self.name = QFileDialog.getOpenFileName()
         self.pyro_proxy.createPackets(self.name[0])
         self.pyro_proxy.savePackets()
@@ -88,6 +89,9 @@ class Ui_PackagePreview(object):
             self.model.appendRow([branch1,QtGui.QStandardItem(str(number))])
 
     def dissect(self):
+        self.model2.removeRows(0,self.model2.rowCount())
+
+
         self.pyro_proxy.createPackets(self.name[0])
         self.pyro_proxy.dissectPackets()
         # self.pyro_proxy.colorCode()
