@@ -84,7 +84,6 @@ class Ui_Form(object):
         self.connector_button = QtWidgets.QPushButton('Connector', self.construct_tab)
         self.connector_button.setGeometry(QtCore.QRect(0,60,83,25))
         self.connector_button.setObjectName("connector_button")
-        self.connector_button.setCheckable(True)
         self.connector_button.clicked.connect(self.connector_button_clicked)
 
         self.toolBox.addItem(self.construct_tab, "")

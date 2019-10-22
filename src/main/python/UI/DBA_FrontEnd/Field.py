@@ -17,18 +17,15 @@ class Field(QWidget):
         self.draw_field_table()
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.table)
-        self.applyButton = QPushButton("Apply")
-        self.layout.addWidget(self.applyButton)
-        self.applyButton.clicked.connect(self.clickMethod)
         self.setLayout(self.layout)
 
         self.show()
     def draw_field_table(self):
-        self.table = QTableWidget(9, 2)
+        self.table = QTableWidget(10, 2)
         # Making the indexes of rows and columns invisible to user
         self.table.verticalHeader().setVisible(False)
         self.table.horizontalHeader().setVisible(False)
-        column_1_text = ["Name","Abbreviation","Description", "Data Type", "Base", "Mask", "Value Constraint", "Var Size", "ID Value"]
+        column_1_text = ["Name","Abbreviation","Description", "Data Type", "Base", "Mask", "Value Constraint", "Var Size", "ID Value", "Required"]
         i = 0
         while i < self.table.rowCount():
             self.table.setItem(i, 0, QTableWidgetItem(column_1_text[i]))
@@ -51,7 +48,7 @@ class Field(QWidget):
 
         # Creating drop down list of data types
         data_type_com= QComboBox()
-        data_types = ["Select from a list of data types", "NONE", "PROTOCOL", "BOOLEAN","FRAMENUM", "UNIT8", "UNIT16", "UNIT24", "UNIT32", "UNIT64", "INT8", "INT16",
+        data_types = ["Select data type", "NONE", "PROTOCOL", "BOOLEAN","FRAMENUM", "UNIT8", "UNIT16", "UNIT24", "UNIT32", "UNIT64", "INT8", "INT16",
                       "INT24", "INT32", "INT64", "FLOAT", "DOUBLE", "ABSOLUTE_TIME", "RELATIVE_TIME", "STRING", "STRINGZ", "UNIT_STRING", "ETHER", "BYTES","UNIT_BYTES", "IPv4","IPv6", "IPXNET", "PROTOCOL", "GUID", "OID"]
         for data_type in data_types:
             data_type_com.addItem(data_type)
@@ -59,7 +56,7 @@ class Field(QWidget):
 
         # Creating drop down list of bases
         base_com = QComboBox()
-        bases = ["Select from a list of bases ", "NONE", "DEC", "HEX", "OCT", "DEC_HEX", "HEX_DEC"]
+        bases = ["Select base", "NONE", "DEC", "HEX", "OCT", "DEC_HEX", "HEX_DEC"]
         for base in bases:
             base_com.addItem(base)
         widgets.append(base_com)
@@ -73,7 +70,7 @@ class Field(QWidget):
         widgets.append(va_cons_line)
 
         # Creating a line edit to add number of size and drop down to identify if it is in bytes or bits
-        var_size_row_layout = QHBoxLayout();
+        var_size_row_layout = QHBoxLayout()
         var_choice = QComboBox()
         var_choices = ["BYTES", "BITS"]
         for choice in var_choices:
@@ -89,12 +86,20 @@ class Field(QWidget):
         id_value_line = QLineEdit()
         widgets.append(id_value_line)
 
+        req_check_box = QCheckBox()
+        req_cell = QWidget()
+        req_cell_layout = QHBoxLayout()
+        req_cell_layout.addWidget(req_check_box)
+        req_cell_layout.setAlignment(Qt.AlignCenter)
+        req_cell.setLayout(req_cell_layout)
+        widgets.append(req_cell)
+
         # Adding Widgets to Table
         j = 0
         while j < len(widgets):
             self.table.setCellWidget(j, 1, widgets[j])
             j += 1
-        self.table.resizeColumnsToContents()
+        self.table.setColumnWidth(1, 138)
         self.table.resizeRowsToContents()
 
     def clickMethod(self):
