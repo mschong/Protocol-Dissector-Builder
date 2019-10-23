@@ -162,6 +162,7 @@ class UiMainWindow(object):
         self.workspaceLabel.setText("")
         self.workspace_file = None
         self.pyro_proxy.close_workspace()
+        self.clearProjectTreview()
 
     def loadWorkspace(self):
         if self.workspace_file == None or self.workspace_file == "":
@@ -308,3 +309,6 @@ class UiMainWindow(object):
     def addProjectToTreeView(self, model, project_name):
         model.insertRow(0)
         model.setData(model.index(0, 0), project_name)
+
+    def clearProjectTreview(self):
+        self.treeview_model.removeRows(0, self.treeview_model.rowCount())
