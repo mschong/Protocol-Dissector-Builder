@@ -1,16 +1,22 @@
-from PyQt5.QtWidgets import QGraphicsWidget, QGraphicsScene, QGraphicsItem, QAction, QMenu, QGraphicsLineItem
+from PyQt5.QtWidgets import *
 from PyQt5.QtCore import * 
 from PyQt5.QtGui import *
-from UI.DBA_FrontEnd.Field import Field
-from UI.DBA_FrontEnd.Connector import Connector
-from UI.DBA_FrontEnd.Loop import Loop
-from UI.DBA_FrontEnd.Decision import Decision
-from UI.DBA_FrontEnd.GraphicsProxyWidget  import GraphicsProxyWidget
-from UI.DBA_FrontEnd.Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
+from Field import Field
+from String_Field import String_Field
+from Int_Field import Int_Field
+from Float_Field import Float_Field
+from Octal_Field import Octal_Field
+from Connector import Connector
+from While_Loop import While_Loop
+from For_Loop import For_Loop
+from Do_Loop import Do_Loop
+from Decision import Decision
+from GraphicsProxyWidget  import GraphicsProxyWidget
+from Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
 import sys
 
 class DropGraphicsScene(QGraphicsScene):
-    InsertLine_ON, InsertLine_OFF, MoveItem = range(3)
+    InsertLine_ON, MoveItem = range(2)
 
     def __init__(self, parent = None):
         super(DropGraphicsScene, self).__init__(parent)
@@ -79,13 +85,37 @@ class DropGraphicsScene(QGraphicsScene):
             field = Field()
             proxy = self.addWidgetToScene(field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-        if(event.mimeData().text() == "Loop"):
-            loop = Loop()
-            proxy = self.addWidgetToScene(loop, event.scenePos(), event.mimeData().text())
+        if(event.mimeData().text() == "Field (String)"):
+            str_field = String_Field()
+            proxy = self.addWidgetToScene(str_field, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "Field (Integer)"):
+            int_field = Int_Field()
+            proxy = self.addWidgetToScene(int_field, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "Field (Float)"):
+            float_field = Float_Field()
+            proxy = self.addWidgetToScene(float_field, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "Field (Octal)"):
+            octal_field = Octal_Field()
+            proxy = self.addWidgetToScene(octal_field, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "while"):
+            while_loop = While_Loop()
+            proxy = self.addWidgetToScene(while_loop, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "for"):
+            for_loop = For_Loop()
+            proxy = self.addWidgetToScene(for_loop, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "do while"):
+            do_loop = Do_Loop()
+            proxy = self.addWidgetToScene(do_loop, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "Decision"):
             decision = Decision()
-            proxy = self.addWidgetToScene(decision, event.scenePos()), event.mimeData().text()
+            proxy = self.addWidgetToScene(decision, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
 
         if ((proxy.scenePos().x() + proxy.size().width()) > self.width()):

@@ -5,7 +5,7 @@ from PyQt5.QtCore import *
 
 
 
-class Field(QWidget):
+class String_Field(QWidget):
     def __init__(self):
 
         super().__init__()
@@ -50,8 +50,7 @@ class Field(QWidget):
 
         # Creating drop down list of data types
         data_type_com= QComboBox()
-        data_types = ["Select data type", "NONE", "PROTOCOL", "BOOLEAN","FRAMENUM", "UNIT8", "UNIT16", "UNIT24", "UNIT32", "UNIT64", "INT8", "INT16",
-                      "INT24", "INT32", "INT64", "FLOAT", "DOUBLE", "ABSOLUTE_TIME", "RELATIVE_TIME", "STRING", "STRINGZ", "UNIT_STRING", "ETHER", "BYTES","UNIT_BYTES", "IPv4","IPv6", "IPXNET", "PROTOCOL", "GUID", "OID"]
+        data_types = ["STRING"]
         for data_type in data_types:
             data_type_com.addItem(data_type)
         widgets.append(data_type_com)
@@ -113,6 +112,6 @@ class Field(QWidget):
 
 if __name__ == '__main__':
     app = QApplication([])
-    test = Field()
+    test = String_Field()
     sys.exit(app.exec_())
 
