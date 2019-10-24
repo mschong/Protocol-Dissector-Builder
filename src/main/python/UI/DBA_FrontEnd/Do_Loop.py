@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPainter, QPen, QPolygon
 from PyQt5.QtCore import Qt, QPoint
-from DBA_BackEnd import While
+from UI.DBA_FrontEnd.DBA_BackEnd import While
 
 
 class Do_Loop(QWidget):

@@ -1,18 +1,18 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import * 
 from PyQt5.QtGui import *
-from Field import Field
-from String_Field import String_Field
-from Int_Field import Int_Field
-from Float_Field import Float_Field
-from Octal_Field import Octal_Field
-from Connector import Connector
-from While_Loop import While_Loop
-from For_Loop import For_Loop
-from Do_Loop import Do_Loop
-from Decision import Decision
-from GraphicsProxyWidget  import GraphicsProxyWidget
-from Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
+from UI.DBA_FrontEnd.Field import Field
+from UI.DBA_FrontEnd.String_Field import String_Field
+from UI.DBA_FrontEnd.Int_Field import Int_Field
+from UI.DBA_FrontEnd.Float_Field import Float_Field
+from UI.DBA_FrontEnd.Octal_Field import Octal_Field
+from UI.DBA_FrontEnd.Connector import Connector
+from UI.DBA_FrontEnd.While_Loop import While_Loop
+from UI.DBA_FrontEnd.For_Loop import For_Loop
+from UI.DBA_FrontEnd.Do_Loop import Do_Loop
+from UI.DBA_FrontEnd.Decision import Decision
+from UI.DBA_FrontEnd.GraphicsProxyWidget  import GraphicsProxyWidget
+from UI.DBA_FrontEnd.Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
 import sys
 
 class DropGraphicsScene(QGraphicsScene):
