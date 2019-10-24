@@ -42,8 +42,8 @@ class PCap:
         fields = {}
         output = []
         try: 
-            os.remove("../UI/PacketPreview/dictColor.log")
-            os.remove("../UI/PacketPreview/dict.log")
+            os.remove("../UI/MainPane/dictColor.log")
+            os.remove("../UI/MainPane/dict.log")
         except:
             pass
         
@@ -60,10 +60,10 @@ class PCap:
                 protocols[protocol] = fields
             packets[number] = protocols
         if self.colorList:
-            writeFile = open("../UI/PacketPreview/dictColor.log","w")
+            writeFile = open("../UI/MainPane/dictColor.log","w")
             output = [packets,protocols,self.colorList]
         else:
-            writeFile = open("../UI/PacketPreview/dict.log","w")
+            writeFile = open("../UI/MainPane/dict.log","w")
             output = [packets,protocols]
         json.dump(output,writeFile)
         writeFile.close()
