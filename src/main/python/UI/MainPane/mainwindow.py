@@ -162,6 +162,7 @@ class UiMainWindow(object):
         self.workspaceLabel.setText("")
         self.workspace_file = None
         self.pyro_proxy.close_workspace()
+        self.clearProjectTreview()
 
     def loadWorkspace(self):
         if self.workspace_file == None or self.workspace_file == "":
@@ -175,7 +176,7 @@ class UiMainWindow(object):
             if JSON['projects'] != None:
                 projects = JSON['projects']
                 # print(projects[str(0)])
-                spacing = 0
+                
                 for project in projects:
                     print(projects[str(project)]['name'])
                     self.addProjectToTreeView(self.treeview_model, projects[str(project)]['name'])
@@ -195,32 +196,17 @@ class UiMainWindow(object):
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.closeWorkspace()
 
-    def displayProject(self):
-        pass
+  
 
 
-    def openWorkpaceConfigDialog(self, wsName=None, wsStartDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"),
-                                 wsEditDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
-        dialog = QtWidgets.QDialog()
-        wcUi = workspaceconfigwindow.Ui_Dialog()
-        wcUi.setupUi(dialog)
-        wcUi.workspaceFileLineEdit.setText(wsName)
-        wcUi.startDateLabel.setText(wsStartDate)
-        wcUi.editDateLabel.setText(wsEditDate)
-        if dialog.exec_() == QtWidgets.QDialog.Accepted:
-            if wcUi.workspaceFileLineEdit.text() != wsName:
-                wsName = wcUi.workspaceFileLineEdit.text()
-                self.pyro_proxy.new_workspace(wsName, wsStartDate, wsEditDate)
-                self.workspaceLabel.setText(wsName)
-                self.workspace_file = "{}.json".format(wsName)
-                self.loadWorkspace()
+    
 
     def openProjectConfigDialog(self, pname=None, pauthor=None, pdesc=None,
                                 created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"),
                                 edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         pass
 
-    def openWorkpaceConfigDialog(self, wsName=None, wsStartDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), wsEditDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
+    def openWorkpaceConfigDialog(self, wsName=None,  wsEditDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         try:
             wsdata = self.pyro_proxy.get_current_workspace()
             if (wsdata != None):
@@ -230,6 +216,10 @@ class UiMainWindow(object):
         finally:   
             if wsName is None:
                     wsName = " "
+            if wsStartDate is None :
+                wsStartDate = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
+            if wsEditDate is None :
+                wsEditDate = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
             dialog = QtWidgets.QDialog()
             wcUi = workspaceconfigwindow.Ui_Dialog()
             wcUi.setupUi(dialog)
@@ -279,19 +269,8 @@ class UiMainWindow(object):
         msgBox.setWindowTitle("Error")
         msgBox.exec_()
 
-    def addContextMenuToProject(self, parent):
-        parent.menu = QtWidgets.QMenu()
-        saveProjectAction = parent.menu.addAction("Save Project")
-        exportProjectAction = parent.menu.addAction("Export Dissector [ -> ]")
-        configureProjectAction = parent.menu.addAction("Configure Project")
-        closeProjectAction = parent.menu.addAction("Close Project [X]")
-
-    def getDefaultContextMenuQPointforButton(self, button):
-        point = QtCore.QPoint()
-        point.setX(button.pos().x())
-        point.setY(button.pos().y() + 70)
-        return point
-
+  
+  
     def openProjectDialog(self):
         dialog = QtWidgets.QDialog()
         opUi = openprojectwindow.Ui_Dialog()
@@ -308,3 +287,6 @@ class UiMainWindow(object):
     def addProjectToTreeView(self, model, project_name):
         model.insertRow(0)
         model.setData(model.index(0, 0), project_name)
+
+    def clearProjectTreview(self):
+        self.treeview_model.removeRows(0, self.treeview_model.rowCount())

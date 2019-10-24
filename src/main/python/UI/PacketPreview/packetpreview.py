@@ -15,8 +15,7 @@ sys.path.append('../..')
 import json
 import Pyro4
 import Pyro4.util
-from Backend.PCAP import PCAP
-from Backend.PCAP import parsePDML
+
 
 
 class Ui_PackagePreview(object):
@@ -26,6 +25,7 @@ class Ui_PackagePreview(object):
         self.pyro_proxy = Pyro4.Proxy(uri)
         PackagePreview.setObjectName("PackagePreview")
         PackagePreview.resize(880, 454)
+        PackagePreview.setMinimumSize(QtCore.QSize(880, 454))
         self.treeView = QtWidgets.QTreeView(PackagePreview)
         self.treeView.setGeometry(QtCore.QRect(0, 50, 400, 401))
         self.treeView.setObjectName("treeView")
@@ -68,6 +68,7 @@ class Ui_PackagePreview(object):
         QtCore.QMetaObject.connectSlotsByName(PackagePreview)
 
     def openFile(self):
+        self.model.removeRows(0,self.model.rowCount())
         self.name = QFileDialog.getOpenFileName()
         self.pyro_proxy.createPackets(self.name[0])
         self.pyro_proxy.savePackets()
@@ -77,8 +78,9 @@ class Ui_PackagePreview(object):
         packetDict = vars[0]
         protocolDict = vars[1]
         for number,packet in packetDict.items():
+            print(str(number))
             branch1= QtGui.QStandardItem("Packet #")
-            for protocol,fields in protocolDict.items():
+            for protocol,fields in packet.items():
                 ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
                 for name,value in fields.items():
                     ProtocolField = QtGui.QStandardItem(name)
@@ -88,11 +90,13 @@ class Ui_PackagePreview(object):
             self.model.appendRow([branch1,QtGui.QStandardItem(str(number))])
 
     def dissect(self):
+        self.model2.removeRows(0,self.model2.rowCount())
+
+
         self.pyro_proxy.createPackets(self.name[0])
         self.pyro_proxy.dissectPackets()
-        self.pyro_proxy.colorCode()
-        self.pyro_proxy.savePackets()
-        self.pyro_proxy.printPackets()
+        # self.pyro_proxy.colorCode()
+        # self.pyro_proxy.savePackets()
 
         fileToRead = open("dictColor.log","r")
         vars = json.loads(fileToRead.read().strip())
@@ -104,17 +108,20 @@ class Ui_PackagePreview(object):
         j=0
         print(colorList)
         for pkt in colorList:
-            if colorList[str(j)] == "Green":
-                color = QColor(0,255,0)#green
-            elif colorList[str(j)] == "Red":
-                color = QColor(255,0,0) #red
-            else:
-                color = QColor(255,255,0) #yellow
+
+            j= j+1
             # branch2= QtGui.QStandardItem("Packet #")
             # number = pkt.frame_info.get_field_value("number")
         for number,packet in packetDict.items():
             branch2= QtGui.QStandardItem("Packet #")
-            for protocol,fields in protocolDict.items():
+            index = int(number) -1
+            if colorList[str(index)] == "Green":
+                color = QColor(0,255,0)#green
+            elif colorList[str(index)] == "Red":
+                color = QColor(255,0,0) #red
+            else:
+                color = QColor(255,255,0) #yellow
+            for protocol,fields in packet.items():
                 ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
                 ProtocolToAdd.setData(QBrush(color), QtCore.Qt.BackgroundRole)
 

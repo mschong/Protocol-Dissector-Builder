@@ -2,9 +2,10 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPainter, QPen, QPolygon
 from PyQt5.QtCore import Qt, QPoint
-from UI.DBA_FrontEnd.DBA_BackEnd import Condition
+from UI.DBA_FrontEnd.DBA_BackEnd import While
 
-class Decision(QWidget):
+
+class While_Loop(QWidget):
     def __init__(self):
 
         super().__init__()
@@ -12,13 +13,13 @@ class Decision(QWidget):
 
     def initUI(self):
 
-        self.setWindowTitle("if Statement")
+        self.setWindowTitle("while Loop")
         self.layout = QGridLayout()
         self.col = 0
         
-        self.if_label = QLabel()
-        self.if_label.setText(" if")
-        self.layout.addWidget(self.if_label, 0, 1)
+        self.while_label = QLabel()
+        self.while_label.setText(" while")
+        self.layout.addWidget(self.while_label, 0, 1)
 
         self.layout.addWidget(QLineEdit(), 1, self.col)
         self.col+=1
@@ -50,11 +51,10 @@ class Decision(QWidget):
         self.col+=1
         self.layout.addWidget(QLineEdit(), 1, self.col)
         self.col+=1
-        self.layout.removeWidget(self.if_label)
-        self.layout.addWidget(self.if_label, 0, self.col//2)
-
-
+        self.layout.removeWidget(self.while_label)
+        self.layout.addWidget(self.while_label, 0, self.col//2)
+        
 if __name__ == '__main__':
     app = QApplication([])
-    test = Decision()
+    test = While_Loop()
     sys.exit(app.exec_())

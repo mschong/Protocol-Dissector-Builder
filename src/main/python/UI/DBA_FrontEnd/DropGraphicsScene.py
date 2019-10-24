@@ -1,21 +1,27 @@
-from PyQt5.QtWidgets import QGraphicsWidget, QGraphicsScene, QGraphicsItem, QAction, QMenu, QGraphicsLineItem
+from PyQt5.QtWidgets import *
 from PyQt5.QtCore import * 
 from PyQt5.QtGui import *
 from UI.DBA_FrontEnd.Field import Field
+from UI.DBA_FrontEnd.String_Field import String_Field
+from UI.DBA_FrontEnd.Int_Field import Int_Field
+from UI.DBA_FrontEnd.Float_Field import Float_Field
+from UI.DBA_FrontEnd.Octal_Field import Octal_Field
 from UI.DBA_FrontEnd.Connector import Connector
-from UI.DBA_FrontEnd.Loop import Loop
+from UI.DBA_FrontEnd.While_Loop import While_Loop
+from UI.DBA_FrontEnd.For_Loop import For_Loop
+from UI.DBA_FrontEnd.Do_Loop import Do_Loop
 from UI.DBA_FrontEnd.Decision import Decision
 from UI.DBA_FrontEnd.GraphicsProxyWidget  import GraphicsProxyWidget
 from UI.DBA_FrontEnd.Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
 import sys
 
 class DropGraphicsScene(QGraphicsScene):
-    InsertLine_ON, InsertLine_OFF = range(2)
+    InsertLine_ON, MoveItem = range(2)
 
     def __init__(self, parent = None):
         super(DropGraphicsScene, self).__init__(parent)
         self.line = None
-        self.myMode = None
+        self.myMode = self.MoveItem
         self.myLineColor = Qt.black
 
     def contextMenuEvent(self, event):
@@ -77,15 +83,39 @@ class DropGraphicsScene(QGraphicsScene):
         proxy = GraphicsProxyWidget()
         if(event.mimeData().text() == "Field"):
             field = Field()
-            proxy = self.addWidgetToScene(field, event.scenePos())
+            proxy = self.addWidgetToScene(field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-        if(event.mimeData().text() == "Loop"):
-            loop = Loop()
-            proxy = self.addWidgetToScene(loop, event.scenePos())
+        if(event.mimeData().text() == "Field (String)"):
+            str_field = String_Field()
+            proxy = self.addWidgetToScene(str_field, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "Field (Integer)"):
+            int_field = Int_Field()
+            proxy = self.addWidgetToScene(int_field, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "Field (Float)"):
+            float_field = Float_Field()
+            proxy = self.addWidgetToScene(float_field, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "Field (Octal)"):
+            octal_field = Octal_Field()
+            proxy = self.addWidgetToScene(octal_field, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "while"):
+            while_loop = While_Loop()
+            proxy = self.addWidgetToScene(while_loop, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "for"):
+            for_loop = For_Loop()
+            proxy = self.addWidgetToScene(for_loop, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "do while"):
+            do_loop = Do_Loop()
+            proxy = self.addWidgetToScene(do_loop, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "Decision"):
             decision = Decision()
-            proxy = self.addWidgetToScene(decision, event.scenePos())
+            proxy = self.addWidgetToScene(decision, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
 
         if ((proxy.scenePos().x() + proxy.size().width()) > self.width()):
@@ -95,13 +125,22 @@ class DropGraphicsScene(QGraphicsScene):
 
 
         event.accept()
-    def addWidgetToScene(self, widget, pos):
+    def addWidgetToScene(self, widget, pos, text):
+        button = QToolButton()
+        button.setPopupMode(QToolButton.MenuButtonPopup)
+        button.setGeometry(QRect(20, 30, 278, 40))
+        button.setText(text)
+        menu = QMenu()
+        button.setMenu(menu)
+        action = QWidgetAction(button)
+        action.setDefaultWidget(widget)
+        button.menu().addAction(action)
         """ A QGraphicsWidget is a QGraphicsItem and A QGraphicsItem is movable. So I will create
         a parent over the field widget so the field can be movable"""
         parent = QGraphicsWidget()
-        parent.setCursor(Qt.SizeAllCursor);
+        parent.setCursor(Qt.SizeAllCursor)
         parent.setGeometry((pos.x())-70, (pos.y())-70, 80, 90)
-        parent.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemSendsGeometryChanges)
+        parent.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
         """ Here we are 'dropping' the item to the scene.
          We needed to create a parent over the widget because if would add the widget to scene 
          the widget would be be positioned at (0,0) and we wouldn't be able o move it"""
@@ -109,7 +148,7 @@ class DropGraphicsScene(QGraphicsScene):
 
         # This Proxy will allows us to add the child to the parent and drop the  widget to the canvas
         proxy = GraphicsProxyWidget()
-        proxy.setWidget(widget)
+        proxy.setWidget(button)
         proxy.setParentItem(parent)
 
         return proxy
@@ -139,6 +178,9 @@ class DropGraphicsScene(QGraphicsScene):
             newLine = QLineF(self.line.line().p1(), event.scenePos())
             self.line.setLine(newLine)
 
+        elif self.myMode == self.MoveItem:
+            super(DropGraphicsScene, self).mouseMoveEvent(event)
+
     def mouseReleaseEvent(self, event):
         if self.line and self.myMode == self.InsertLine_ON:
             startItems = self.items(self.line.line().p1())
@@ -164,6 +206,7 @@ class DropGraphicsScene(QGraphicsScene):
 
 
         self.line = None
+        self.myMode = self.MoveItem
         super(DropGraphicsScene, self).mouseReleaseEvent(event)
 
     def setLineColor(self, color):
