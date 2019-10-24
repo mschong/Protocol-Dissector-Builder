@@ -8,6 +8,7 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 	def __init__(self):
 		super().__init__()
 		self.connectors = []
+		self.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
 
 	def dragEnterEvent(self, e):
 		e.acceptProposedAction()

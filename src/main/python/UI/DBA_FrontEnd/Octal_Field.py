@@ -5,7 +5,7 @@ from PyQt5.QtCore import *
 
 
 
-class Field(QWidget):
+class Octal_Field(QWidget):
     def __init__(self):
 
         super().__init__()
@@ -58,7 +58,7 @@ class Field(QWidget):
 
         # Creating drop down list of bases
         base_com = QComboBox()
-        bases = ["Select base", "NONE", "DEC", "HEX", "OCT", "DEC_HEX", "HEX_DEC"]
+        bases = ["OCT"]
         for base in bases:
             base_com.addItem(base)
         widgets.append(base_com)
@@ -113,6 +113,6 @@ class Field(QWidget):
 
 if __name__ == '__main__':
     app = QApplication([])
-    test = Field()
+    test = Octal_Field()
     sys.exit(app.exec_())
 

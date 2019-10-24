@@ -10,12 +10,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 #from StartField import StartField
 
-from UI.DBA_FrontEnd.Field import Field
-from UI.DBA_FrontEnd.Loop import Loop
-from UI.DBA_FrontEnd.Decision import Decision
-from UI.DBA_FrontEnd.GraphicsProxyWidget import GraphicsProxyWidget
-from UI.DBA_FrontEnd.DropGraphicsScene import DropGraphicsScene
-from UI.DBA_FrontEnd.DragButton import DragButton
+from Field import Field
+from While_Loop import While_Loop
+from Decision import Decision
+from GraphicsProxyWidget import GraphicsProxyWidget
+from DropGraphicsScene import DropGraphicsScene
+from DragButton import DragButton
 class QGraphicsView(QtWidgets.QGraphicsView):
     def __init__(self, parent=None):
         super(QGraphicsView, self).__init__(parent)
@@ -64,8 +64,24 @@ class Ui_Form(object):
         
 
         self.field_button = DragButton('Field', self.field_tab)
-        self.field_button.setGeometry(QtCore.QRect(20, 30, 171, 65))
+        self.field_button.setGeometry(QtCore.QRect(20, 5, 100, 30))
         self.field_button.setObjectName("field_button")
+
+        self.str_field_button = DragButton('Field (String)', self.field_tab)
+        self.str_field_button.setGeometry(QtCore.QRect(20, 40, 100, 30))
+        self.str_field_button.setObjectName("str_field_button")
+
+        self.int_field_button = DragButton('Field (Integer)', self.field_tab)
+        self.int_field_button.setGeometry(QtCore.QRect(20, 75, 100, 30))
+        self.int_field_button.setObjectName("int_field_button")
+
+        self.float_field_button = DragButton('Field (Float)', self.field_tab)
+        self.float_field_button.setGeometry(QtCore.QRect(20, 110, 100, 30))
+        self.float_field_button.setObjectName("float_field_button")
+
+        self.octal_field_button = DragButton('Field (Octal)', self.field_tab)
+        self.octal_field_button.setGeometry(QtCore.QRect(20, 145, 100, 30))
+        self.octal_field_button.setObjectName("octal_field_button")
 
 
         self.toolBox.addItem(self.field_tab, "")
@@ -77,15 +93,22 @@ class Ui_Form(object):
         self.decision_button.setObjectName("decision_button")
         
 
-        self.loop_button =DragButton("Loop", self.construct_tab)
-        self.loop_button.setGeometry(QtCore.QRect(0, 30, 83, 25))
-        self.loop_button.setObjectName("loop_button")
-        #self.loop_button.clicked.connect(self.open_loop_window)
+        self.while_loop_button =DragButton("while", self.construct_tab)
+        self.while_loop_button.setGeometry(QtCore.QRect(0, 30, 83, 25))
+        self.while_loop_button.setObjectName("while_loop_button")
+
+        self.for_loop_button =DragButton("for", self.construct_tab)
+        self.for_loop_button.setGeometry(QtCore.QRect(0, 60, 83, 25))
+        self.for_loop_button.setObjectName("for_loop_button")
+
+        self.do_loop_button =DragButton("do while", self.construct_tab)
+        self.do_loop_button.setGeometry(QtCore.QRect(0, 90, 83, 25))
+        self.do_loop_button.setObjectName("do_loop_button")
+        
 
         self.connector_button = QtWidgets.QPushButton('Connector', self.construct_tab)
-        self.connector_button.setGeometry(QtCore.QRect(0,60,83,25))
+        self.connector_button.setGeometry(QtCore.QRect(0,120,83,25))
         self.connector_button.setObjectName("connector_button")
-        self.connector_button.setCheckable(True)
         self.connector_button.clicked.connect(self.connector_button_clicked)
 
         self.toolBox.addItem(self.construct_tab, "")
@@ -99,12 +122,7 @@ class Ui_Form(object):
         Form.setWindowTitle(_translate("Form", "Form"))
         self.dba_label.setText(_translate("Form", "Dissector Builder Area"))
         self.toolbox_label.setText(_translate("Form", "Toolbox"))
-        #self.startField_button.setText(_translate("Form", "Start Field"))
-        #self.field_button.setText(_translate("Form", "Field"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.field_tab), _translate("Form", "Field"))
-        #self.decision_button.setText(_translate("Form", "Decision"))
-       # self.loop_button.setText(_translate("Form", "Loop"))
-        
         self.toolBox.setItemText(self.toolBox.indexOf(self.construct_tab), _translate("Form", "Construct"))
 
     def open_field_window(self):
@@ -120,10 +138,8 @@ class Ui_Form(object):
         self.decision_win.show()
 
     def connector_button_clicked(self):
-        if(self.connector_button.isChecked()):
-            self.scene.setMode(self.scene.InsertLine_ON)
-        else:
-            self.scene.setMode(self.scene.InsertLine_OFF)
+        self.scene.setMode(self.scene.InsertLine_ON)
+        
 
 
 if __name__ == "__main__":
