@@ -176,7 +176,7 @@ class UiMainWindow(object):
             if JSON['projects'] != None:
                 projects = JSON['projects']
                 # print(projects[str(0)])
-                
+                self.clearProjectTreview()
                 for project in projects:
                     print(projects[str(project)]['name'])
                     self.addProjectToTreeView(self.treeview_model, projects[str(project)]['name'])
@@ -285,6 +285,7 @@ class UiMainWindow(object):
         return model
 
     def addProjectToTreeView(self, model, project_name):
+        
         model.insertRow(0)
         model.setData(model.index(0, 0), project_name)
 
