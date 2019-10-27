@@ -8,6 +8,7 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 	def __init__(self):
 		super().__init__()
 		self.connectors = []
+		self.polygon = None
 		self.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
 
 	def dragEnterEvent(self, e):
@@ -19,6 +20,12 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 
 	def dragMoveEvent(self, e):
 		e.acceptProposedAction()
+
+	def isMoving(self):
+		if(self.polygon.scenePos() != self.sceneBoundingRect().center()):
+			self.polygon.setPos(self.sceneBoundingRect().center())
+			for connector in self.connectors:
+				connector.updatePosition()
 
 	def setPolygon(self):
 
@@ -38,14 +45,18 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 
 		self.polygon = QGraphicsPolygonItem()
 		self.polygon.setPolygon(polyVector)
+		self.polygon.setFlag(QGraphicsItem.ItemIsMovable, True)
 		self.polygon.setPos(self.sceneBoundingRect().center())
+
+	# Returns QGraphicsPolygonItem
+	def getPolygon(self):
+		return self.polygon
 
 	def removeConnector(self, connector):
 		try:
 			self.connectors.remove(connector)
 		except ValueError:
 			pass
-
 
 	def removeConnectors(self):
 		for connector in self.connectors[:]:
@@ -55,9 +66,3 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 
 	def addConnector(self, connector):
 		self.connectors.append(connector)
-
-	def itemChange(self, change, value):
-		if change == QGraphicsItem.ItemPositionChange:
-			for connector in self.connectors:
-				connector.updatePosition()
-		return value

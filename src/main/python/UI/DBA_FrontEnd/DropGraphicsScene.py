@@ -179,6 +179,11 @@ class DropGraphicsScene(QGraphicsScene):
             self.line.setLine(newLine)
 
         elif self.myMode == self.MoveItem:
+            if(len(self.items(event.scenePos())) and isinstance(self.items(event.scenePos())[0], QGraphicsWidget)):
+                movingItem = self.items(event.scenePos())[0]
+                if(len(movingItem.childItems()) and movingItem.childItems()[0].isMoving()):
+                    pass
+
             super(DropGraphicsScene, self).mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
@@ -208,16 +213,3 @@ class DropGraphicsScene(QGraphicsScene):
         self.line = None
         self.myMode = self.MoveItem
         super(DropGraphicsScene, self).mouseReleaseEvent(event)
-
-    def setLineColor(self, color):
-        self.myLineColor = color
-        if self.isItemChange(Connector):
-            item = self.selectedItems()[0]
-            item.setColor(self.myLineColor)
-            self.update()
-
-    def isItemChange(self, type):
-        for item in self.selectedItems():
-            if isinstance(item, type):
-                return True
-        return False
