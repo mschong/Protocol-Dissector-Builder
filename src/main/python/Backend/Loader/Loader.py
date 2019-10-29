@@ -7,15 +7,18 @@ sys.path.insert(1, "../../")
 sys.path.insert(1, "../../../../")
 from Project import project
 from Workspace import workspace
+import os
 import json
 
 
 class Loader():
 
     workspace = None
+    
 
     def __init__(self):
         self.workspace = workspace.Workspace()
+        
 
     #WORKSAPCE FUNCTIONS
 
@@ -27,7 +30,7 @@ class Loader():
             JSON = self.workspace.get_JSON()
             
             print(JSON)
-            f = open("{}.json".format(self.workspace.name) ,"w+")
+            f = open("{}/{}.json".format(self.workspace.wpath,self.workspace.name) ,"w+")
             f.write(json.dumps(JSON))
             f.close()
     '''
@@ -49,6 +52,7 @@ class Loader():
         self.workspace = workspace.Workspace(ws_name, None)
         self.workspace.startDate = ws_created
         self.workspace.editDate = ws_edited
+        self.workspace.wpath = os.getcwd()
         self.save_workspace()
 
     '''
@@ -69,21 +73,24 @@ class Loader():
         p.dateCreated = p_created
         p.editDate =p_edited
         p.author = p_author
-        self.workspace.addProjectToWorkspace(p.get_JSON())
-        self.save_project(p_name)
+        p.path = "{}/{}.json".format(self.workspace.wpath,p.name)
+        self.workspace.addProjectToWorkspace(p.path)
+        self.save_project(p.path)
     
 
     def save_project(self,p_name):
        
         JSON = self.workspace.projects
         print(JSON)
+        print(p_name)
         for project in JSON:
             print(project)
-            if JSON[project]['name'] == p_name:
+           
+            if JSON[project] == p_name:
                 JSON = JSON[project]
          
        
-        f = open("{}.json".format(p_name) ,"w+")
+        f = open("{}".format(p_name) ,"w+")
         f.write(json.dumps(JSON))
         f.close()
         self.save_workspace()

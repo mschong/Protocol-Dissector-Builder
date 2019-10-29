@@ -9,13 +9,15 @@ class Project:
     editDate = None
     description = None
     author = None
+    path = None
 
     JSON = {
         'name' : name,
         'created' : dateCreated,
         'edited' : editDate,
         'description' : description,
-        'author' : author
+        'author' : author,
+        'path' : path
     }
 
     def __init__(self, name = None, JSON = None):
@@ -27,6 +29,7 @@ class Project:
         
            self.startDate = JSON['created']
            self.editDate = JSON['edited']
+           self.path = JSON['path']
 
  
 
@@ -38,6 +41,7 @@ class Project:
         self.JSON['edited'] = self.editDate
         self.JSON['description'] = self.description
         self.JSON['author'] = self.author
+        self.JSON['path'] = self.path
         return self.JSON
 
 

@@ -178,8 +178,8 @@ class UiMainWindow(object):
                 # print(projects[str(0)])
                 self.clearProjectTreview()
                 for project in projects:
-                    print(projects[str(project)]['name'])
-                    self.addProjectToTreeView(self.treeview_model, projects[str(project)]['name'])
+                    print(projects[str(project)])
+                    self.addProjectToTreeView(self.treeview_model, projects[str(project)])
 
             return JSON['name']
         except Exception as ex:
@@ -206,7 +206,9 @@ class UiMainWindow(object):
                                 edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         pass
 
-    def openWorkpaceConfigDialog(self, wsName=None,  wsEditDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
+    def openWorkpaceConfigDialog(self, wsName=None):
+        wsStartDate = None
+        wsEditDate = None
         try:
             wsdata = self.pyro_proxy.get_current_workspace()
             if (wsdata != None):
@@ -214,7 +216,7 @@ class UiMainWindow(object):
                 wsStartDate = wsdata['created']
                 wsEditDate = wsdata['edited']
         finally:   
-            if wsName is None:
+            if wsName is None or wsName is False:
                     wsName = " "
             if wsStartDate is None :
                 wsStartDate = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
