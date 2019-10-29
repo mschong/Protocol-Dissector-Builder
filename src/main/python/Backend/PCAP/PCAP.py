@@ -79,20 +79,32 @@ class PCap:
         tw = py.io.TerminalWriter()
         i = 0
         j = 0
+        with open('/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/Lua/dissector.json') as f:
+            data = json.load(f)
+            print(data["protocol"])
+        print(data["protocol"])    
         if os.listdir('/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/Lua/') == []:
             self.yellowFlag = True
             for x in self.pcapFile:
                 self.colorList[j] = "Yellow"
                 j+=1
         for pkt in self.pcapFile:
-            if self.yellowFlag == False:
-                self.colorList[i] = "Red"
+            # if self.yellowFlag == False:
+            #     self.colorList[i] = "Red"
             for prot in pkt.frame_info.protocols.split(":"):
+                #print(prot)
+                print("prot: {}".format(prot))
+                print("data[protocol]: {}".format(data['protocol']))
+                print("prot==data[protocol]: {}".format(prot==data['protocol']))
                 if prot=='mydns':
                     # self.colorFlag=True
                     self.colorList[i] = "Green"
                     break
-            if self.yellowFlag == True:
+                elif prot==data['protocol'] or prot=="data":
+                    self.colorList[i] = "Yellow"
+                else:
+                    self.colorList[i] = "Red"
+            if (self.yellowFlag == True) or (self.colorList[i] == "Yellow"):
                 tw.write("%s : %s" %( str(i+1), pkt), yellow=True, bold=True)
             elif self.colorList[i] == "Red":
                 tw.write("%s : %s" %( str(i+1), pkt), red=True, bold=True)
