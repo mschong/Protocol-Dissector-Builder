@@ -24,22 +24,23 @@ class Ui_PackagePreview(object):
         uri = ns.lookup("pyro.service")
         self.pyro_proxy = Pyro4.Proxy(uri)
         PackagePreview.setObjectName("PackagePreview")
-        PackagePreview.resize(880, 454)
-        PackagePreview.setMinimumSize(QtCore.QSize(880, 454))
+        PackagePreview.resize(400, 200)
+        PackagePreview.setMinimumSize(QtCore.QSize(100, 454))
         self.treeView = QtWidgets.QTreeView(PackagePreview)
         self.treeView.setGeometry(QtCore.QRect(0, 50, 400, 401))
         self.treeView.setObjectName("treeView")
+        self.treeView.setSortingEnabled(True)
 
         self.model = QtGui.QStandardItemModel(0,1)
         self.treeView.setModel(self.model)
 
-        self.treeView2 = QtWidgets.QTreeView(PackagePreview)
-        self.treeView2.setGeometry(QtCore.QRect(530, 50, 321, 381))
-        self.treeView2.setObjectName("treeView")
+        # self.treeView2 = QtWidgets.QTreeView(PackagePreview)
+        # self.treeView2.setGeometry(QtCore.QRect(530, 50, 321, 381))
+        # self.treeView2.setObjectName("treeView")
         # self.treeView2.setStyleSheet("text-color: green")
 
-        self.model2 = QtGui.QStandardItemModel(0,1)
-        self.treeView2.setModel(self.model2)
+        # self.model = QtGui.QStandardItemModel(0,1)
+        # self.treeView2.setModel(self.model)
 
 
        # self.listView = QtWidgets.QListView(PackagePreview)
@@ -53,13 +54,13 @@ class Ui_PackagePreview(object):
         self.pushButton.clicked.connect(self.openFile)
 
         self.pushButton2 = QtWidgets.QPushButton(PackagePreview)
-        self.pushButton2.setGeometry(QtCore.QRect(415, 200, 101, 40))
+        self.pushButton2.setGeometry(QtCore.QRect(100, 0, 83, 25))
         self.pushButton2.setObjectName("pushButton2")
         self.pushButton2.clicked.connect(self.dissect)
 
-        self.label = QtWidgets.QLabel(PackagePreview)
-        self.label.setGeometry(QtCore.QRect(530, 30, 131, 17))
-        self.label.setObjectName("label")
+        # self.label = QtWidgets.QLabel(PackagePreview)
+        # self.label.setGeometry(QtCore.QRect(530, 30, 131, 17))
+        # self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(PackagePreview)
         self.label_2.setGeometry(QtCore.QRect(0, 30, 101, 17))
         self.label_2.setObjectName("label_2")
@@ -79,7 +80,7 @@ class Ui_PackagePreview(object):
         protocolDict = vars[1]
         for number,packet in packetDict.items():
             print(str(number))
-            branch1= QtGui.QStandardItem("Packet #")
+            branch1= QtGui.QStandardItem("Packet #" + str(number))
             for protocol,fields in packet.items():
                 ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
                 for name,value in fields.items():
@@ -87,10 +88,10 @@ class Ui_PackagePreview(object):
                     ProtocolValue = QtGui.QStandardItem(value)
                     ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
                 branch1.appendRow(ProtocolToAdd)
-            self.model.appendRow([branch1,QtGui.QStandardItem(str(number))])
+            self.model.appendRow([branch1])
 
     def dissect(self):
-        self.model2.removeRows(0,self.model2.rowCount())
+        self.model.removeRows(0,self.model.rowCount())
 
 
         self.pyro_proxy.createPackets(self.name[0])
@@ -113,7 +114,7 @@ class Ui_PackagePreview(object):
             # branch2= QtGui.QStandardItem("Packet #")
             # number = pkt.frame_info.get_field_value("number")
         for number,packet in packetDict.items():
-            branch2= QtGui.QStandardItem("Packet #")
+            branch2= QtGui.QStandardItem("Packet # " + str(number))
             index = int(number) -1
             if colorList[str(index)] == "Green":
                 color = QColor(0,255,0)#green
@@ -134,8 +135,8 @@ class Ui_PackagePreview(object):
                     ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
                 branch2.appendRow(ProtocolToAdd)
                 branch2.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-            numberCol = QtGui.QStandardItem(str(number))
-            self.model2.appendRow([branch2,numberCol])
+            numberCol = QtGui.QStandardItem(str(colorList[str(index)]))
+            self.model.appendRow([branch2,numberCol])
             numberCol.setData(QBrush(color), QtCore.Qt.BackgroundRole)
 
     # def dissect(self):
@@ -176,7 +177,7 @@ class Ui_PackagePreview(object):
     #             except:
     #                 pass
     #         numberCol = QtGui.QStandardItem(str(number))
-    #         self.model2.appendRow([branch2,numberCol])
+    #         self.model.appendRow([branch2,numberCol])
     #
     #         numberCol.setData(QBrush(color), QtCore.Qt.BackgroundRole)
     #         j+=1
@@ -188,8 +189,8 @@ class Ui_PackagePreview(object):
         _translate = QtCore.QCoreApplication.translate
         PackagePreview.setWindowTitle(_translate("PackagePreview", "PackagePreview"))
         self.pushButton.setText(_translate("PackagePreview", "File"))
-        self.pushButton2.setText(_translate("PackagePreview", "Dissect >"))
-        self.label.setText(_translate("PackagePreview", "Dissected Data"))
+        self.pushButton2.setText(_translate("PackagePreview", "Dissect"))
+        # self.label.setText(_translate("PackagePreview", "Dissected Data"))
         self.label_2.setText(_translate("PackagePreview", "Packet Stream"))
 
 
