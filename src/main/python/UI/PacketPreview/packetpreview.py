@@ -15,7 +15,7 @@ sys.path.append('../..')
 import json
 import Pyro4
 import Pyro4.util
-
+import os
 
 
 class Ui_PackagePreview(object):
@@ -69,17 +69,17 @@ class Ui_PackagePreview(object):
         QtCore.QMetaObject.connectSlotsByName(PackagePreview)
 
     def openFile(self):
+        print(os.getcwd())
         self.model.removeRows(0,self.model.rowCount())
         self.name = QFileDialog.getOpenFileName()
         self.pyro_proxy.createPackets(self.name[0])
         self.pyro_proxy.savePackets()
         self.pyro_proxy.printPackets()
-        fileToRead = open("/root/Desktop/Protocol-Dissector-Builder/src/main/python/UI/MainPane/dict.log","r")
+        fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","r")
         vars = json.loads(fileToRead.read().strip())
         packetDict = vars[0]
         protocolDict = vars[1]
         for number,packet in packetDict.items():
-            print(str(number))
             branch1= QtGui.QStandardItem("Packet #" + str(number))
             for protocol,fields in packet.items():
                 ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
@@ -99,7 +99,7 @@ class Ui_PackagePreview(object):
         # self.pyro_proxy.colorCode()
         # self.pyro_proxy.savePackets()
 
-        fileToRead = open("/root/Desktop/Protocol-Dissector-Builder/src/main/python/UI/MainPane/dictColor.log","r")
+        fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","r")
         vars = json.loads(fileToRead.read().strip())
         packetDict = vars[0]
         protocolDict = vars[1]
@@ -111,8 +111,6 @@ class Ui_PackagePreview(object):
         for pkt in colorList:
 
             j= j+1
-            # branch2= QtGui.QStandardItem("Packet #")
-            # number = pkt.frame_info.get_field_value("number")
         for number,packet in packetDict.items():
             branch2= QtGui.QStandardItem("Packet # " + str(number))
             index = int(number) -1
@@ -138,49 +136,6 @@ class Ui_PackagePreview(object):
             numberCol = QtGui.QStandardItem(str(colorList[str(index)]))
             self.model.appendRow([branch2,numberCol])
             numberCol.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-
-    # def dissect(self):
-    #     PCAPFileD = PCAP.PCap(name)
-    #     PCAPFileD.dissectPCAP()
-    #     PCAPFileD.colorFilter()
-    #     color = QColor(255,0,0) #red
-    #     i=0
-    #     j=0
-    #     for pkt in PCAPFileD.pcapFile:
-    #         if PCAPFileD.colorList[j] == "Green":
-    #             color = QColor(0,255,0)#green
-    #         elif PCAPFileD.colorList[j] == "Red":
-    #             color = QColor(255,0,0) #red
-    #         else:
-    #             color = QColor(255,255,0) #yellow
-    #         branch2= QtGui.QStandardItem("Packet #")
-    #         k=0
-    #         number = pkt.frame_info.get_field_value("number")
-    #         for protocol in (pkt.frame_info.protocols).split(":"):
-    #             ProtocolToAdd = QtGui.QStandardItem("Protocol: " + protocol)
-    #
-    #             ProtocolToAdd.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-    #             try:
-    #                 for val in pkt[protocol].field_names:
-    #                     if(val != "payload" and val !="data"):
-    #                         ProtocolField = QtGui.QStandardItem(val)
-    #                         ProtocolValue = QtGui.QStandardItem(pkt[protocol].get_field_value(val))
-    #                         ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
-    #
-    #                         ProtocolValue.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-    #                         ProtocolField.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-    #                 k= k+1
-    #                 branch2.appendRow(ProtocolToAdd)
-    #
-    #                 branch2.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-    #
-    #             except:
-    #                 pass
-    #         numberCol = QtGui.QStandardItem(str(number))
-    #         self.model.appendRow([branch2,numberCol])
-    #
-    #         numberCol.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-    #         j+=1
 
 
 

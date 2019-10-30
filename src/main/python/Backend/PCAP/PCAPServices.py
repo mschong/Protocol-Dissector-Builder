@@ -1,6 +1,5 @@
 import PCAP
 import sys
-
 global PCAPFile
 while(1):
     print("loop")
