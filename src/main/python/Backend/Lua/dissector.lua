@@ -64,7 +64,7 @@ local DEBUG = debug_level.LEVEL_1
 local default_settings =
 {
     debug_level  = DEBUG,
-    port         = 47806, --65333 for MYDNS example
+    port         = 45054, --65333 for MYDNS example
     heur_enabled = false,
 }
 
