@@ -206,7 +206,7 @@ class UiMainWindow(object):
                                 edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         pass
 
-    def openWorkpaceConfigDialog(self, wsName=None,  wsEditDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
+    def openWorkpaceConfigDialog(self, wsName=None,  wsEditDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"),wsStartDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         try:
             wsdata = self.pyro_proxy.get_current_workspace()
             if (wsdata != None):
@@ -214,7 +214,7 @@ class UiMainWindow(object):
                 wsStartDate = wsdata['created']
                 wsEditDate = wsdata['edited']
         finally:   
-            if wsName is None:
+            if wsName is None or wsName is False:
                     wsName = " "
             if wsStartDate is None :
                 wsStartDate = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")

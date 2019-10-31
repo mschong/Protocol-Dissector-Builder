@@ -15,4 +15,4 @@ if __name__ == "__main__":
     ui.setupUi(mainDialog)
     mainDialog.show()
     exit_code = appctxt.app.exec_()
-    sys.exit(app.exec_())
+    sys.exit(exit_code)
