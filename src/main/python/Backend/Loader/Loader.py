@@ -28,9 +28,9 @@ class Loader():
     '''
     def save_workspace(self):
             JSON = self.workspace.get_JSON()
-            
             print(JSON)
-            f = open("{}/{}.json".format(self.workspace.wpath,self.workspace.name) ,"w+")
+           
+            f = open("{}/{}.json".format(self.workspace.wpath.strip(),self.workspace.name.strip()) ,"w+")
             f.write(json.dumps(JSON))
             f.close()
     '''
@@ -49,11 +49,13 @@ class Loader():
     Creates a new workspace object with the given name. saves the workspace afterwards.
     '''
     def new_workspace(self,ws_name,ws_created,ws_edited):
-        self.workspace = workspace.Workspace(ws_name, None)
+        self.workspace = workspace.Workspace(ws_name.strip(), None)
         self.workspace.startDate = ws_created
         self.workspace.editDate = ws_edited
-        self.workspace.wpath = os.getcwd()
+        self.workspace.wpath = "{}/{}".format(os.getcwd().strip(),self.workspace.name.strip())
+        os.mkdir(self.workspace.name.strip())
         self.save_workspace()
+        return self.workspace.wpath
 
     '''
     Close a workspace
@@ -68,30 +70,19 @@ class Loader():
     #Project functions
     def new_project(self,p_name,p_author,p_desc,p_created,p_edited,):
         
-        p = project.Project(p_name)
+        p = project.Project(p_name.strip())
         p.description = p_desc
         p.dateCreated = p_created
         p.editDate =p_edited
         p.author = p_author
         p.path = "{}/{}.json".format(self.workspace.wpath,p.name)
         self.workspace.addProjectToWorkspace(p.path)
-        self.save_project(p.path)
+        self.save_project(p.path,p)
     
 
-    def save_project(self,p_name):
-       
-        JSON = self.workspace.projects
-        print(JSON)
-        print(p_name)
-        for project in JSON:
-            print(project)
-           
-            if JSON[project] == p_name:
-                JSON = JSON[project]
-         
-       
-        f = open("{}".format(p_name) ,"w+")
-        f.write(json.dumps(JSON))
+    def save_project(self,p_path,p):
+        f = open("{}".format(p_path) ,"w+")
+        f.write(json.dumps(p.get_JSON()))
         f.close()
         self.save_workspace()
 
@@ -100,11 +91,14 @@ class Loader():
      
         with open(filename) as f:
             data = json.loads(f.read())
-     
+            print("ABOUT TO PRINT DATA")
+            print(data)
+            print("DATA PRINTED")
+
         p = project.Project(JSON = data)
-      
-        self.workspace.addProjectToWorkspace(p.get_JSON())
-        self.save_project(p.name)
+        p.path = "{}/{}.json".format(self.workspace.wpath,p.name) 
+        self.workspace.addProjectToWorkspace(p.path)
+        self.save_project(p.path,p)
 
             
     def open_project(self,p_name):

@@ -27,8 +27,10 @@ class Project:
            self.JSON = JSON
            self.name = JSON['name']
         
-           self.startDate = JSON['created']
+           self.dateCreated = JSON['created']
            self.editDate = JSON['edited']
+           self.description = JSON['description']
+           self.author = JSON['author']
            self.path = JSON['path']
 
  
