@@ -2,6 +2,7 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtWidgets import QMainWindow
 import Pyro4
 import Pyro4.util
+import json
 import os, sys, ntpath
 from PyQt5 import QtCore, QtGui, QtWidgets
 import datetime
@@ -139,7 +140,7 @@ class UiMainWindow(object):
         openWorkspaceUi = openworkspacedialog.Ui_OpenWorkspaceDialog()
         openWorkspaceUi.setupUi(dialog)
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
-            self.workspace_file = openWorkspaceUi.filename
+            self.workspace_file = openWorkspaceUi.filename   
             ws_name = self.loadWorkspace()
             self.workspaceLabel.setText(ws_name)
 
@@ -159,6 +160,7 @@ class UiMainWindow(object):
             return self.pyro_proxy.save_workspace()
 
     def closeWorkspace(self):
+
         self.workspaceLabel.setText("")
         self.workspace_file = None
         self.pyro_proxy.close_workspace()
@@ -171,15 +173,17 @@ class UiMainWindow(object):
             self.showErrorMessage(errmsg)
             return
         try:
-
+            print(self.workspace_file)
             JSON = self.pyro_proxy.load_workspace(self.workspace_file)
             if JSON['projects'] != None:
                 projects = JSON['projects']
                 # print(projects[str(0)])
                 self.clearProjectTreview()
                 for project in projects:
-                    print(projects[str(project)]['name'])
-                    self.addProjectToTreeView(self.treeview_model, projects[str(project)]['name'])
+                    with open(projects[str(project)]) as json_file:
+                        data = json.load(json_file)
+                       
+                    self.addProjectToTreeView(self.treeview_model, data['name'])
 
             return JSON['name']
         except Exception as ex:
@@ -206,7 +210,9 @@ class UiMainWindow(object):
                                 edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         pass
 
-    def openWorkpaceConfigDialog(self, wsName=None,  wsEditDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"),wsStartDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
+    def openWorkpaceConfigDialog(self, wsName=None):
+        wsStartDate = None
+        wsEditDate = None
         try:
             wsdata = self.pyro_proxy.get_current_workspace()
             if (wsdata != None):
@@ -229,9 +235,9 @@ class UiMainWindow(object):
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
                 if wcUi.workspaceFileLineEdit.text() != wsName:
                     wsName = wcUi.workspaceFileLineEdit.text()
-                    self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate)
+                    self.workspace_file ="{}/{}.json".format(self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate),wsName.strip())
                     self.workspaceLabel.setText(wsName)
-                    self.workspace_file = "{}.json".format(wsName)
+                    
                     self.loadWorkspace()
  
    
