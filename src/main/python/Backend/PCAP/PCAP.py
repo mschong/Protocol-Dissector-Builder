@@ -59,11 +59,12 @@ class PCap:
                     pass
                 protocols[protocol] = fields
             packets[number] = protocols
+      
         if self.colorList:
-            writeFile = open("../UI/MainPane/dictColor.log","w")
+            writeFile = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","w")
             output = [packets,protocols,self.colorList]
         else:
-            writeFile = open("../UI/MainPane/dict.log","w")
+            writeFile = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","w")
             output = [packets,protocols]
         json.dump(output,writeFile)
         writeFile.close()
@@ -79,11 +80,11 @@ class PCap:
         tw = py.io.TerminalWriter()
         i = 0
         j = 0
-        with open(os.getcwd() + '/Lua/dissector.json') as f:
+        with open(os.getcwd() + '/src/main/python/Backend/Lua/dissector.json') as f:
             data = json.load(f)
             print(data["protocol"])
         print(data["protocol"])
-        if os.listdir(os.getcwd() + '/Lua/') == []:
+        if os.listdir(os.getcwd() + '/src/main/python/Backend/Lua/') == []:
             self.yellowFlag = True
             for x in self.pcapFile:
                 self.colorList[j] = "Yellow"
