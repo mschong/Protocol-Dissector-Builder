@@ -256,8 +256,7 @@ class UiMainWindow(object):
         pUi.lineEdit.setText(pname)
         pUi.lineEdit_2.setText(pauthor)
         pUi.lineEdit_3.setText(pdesc)
-        pUi.label_6.setText(created)
-        pUi.label_7.setText(edited)
+       
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             if pUi.lineEdit.text() != pname:
                 pname = pUi.lineEdit.text()
