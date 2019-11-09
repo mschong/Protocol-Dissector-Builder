@@ -5,8 +5,7 @@ sys.path.insert(1, "../../")
 from subprocess import Popen
 from Loader import Loader
 import pexpect
-
-
+import platform
 @Pyro4.expose
 class Pyro_Run():
     loader = None
@@ -31,12 +30,16 @@ class Pyro_Run():
 
     def import_project(self,file):
         return self.loader.import_project(file)
-    
+
     def new_project(self,name,author,desc,created,edited):
         return self.loader.new_project(name,author,desc,created,edited)
-    
+
+
     def createPackets(self,fileName):
-        self.child = pexpect.spawn("python3.6 PCAP/PCAPServices.py",encoding='utf-8')
+        projectPath = " PCAP/PCAPServices.py"
+        if platform.system() == 'Darwin':
+            projectPath = "src/main/python/Backend/PCAP/PCAPServices.py"
+        self.child = pexpect.spawn("python3.6 " + projectPath,encoding='utf-8')
         self.child.expect("loop",timeout=None)
         print("Creating")
         self.child.sendline("create " + fileName)

@@ -3,6 +3,7 @@ import pyshark
 import os
 import py
 import json
+import platform
 class PCap:
     def __init__(self,PCAPLocation):
         self.fileLocation = PCAPLocation
@@ -32,7 +33,7 @@ class PCap:
         print("Done")
 
     def dissectPCAP(self):
-        param = {"-X": 'lua_script:/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/Lua/dissector.lua'}
+        param = {"-X": 'lua_script:' + os.getcwd() + '/Lua/dissector.lua'}
         self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
 
 
@@ -41,12 +42,12 @@ class PCap:
         protocols = {}
         fields = {}
         output = []
-        try: 
+        try:
             os.remove("../UI/MainPane/dictColor.log")
             os.remove("../UI/MainPane/dict.log")
         except:
             pass
-        
+
         for pkt in self.pcapFile:
             number = pkt.frame_info.get_field_value("number")
             protocols = {}
@@ -59,11 +60,19 @@ class PCap:
                     pass
                 protocols[protocol] = fields
             packets[number] = protocols
+
         if self.colorList:
-            writeFile = open("../UI/MainPane/dictColor.log","w")
+            if platform.system() == 'Linux' or platform.system() == 'Windows':
+                writeFile = open("../UI/MainPane/dictColor.log","w")
+            if platform.system() == 'Darwin':
+                writeFile = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","w")
             output = [packets,protocols,self.colorList]
         else:
-            writeFile = open("../UI/MainPane/dict.log","w")
+            if platform.system() == 'Linux' or platform.system() == 'Windows':
+                writeFile = open("../UI/MainPane/dict.log","w")
+            if platform.system() == 'Darwin':
+                writeFile = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","w")
+
             output = [packets,protocols]
         json.dump(output,writeFile)
         writeFile.close()
@@ -79,11 +88,14 @@ class PCap:
         tw = py.io.TerminalWriter()
         i = 0
         j = 0
-        with open('/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/Lua/dissector.json') as f:
+        path = os.getcwd() + '/Lua/'
+        if platform.system() == 'Darwin':
+            path = os.getcwd() + '/src/main/python/Backend/Lua/'
+        with open(path + "dissector.json") as f:
             data = json.load(f)
             print(data["protocol"])
-        print(data["protocol"])    
-        if os.listdir('/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/Lua/') == []:
+        print(data["protocol"])
+        if os.listdir(path) == []:
             self.yellowFlag = True
             for x in self.pcapFile:
                 self.colorList[j] = "Yellow"
