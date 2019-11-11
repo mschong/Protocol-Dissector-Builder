@@ -31,7 +31,7 @@ class Pyro_Run():
     def import_project(self,file):
         return self.loader.import_project(file)
 
-    def new_project(self,name,author,desc,created,edited):
+    def new_project(self,name,author,desc,created,edited , protocol, change_protocol, src_port, dst_port):
         return self.loader.new_project(name,author,desc,created,edited)
 
 

@@ -68,7 +68,7 @@ class Loader():
 
    
     #Project functions
-    def new_project(self,p_name,p_author,p_desc,p_created,p_edited,):
+    def new_project(self,p_name,p_author,p_desc,p_created,p_edited,protocol,change_protocol,src_port,dst_port):
         
         p = project.Project(p_name.strip())
         p.description = p_desc
@@ -76,6 +76,10 @@ class Loader():
         p.editDate =p_edited
         p.author = p_author
         p.path = "{}/{}.json".format(self.workspace.wpath,p.name)
+        p.protocol  = protocol
+        p.change_protocol = change_protocol
+        p.src_port = src_port
+        p.dst_port = dst_port
         self.workspace.addProjectToWorkspace(p.path)
         self.save_project(p.path,p)
     

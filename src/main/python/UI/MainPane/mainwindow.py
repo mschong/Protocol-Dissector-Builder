@@ -262,7 +262,11 @@ class UiMainWindow(object):
                 pname = pUi.lineEdit.text()
                 pauthor = pUi.lineEdit_2.text()
                 pdesc = pUi.lineEdit_3.text()
-                self.pyro_proxy.new_project(pname, pauthor, pdesc, created, edited)
+                protocol = pUi.lineEdit_4.text()
+                change_protocol = pUi.lineEdit_5.text()
+                src_port = pUi.lineEdit_6.text()
+                dst_port = pUi.lineEdit_7.text()
+                self.pyro_proxy.new_project(pname, pauthor, pdesc, created, edited , protocol, change_protocol , src_port, dst_port)
                 self.loadWorkspace()
 
     # PROJECT FUNCTIONS
