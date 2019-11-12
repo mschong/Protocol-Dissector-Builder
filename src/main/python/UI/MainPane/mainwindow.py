@@ -22,13 +22,15 @@ class UiMainWindow(object):
 
     workspace_file = None
     pyro_proxy = None
-
     packetpreview_ui = None
-
     dba_scrollarea = None
     treeview_model = None
     dba_pool = []
     MAX_PROJECTS = 10
+    parent_vlayout = None
+    workspace_label_hlayout = None
+    projectView_canvas_hlayout = None
+    packetPreview_hlayout = None
 
     def setupUi(self, MainWindow):
         ## Pyro
@@ -38,24 +40,32 @@ class UiMainWindow(object):
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1200, 800)
-        MainWindow.setMinimumSize(QtCore.QSize(1200, 800))
-        MainWindow.setMaximumSize(QtCore.QSize(1200, 800))
+        MainWindow.setMinimumSize(QtCore.QSize(400, 400))
+        #MainWindow.setMaximumSize(QtCore.QSize(1200, 800))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
+        self.parent_vlayout = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.workspace_label_hlayout = QtWidgets.QHBoxLayout()
+        self.projectView_canvas_hlayout = QtWidgets.QHBoxLayout()
+        self.packetPreview_hlayout = QtWidgets.QHBoxLayout()
+
         self.treeView = QtWidgets.QTreeView(self.centralwidget)
-        self.treeView.setGeometry(QtCore.QRect(0, 40, 211, 511))
+        self.treeView.setMaximumSize(QtCore.QSize(200, 4096))
         self.treeView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.treeView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.treeView.setObjectName("treeView")
         self.treeview_model = self.createProjectTreeViewModel(self.treeView)
         self.treeView.setModel(self.treeview_model)
+        self.projectView_canvas_hlayout.addWidget(self.treeView)
+
         self.canvasFrame = QtWidgets.QScrollArea(self.centralwidget)
-        self.canvasFrame.setGeometry(QtCore.QRect(210, 40, 981, 511))
+        self.canvasFrame.setMinimumSize(QtCore.QSize(200, 300))
         self.canvasFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.canvasFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.canvasFrame.setObjectName("canvasFrame")
         self.canvasFrame.setWidgetResizable(True)
-        ## Dissector Builder Area (DBA)
+        self.projectView_canvas_hlayout.addWidget(self.canvasFrame)
 
         dba_form = QtWidgets.QWidget()
         dba_ui = DBA.Ui_Form()
@@ -64,22 +74,30 @@ class UiMainWindow(object):
         self.dba_pool.append(dba_ui)
 
         self.workspaceLabel = QtWidgets.QLabel(self.centralwidget)
-        self.workspaceLabel.setGeometry(QtCore.QRect(213, 10, 971, 20))
-        self.workspaceLabel.setText("")
+        self.workspaceLabel.setText("No Workspace Selected")
         self.workspaceLabel.setObjectName("workspaceLabel")
-      
+        self.workspace_label_hlayout.addWidget(self.workspaceLabel)
+
         self.packetPreviewFrame = QtWidgets.QScrollArea(self.centralwidget)
-        self.packetPreviewFrame.setGeometry(QtCore.QRect(0, 560, 1191, 211))
+        self.packetPreviewFrame.setMinimumSize(QtCore.QSize(200, 300))
         self.packetPreviewFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.packetPreviewFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.packetPreviewFrame.setObjectName("packetPreviewFrame")
         self.packetPreviewFrame.setWidgetResizable(True)
+        self.packetPreview_hlayout.addWidget(self.packetPreviewFrame)
 
         ## Packet Preview Pane
         packetpreview_form = QtWidgets.QWidget()
         self.packetpreview_ui = packetpreview.Ui_PackagePreview()
         self.packetpreview_ui.setupUi(packetpreview_form)
         self.packetPreviewFrame.setWidget(packetpreview_form)
+
+        self.parent_vlayout.addLayout(self.workspace_label_hlayout)
+        self.parent_vlayout.addLayout(self.projectView_canvas_hlayout)
+        self.parent_vlayout.addLayout(self.packetPreview_hlayout)
+        spacerItem = QtWidgets.QSpacerItem(20, 245, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.parent_vlayout.addItem(spacerItem)
+
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -142,7 +160,7 @@ class UiMainWindow(object):
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.workspace_file = openWorkspaceUi.filename   
             ws_name = self.loadWorkspace()
-            self.workspaceLabel.setText(ws_name)
+            self.workspaceLabel.setText("Worspace: " + ws_name)
 
     def saveWorkspace(self, wsname):
         msgBox = QtWidgets.QMessageBox()
@@ -161,7 +179,7 @@ class UiMainWindow(object):
 
     def closeWorkspace(self):
 
-        self.workspaceLabel.setText("")
+        self.workspaceLabel.setText("No Workspace Selected")
         self.workspace_file = None
         self.pyro_proxy.close_workspace()
         self.clearProjectTreview()
@@ -236,7 +254,7 @@ class UiMainWindow(object):
                 if wcUi.workspaceFileLineEdit.text() != wsName:
                     wsName = wcUi.workspaceFileLineEdit.text()
                     self.workspace_file ="{}/{}.json".format(self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate),wsName.strip())
-                    self.workspaceLabel.setText(wsName)
+                    self.workspaceLabel.setText("Workspace: " + wsName)
                     
                     self.loadWorkspace()
  
