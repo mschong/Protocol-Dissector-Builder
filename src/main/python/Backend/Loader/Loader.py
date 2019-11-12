@@ -5,8 +5,8 @@ import xml.etree.ElementTree as ET
 sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
 sys.path.insert(1, "../../../../")
-from Project import project
-from Workspace import workspace
+from Backend.Project import project
+from Backend.Workspace import workspace
 import os
 import json
 

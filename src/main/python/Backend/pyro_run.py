@@ -3,7 +3,7 @@ import sys, traceback, time, os, logging
 sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
 from subprocess import Popen
-from Loader import Loader
+from Backend.Loader import Loader
 import pexpect
 import platform
 @Pyro4.expose
@@ -65,15 +65,15 @@ class Pyro_Run():
         print(self.child.read())
 
 
-def main():
-    daemon = Pyro4.Daemon()
-    Popen("pyro4-ns")
-    time.sleep(5)
-    ns = Pyro4.locateNS()
-    uri = daemon.register(Pyro_Run)
-    ns.register("pyro.service",uri)
-    print("[+] Pyro4 URI: " + str(uri))
-    daemon.requestLoop()
+    def main(self):
+        daemon = Pyro4.Daemon()
+        Popen("pyro4-ns")
+        time.sleep(5)
+        ns = Pyro4.locateNS()
+        uri = daemon.register(Pyro_Run)
+        ns.register("pyro.service",uri)
+        print("[+] Pyro4 URI: " + str(uri))
+        daemon.requestLoop()
 
 if __name__ == "__main__":
     main()
