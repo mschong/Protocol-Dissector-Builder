@@ -52,6 +52,7 @@ class Ui_Form(object):
         self.graphicsView.setObjectName("graphicsView")
         self.scene = DropGraphicsScene(QtCore.QRectF(0,0,self.graphicsView.width(), self.graphicsView.height()))
         self.graphicsView.setScene(self.scene)
+        self.graphicsView.setSceneRect(QtCore.QRectF(0, 0, 6000, 6000))
         self.toolbox_label = QtWidgets.QLabel(Form)
         self.toolbox_label.setGeometry(QtCore.QRect(650, 10, 64, 17))
         self.toolbox_label.setObjectName("toolbox_label")
@@ -104,12 +105,24 @@ class Ui_Form(object):
         self.do_loop_button =DragButton("do while", self.construct_tab)
         self.do_loop_button.setGeometry(QtCore.QRect(0, 90, 83, 25))
         self.do_loop_button.setObjectName("do_loop_button")
-        
+
+        self.end_loop_button = DragButton("End Loop", self.construct_tab)
+        self.end_loop_button.setGeometry(QtCore.QRect(90, 0, 83, 25))
+        self.end_loop_button.setObjectName("end_loop_button")
+
+        self.do_button = DragButton("do", self.construct_tab)
+        self.do_button.setGeometry(QtCore.QRect(90, 30, 83, 25))
+        self.do_button.setObjectName("do_button")
 
         self.connector_button = QtWidgets.QPushButton('Connector', self.construct_tab)
         self.connector_button.setGeometry(QtCore.QRect(0,120,83,25))
         self.connector_button.setObjectName("connector_button")
         self.connector_button.clicked.connect(self.connector_button_clicked)
+
+        self.save_button = QtWidgets.QPushButton('Save', self.construct_tab)
+        self.save_button.setGeometry(QtCore.QRect(0,150,83,25))
+        self.save_button.setObjectName("save_button")
+        self.save_button.clicked.connect(self.save_button_clicked)
 
         self.toolBox.addItem(self.construct_tab, "")
 
@@ -139,6 +152,9 @@ class Ui_Form(object):
 
     def connector_button_clicked(self):
         self.scene.setMode(self.scene.InsertLine_ON)
+
+    def save_button_clicked(self):
+        self.scene.save_dissector()
         
 
 

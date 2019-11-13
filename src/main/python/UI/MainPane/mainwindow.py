@@ -2,6 +2,7 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtWidgets import QMainWindow
 import Pyro4
 import Pyro4.util
+import json
 import os, sys, ntpath
 from PyQt5 import QtCore, QtGui, QtWidgets
 import datetime
@@ -21,13 +22,15 @@ class UiMainWindow(object):
 
     workspace_file = None
     pyro_proxy = None
-
     packetpreview_ui = None
-
     dba_scrollarea = None
     treeview_model = None
     dba_pool = []
     MAX_PROJECTS = 10
+    parent_vlayout = None
+    workspace_label_hlayout = None
+    projectView_canvas_hlayout = None
+    packetPreview_hlayout = None
 
     def setupUi(self, MainWindow):
         ## Pyro
@@ -37,24 +40,32 @@ class UiMainWindow(object):
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1200, 800)
-        MainWindow.setMinimumSize(QtCore.QSize(1200, 800))
-        MainWindow.setMaximumSize(QtCore.QSize(1200, 800))
+        MainWindow.setMinimumSize(QtCore.QSize(400, 400))
+        #MainWindow.setMaximumSize(QtCore.QSize(1200, 800))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
+        self.parent_vlayout = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.workspace_label_hlayout = QtWidgets.QHBoxLayout()
+        self.projectView_canvas_hlayout = QtWidgets.QHBoxLayout()
+        self.packetPreview_hlayout = QtWidgets.QHBoxLayout()
+
         self.treeView = QtWidgets.QTreeView(self.centralwidget)
-        self.treeView.setGeometry(QtCore.QRect(0, 40, 211, 511))
+        self.treeView.setMaximumSize(QtCore.QSize(200, 4096))
         self.treeView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.treeView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.treeView.setObjectName("treeView")
         self.treeview_model = self.createProjectTreeViewModel(self.treeView)
         self.treeView.setModel(self.treeview_model)
+        self.projectView_canvas_hlayout.addWidget(self.treeView)
+
         self.canvasFrame = QtWidgets.QScrollArea(self.centralwidget)
-        self.canvasFrame.setGeometry(QtCore.QRect(210, 40, 981, 511))
+        self.canvasFrame.setMinimumSize(QtCore.QSize(200, 300))
         self.canvasFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.canvasFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.canvasFrame.setObjectName("canvasFrame")
         self.canvasFrame.setWidgetResizable(True)
-        ## Dissector Builder Area (DBA)
+        self.projectView_canvas_hlayout.addWidget(self.canvasFrame)
 
         dba_form = QtWidgets.QWidget()
         dba_ui = DBA.Ui_Form()
@@ -63,22 +74,30 @@ class UiMainWindow(object):
         self.dba_pool.append(dba_ui)
 
         self.workspaceLabel = QtWidgets.QLabel(self.centralwidget)
-        self.workspaceLabel.setGeometry(QtCore.QRect(213, 10, 971, 20))
-        self.workspaceLabel.setText("")
+        self.workspaceLabel.setText("No Workspace Selected")
         self.workspaceLabel.setObjectName("workspaceLabel")
-      
+        self.workspace_label_hlayout.addWidget(self.workspaceLabel)
+
         self.packetPreviewFrame = QtWidgets.QScrollArea(self.centralwidget)
-        self.packetPreviewFrame.setGeometry(QtCore.QRect(0, 560, 1191, 211))
+        self.packetPreviewFrame.setMinimumSize(QtCore.QSize(200, 300))
         self.packetPreviewFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.packetPreviewFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.packetPreviewFrame.setObjectName("packetPreviewFrame")
         self.packetPreviewFrame.setWidgetResizable(True)
+        self.packetPreview_hlayout.addWidget(self.packetPreviewFrame)
 
         ## Packet Preview Pane
         packetpreview_form = QtWidgets.QWidget()
         self.packetpreview_ui = packetpreview.Ui_PackagePreview()
         self.packetpreview_ui.setupUi(packetpreview_form)
         self.packetPreviewFrame.setWidget(packetpreview_form)
+
+        self.parent_vlayout.addLayout(self.workspace_label_hlayout)
+        self.parent_vlayout.addLayout(self.projectView_canvas_hlayout)
+        self.parent_vlayout.addLayout(self.packetPreview_hlayout)
+        spacerItem = QtWidgets.QSpacerItem(20, 245, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.parent_vlayout.addItem(spacerItem)
+
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -139,9 +158,9 @@ class UiMainWindow(object):
         openWorkspaceUi = openworkspacedialog.Ui_OpenWorkspaceDialog()
         openWorkspaceUi.setupUi(dialog)
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
-            self.workspace_file = openWorkspaceUi.filename
+            self.workspace_file = openWorkspaceUi.filename   
             ws_name = self.loadWorkspace()
-            self.workspaceLabel.setText(ws_name)
+            self.workspaceLabel.setText("Worspace: " + ws_name)
 
     def saveWorkspace(self, wsname):
         msgBox = QtWidgets.QMessageBox()
@@ -159,7 +178,8 @@ class UiMainWindow(object):
             return self.pyro_proxy.save_workspace()
 
     def closeWorkspace(self):
-        self.workspaceLabel.setText("")
+
+        self.workspaceLabel.setText("No Workspace Selected")
         self.workspace_file = None
         self.pyro_proxy.close_workspace()
         self.clearProjectTreview()
@@ -171,15 +191,17 @@ class UiMainWindow(object):
             self.showErrorMessage(errmsg)
             return
         try:
-
+            print(self.workspace_file)
             JSON = self.pyro_proxy.load_workspace(self.workspace_file)
             if JSON['projects'] != None:
                 projects = JSON['projects']
                 # print(projects[str(0)])
-                
+                self.clearProjectTreview()
                 for project in projects:
-                    print(projects[str(project)]['name'])
-                    self.addProjectToTreeView(self.treeview_model, projects[str(project)]['name'])
+                    with open(projects[str(project)]) as json_file:
+                        data = json.load(json_file)
+                       
+                    self.addProjectToTreeView(self.treeview_model, data['name'])
 
             return JSON['name']
         except Exception as ex:
@@ -206,7 +228,9 @@ class UiMainWindow(object):
                                 edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         pass
 
-    def openWorkpaceConfigDialog(self, wsName=None,  wsEditDate=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
+    def openWorkpaceConfigDialog(self, wsName=None):
+        wsStartDate = None
+        wsEditDate = None
         try:
             wsdata = self.pyro_proxy.get_current_workspace()
             if (wsdata != None):
@@ -214,7 +238,7 @@ class UiMainWindow(object):
                 wsStartDate = wsdata['created']
                 wsEditDate = wsdata['edited']
         finally:   
-            if wsName is None:
+            if wsName is None or wsName is False:
                     wsName = " "
             if wsStartDate is None :
                 wsStartDate = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
@@ -229,9 +253,9 @@ class UiMainWindow(object):
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
                 if wcUi.workspaceFileLineEdit.text() != wsName:
                     wsName = wcUi.workspaceFileLineEdit.text()
-                    self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate)
-                    self.workspaceLabel.setText(wsName)
-                    self.workspace_file = "{}.json".format(wsName)
+                    self.workspace_file ="{}/{}.json".format(self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate),wsName.strip())
+                    self.workspaceLabel.setText("Workspace: " + wsName)
+                    
                     self.loadWorkspace()
  
    
@@ -250,14 +274,17 @@ class UiMainWindow(object):
         pUi.lineEdit.setText(pname)
         pUi.lineEdit_2.setText(pauthor)
         pUi.lineEdit_3.setText(pdesc)
-        pUi.label_6.setText(created)
-        pUi.label_7.setText(edited)
+       
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             if pUi.lineEdit.text() != pname:
                 pname = pUi.lineEdit.text()
                 pauthor = pUi.lineEdit_2.text()
                 pdesc = pUi.lineEdit_3.text()
-                self.pyro_proxy.new_project(pname, pauthor, pdesc, created, edited)
+                protocol = pUi.lineEdit_4.text()
+                change_protocol = pUi.lineEdit_5.text()
+                src_port = pUi.lineEdit_6.text()
+                dst_port = pUi.lineEdit_7.text()
+                self.pyro_proxy.new_project(pname, pauthor, pdesc, created, edited , protocol, change_protocol , src_port, dst_port)
                 self.loadWorkspace()
 
     # PROJECT FUNCTIONS
@@ -285,6 +312,7 @@ class UiMainWindow(object):
         return model
 
     def addProjectToTreeView(self, model, project_name):
+        
         model.insertRow(0)
         model.setData(model.index(0, 0), project_name)
 

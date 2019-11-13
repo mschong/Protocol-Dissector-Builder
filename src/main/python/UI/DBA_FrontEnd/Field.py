@@ -3,8 +3,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-
-
 class Field(QWidget):
     def __init__(self):
 
@@ -104,12 +102,14 @@ class Field(QWidget):
         self.table.setColumnWidth(1, 138)
         self.table.resizeRowsToContents()
 
-    def clickMethod(self):
-        dict01 = dict({'Name': self.table.cellWidget(0,1).text(), 'Abbreviation': self.table.cellWidget(1,1).text(), 'Description': self.table.cellWidget(2,1).text(), 'Reference List': self.table.cellWidget(3,1).currentText(), 'Data Type': self.table.cellWidget(4,1).currentText(), 'Base': self.table.cellWidget(5,1).currentText(), 'Mask': self.table.cellWidget(6,1).text(), 'Values Constraint': self.table.cellWidget(7,1).text(), 'Var Size': self.table.cellWidget(8,1).currentText()})
-        if self.table.cellWidget(9,1).isTristate():
-            dict.update({'Required': 'true'})
+    def saveMethod(self):
+        field_properties = dict({'Name': self.table.cellWidget(0,1).text(), 'Abbreviation': self.table.cellWidget(1,1).text(), 'Description': self.table.cellWidget(2,1).text(), 'Data Type': self.table.cellWidget(3,1).currentText(), 'Base': self.table.cellWidget(4,1).currentText(), 'Mask': self.table.cellWidget(5,1).text(), 'Value Constraint': self.table.cellWidget(6,1).text(), 'Var Size': {'editText': self.table.cellWidget(7,1).children()[1].text(), 'combobox': self.table.cellWidget(7,1).children()[2].currentText()}, 'ID Value': self.table.cellWidget(8,1).text()})
+        if self.table.cellWidget(9,1).children()[1].isTristate():
+            field_properties.update({'Required': 'true'})
         else:
-            dict.update({'Required': 'false'})
+            field_properties.update({'Required': 'false'})
+
+        return field_properties
 
 if __name__ == '__main__':
     app = QApplication([])
