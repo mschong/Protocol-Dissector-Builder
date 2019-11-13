@@ -73,14 +73,14 @@ class Connector(QGraphicsLineItem):
         painter.setPen(myPen)
         painter.setBrush(self.myColor)
 
-        centerLine = QLineF(myStartItem.sceneBoundingRect().center(), myEndItem.polygon.scenePos())
+        centerLine = QLineF(myStartItem.sceneBoundingRect().center(), myEndItem.getPolygon().scenePos())
 
-        endPolygon = myEndItem.polygon.polygon()
-        p1 = endPolygon.first() + myEndItem.polygon.scenePos()
+        endPolygon = myEndItem.getPolygon().polygon()
+        p1 = endPolygon.first() + myEndItem.getPolygon().scenePos()
 
         intersectPoint = QPointF()
         for i in endPolygon:
-            p2 = i + myEndItem.polygon.scenePos()
+            p2 = i + myEndItem.getPolygon().scenePos()
             polyLine = QLineF(p1, p2)
             intersectType = polyLine.intersect(centerLine, intersectPoint)
             if intersectType == QLineF.BoundedIntersection:
