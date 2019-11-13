@@ -259,7 +259,11 @@ class DropGraphicsScene(QGraphicsScene):
             # Saving "end loop" or "do" widgets into a dictionary
             if(isinstance(proxyWidget.widget(), QPushButton)):
                 if(proxyWidget.widget().text() == "End Loop"):
-                    endLoop = {'Position': proxyWidget.scenePos()}
+                    x_position = proxyWidget.scenePos().x()
+                    y_position = proxyWidget.scenePos().y()
+                    position = {'x': x_position, 'y': y_position}
+                    endLoop = {'Position': position}
+
                     end_item = ""
                     for connector in proxyWidget.connectors:
                         if connector.endItem().widget() is proxyWidget.widget():
@@ -267,13 +271,15 @@ class DropGraphicsScene(QGraphicsScene):
                         end_item = self.getNextWidgetName(connector.endItem())
                         endLoop.update({'next_field': end_item})
 
-
                     name = "End_" + end_item
                     dissector.update({name: endLoop})
                     
                     
                 elif(proxyWidget.widget().text() == "do"):
-                    doWhile_start = {'Position': proxyWidget.scenePos()}
+                    x_position = proxyWidget.scenePos().x()
+                    y_position = proxyWidget.scenePos().y()
+                    position = {'x': x_position, 'y': y_position}
+                    doWhile_start = {'Position': position}
                     
                     for connector in proxyWidget.connectors:
                         if connector.endItem().widget() is proxyWidget.widget():
@@ -286,19 +292,20 @@ class DropGraphicsScene(QGraphicsScene):
                 continue # continue proxyWidgetList for-loop
 
 
-
             # if widget isn't a "do" or "End Loop", get default widget
             defaultWidget = self.getDefaultWidget(proxyWidget)
             
             # Saving field information into a dictionary
             if(isinstance(defaultWidget, Field)):
                 field = defaultWidget.saveMethod()
-                
-                field.update({'Position': proxyWidget.scenePos()})
+
+                x_position = proxyWidget.scenePos().x()
+                y_position = proxyWidget.scenePos().y()
+                position = {'x': x_position, 'y': y_position}
+                field.update({'Position': position})
 
                 # Getting "next field"
                 for connector in proxyWidget.connectors:
-
                     # Skip if this widget is the endItem of the connector
                     if(not isinstance(connector.endItem().widget(), QPushButton)):
                         if(self.getDefaultWidget(connector.endItem()) is defaultWidget):
@@ -307,81 +314,76 @@ class DropGraphicsScene(QGraphicsScene):
                     end_item = self.getNextWidgetName(connector.endItem())
                     field.update({'next_field': end_item})
 
+                if(self.isEndField(field)):
+                    field.update({'next_field': "END"})
+
+                if(self.isStartField(proxyWidget)):
+                    dissector.update({'START': field['Name']}) 
+
                 dissector.update({field['Name']: field})
 
             # Saving Decision information into dictionary
             elif(isinstance(defaultWidget, Decision)):
-                decision_name = defaultWidget.getName()
-                decisionCondition = defaultWidget.saveMethod()
-                decision = {'Condition': decisionCondition}
-
-                decision.update({'Position': proxyWidget.scenePos()})
-
-                for connector in proxyWidget.connectors:
-                    # Skip if this widget is the endItem of the connector
-                    if(not isinstance(connector.endItem().widget(), QPushButton)):
-                        if(self.getDefaultWidget(connector.endItem()) is defaultWidget):
-                            continue # continue connector for-loop
-
-                    end_item = self.getNextWidgetName(connector.endItem())
-                    if(connector.getType() == "True"):
-                        decision.update({'true': end_item})
-                    elif(connector.getType() == "False"):
-                        decision.update({'false': end_item})
-
-                dissector.update({decision_name: decision})
+                decision = self.saveConditionWidget(proxyWidget)
+                dissector.update(decision)
 
             # Saving While loop information into dictionary
             elif(isinstance(defaultWidget, While_Loop)):
-                whileLoop_name = defaultWidget.getName()
-                whileLoopCondition = defaultWidget.saveMethod()
-                whileLoop = {'Condition': whileLoopCondition}
-
-                whileLoop.update({'Position': proxyWidget.scenePos()})
-
-                for connector in proxyWidget.connectors:
-                    # Skip if this widget is the endItem of the connector
-                    if(not isinstance(connector.endItem().widget(), QPushButton)):
-                        if(self.getDefaultWidget(connector.endItem()) is defaultWidget):
-                            continue # continue connector for-loop
-
-                    end_item = self.getNextWidgetName(connector.endItem())
-                    if(connector.getType() == "True"):
-                        whileLoop.update({'true': end_item})
-                    elif(connector.getType() == "False"):
-                        whileLoop.update({'false': end_item})
-
-                dissector.update({whileLoop_name: whileLoop})
+                whileLoop = self.saveConditionWidget(proxyWidget)
+                dissector.update(whileLoop)
 
             # Saving Do While loop information into dictionary
             elif(isinstance(defaultWidget, Do_Loop)):
-                doWhile_name = defaultWidget.getName()
-                doWhileCondition = defaultWidget.saveMethod()
-                doWhile = {'Condition': doWhileCondition}
-
-                doWhile.update({'Position': proxyWidget.scenePos()})
-                for connector in proxyWidget.connectors:
-                    # Skip if this widget is the endItem of the connector
-                    if(not isinstance(connector.endItem().widget(), QPushButton)):
-                        if(self.getDefaultWidget(connector.endItem()) is defaultWidget):
-                            continue # continue connector for-loop
-
-                    end_item = self.getNextWidgetName(connector.endItem())
-                    if(connector.getType() == "True"):
-                        doWhile.update({'true': end_item})
-                    elif(connector.getType() == "False"):
-                        doWhile.update({'false': end_item})
-
-                dissector.update({doWhile_name: doWhile})
+                doWhile = self.saveConditionWidget(proxyWidget)
+                dissector.update(doWhile)
 
             elif(isinstance(defaultWidget, For_Loop)):
                 pass
 
-        print(dissector)
+        return dissector
+
+    # called by self.saveDissector() to save Decision, While, Do_While
+    def saveConditionWidget(self, proxyWidget):
+        defaultWidget = self.getDefaultWidget(proxyWidget)
+        widget_name = defaultWidget.getName()
+        condition = defaultWidget.saveMethod()
+        widget_properties = {'Condition': condition}
+
+        x_position = proxyWidget.scenePos().x()
+        y_position = proxyWidget.scenePos().y()
+        position = {'x': x_position, 'y': y_position}
+        widget_properties.update({'Position': position})
+
+        for connector in proxyWidget.connectors:
+            # Skip if this widget is the endItem of the connector
+            if(not isinstance(connector.endItem().widget(), QPushButton)):
+                if(self.getDefaultWidget(connector.endItem()) is defaultWidget):
+                    continue # continue connector for-loop
+
+            end_item = self.getNextWidgetName(connector.endItem())
+            if(connector.getType() == "True"):
+                widget_properties.update({'true': end_item})
+            elif(connector.getType() == "False"):
+                widget_properties.update({'false': end_item})
+        if(self.isStartField(proxyWidget)):
+            return {widget_name: widget_properties, 'START': widget_name}
+        else:
+            return {widget_name: widget_properties}
 
     # widget must be a GraphicsProxyWidget
     def getDefaultWidget(self, widget):
         return widget.widget().menu().actions()[0].defaultWidget()
+
+    # widget properties is a dictionary
+    def isEndField(self, widget_properties):
+        return not 'next_field' in widget_properties
+
+    def isStartField(self, proxyWidget):
+        for connector in proxyWidget.connectors:
+            if(not isinstance(connector.endItem().widget(), QPushButton)):
+                if(connector.endItem() is proxyWidget):
+                    return False # false if this widget is pointed to by a connector
+        return True # true if no connectors are pointed to this widget
 
     # endItem is connector.endItem()
     def getNextWidgetName(self, endItem):
@@ -399,10 +401,7 @@ class DropGraphicsScene(QGraphicsScene):
         if(isinstance(endItem.widget(), QPushButton) and endItem.widget().text() == "do"):
             return self.getDoWidgetName(endItem)
 
-
-
         endItem_Widget = self.getDefaultWidget(endItem)
-
         if(isinstance(endItem_Widget,Field)):
             endItem_name = endItem_Widget.table.cellWidget(0,1).text()
 

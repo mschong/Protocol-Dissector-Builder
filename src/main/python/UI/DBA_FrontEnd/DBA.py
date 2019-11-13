@@ -16,6 +16,9 @@ from UI.DBA_FrontEnd.Decision import Decision
 from UI.DBA_FrontEnd.GraphicsProxyWidget import GraphicsProxyWidget
 from UI.DBA_FrontEnd.DropGraphicsScene import DropGraphicsScene
 from UI.DBA_FrontEnd.DragButton import DragButton
+import json
+
+
 class QGraphicsView(QtWidgets.QGraphicsView):
     def __init__(self, parent=None):
         super(QGraphicsView, self).__init__(parent)
@@ -154,8 +157,9 @@ class Ui_Form(object):
         self.scene.setMode(self.scene.InsertLine_ON)
 
     def save_button_clicked(self):
-        self.scene.save_dissector()
-        
+        dissector_dictionary = self.scene.save_dissector()
+        dissector_json = json.dumps(dissector_dictionary)
+        print(dissector_json)
 
 
 if __name__ == "__main__":
