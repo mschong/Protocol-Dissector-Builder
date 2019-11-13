@@ -36,7 +36,6 @@ class Project:
         else:
            self.JSON = JSON
            self.name = JSON['name']
-        
            self.dateCreated = JSON['created']
            self.editDate = JSON['edited']
            self.description = JSON['description']
