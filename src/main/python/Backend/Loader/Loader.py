@@ -7,6 +7,7 @@ sys.path.insert(1, "../../")
 sys.path.insert(1, "../../../../")
 from Backend.Project import project
 from Backend.Workspace import workspace
+from Backend.Dissector import dissector
 import os
 import json
 
@@ -54,6 +55,7 @@ class Loader():
         self.workspace.editDate = ws_edited
         self.workspace.wpath = "{}/{}".format(os.getcwd().strip(),self.workspace.name.strip())
         os.mkdir(self.workspace.name.strip())
+        os.mkdir("{}/Lua".format(self.workspace.wpath))
         self.save_workspace()
         return self.workspace.wpath
 
@@ -110,7 +112,16 @@ class Loader():
 
 
   
-
+    def export_lua_script(self,workspace,project):
+        ws_json = self.loadworkspace(workspace)
+        p_path = "{}/{}.json".format(ws_json['path'],project)
+        with open(p_path) as f:
+            p_json = json.loads(f.read())
+            print("JSON = {}".format(p_json))
+        generator = dissector.Dissector_Generator()
+        # generator.parse_json(p_json)
+        # generator.export_lua(workspace)
+        generator.mock_run(ws_json['path'])
 
 
   

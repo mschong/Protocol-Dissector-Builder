@@ -32,7 +32,10 @@ class Pyro_Run():
         return self.loader.import_project(file)
 
     def new_project(self,name,author,desc,created,edited , protocol, change_protocol, src_port, dst_port):
-        return self.loader.new_project(name,author,desc,created,edited)
+        return self.loader.new_project(name,author,desc,created,edited,protocol,change_protocol,src_port,dst_port)
+
+    def export_lua_script(self,workspace,project):
+        self.loader.export_lua_script(workspace,project)
 
 
     def createPackets(self,fileName):

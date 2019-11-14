@@ -16,7 +16,7 @@ function protocol.dissector(buffer, pinfo, tree)
   
 
     
-{
+
     {% set offset = namespace(off=0) %}
     {% for field in dis.fields %}
         subtree:add({{field.name}},buffer({{offset.off}},{{field.size}}))

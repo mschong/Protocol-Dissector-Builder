@@ -131,12 +131,14 @@ class UiMainWindow(object):
         #Project Options
         self.new_proj = QtWidgets.QAction("New Project",self.menubar)
         self.import_proj =  QtWidgets.QAction("Import Project",self.menubar)
+        self.export_lua = QtWidgets.QAction("Export Lua Script",self.menubar)
         #Project options functions
         self.new_proj.triggered.connect(self.openProjectConfigDialog)
         self.import_proj.triggered.connect(self.openProjectDialog)
+        self.export_lua.triggered.connect(self.export_lua_script)
 
 
-        self.options = [self.new_ws,self.open_ws,self.close_ws,self.config_ws,self.new_proj,self.import_proj]
+        self.options = [self.new_ws,self.open_ws,self.close_ws,self.config_ws,self.new_proj,self.import_proj,self.export_lua]
         self.menuFile.addActions(self.options)
       
         MainWindow.setMenuBar(self.menubar)
@@ -248,8 +250,7 @@ class UiMainWindow(object):
             wcUi = workspaceconfigwindow.Ui_Dialog()
             wcUi.setupUi(dialog)
             wcUi.workspaceFileLineEdit.setText(str(wsName))
-            wcUi.startDateLabel.setText(wsStartDate)
-            wcUi.editDateLabel.setText(wsEditDate)
+            
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
                 if wcUi.workspaceFileLineEdit.text() != wsName:
                     wsName = wcUi.workspaceFileLineEdit.text()
@@ -264,6 +265,9 @@ class UiMainWindow(object):
    
 
     #PROJECT FUNCTIONS
+    def export_lua_script(self):
+        selected_project = "MyDNS"
+        self.pyro_proxy.export_lua_script(self.workspace_file,selected_project)
        
     def openProjectConfigDialog(self,pname=None,pauthor = None,pdesc=None,created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         dialog = QtWidgets.QDialog()
