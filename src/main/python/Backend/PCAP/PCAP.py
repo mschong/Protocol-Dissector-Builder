@@ -62,16 +62,16 @@ class PCap:
             packets[number] = protocols
 
         if self.colorList:
-            if platform.system() == 'Linux' or platform.system() == 'Windows':
-                writeFile = open("../UI/MainPane/dictColor.log","w")
-            if platform.system() == 'Darwin':
-                writeFile = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","w")
+            # if platform.system() == 'Linux' or platform.system() == 'Windows':
+            #     writeFile = open("../UI/MainPane/dictColor.log","w")
+            # if platform.system() == 'Darwin':
+            writeFile = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","w")
             output = [packets,protocols,self.colorList]
         else:
-            if platform.system() == 'Linux' or platform.system() == 'Windows':
-                writeFile = open("../UI/MainPane/dict.log","w")
-            if platform.system() == 'Darwin':
-                writeFile = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","w")
+            # if platform.system() == 'Linux' or platform.system() == 'Windows':
+            #     writeFile = open("../UI/MainPane/dict.log","w")
+            # if platform.system() == 'Darwin':
+            writeFile = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","w")
 
             output = [packets,protocols]
         json.dump(output,writeFile)
@@ -88,9 +88,9 @@ class PCap:
         tw = py.io.TerminalWriter()
         i = 0
         j = 0
-        path = os.getcwd() + '/Lua/'
-        if platform.system() == 'Darwin':
-            path = os.getcwd() + '/src/main/python/Backend/Lua/'
+        # path = os.getcwd() + '/Lua/'
+        # if platform.system() == 'Darwin':
+        path = os.getcwd() + '/src/main/python/Backend/Lua/'
         with open(path + "dissector.json") as f:
             data = json.load(f)
             print(data["protocol"])

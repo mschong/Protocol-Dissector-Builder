@@ -39,9 +39,9 @@ class Pyro_Run():
 
 
     def createPackets(self,fileName):
-        projectPath = " PCAP/PCAPServices.py"
-        if platform.system() == 'Darwin':
-            projectPath = "src/main/python/Backend/PCAP/PCAPServices.py"
+        # projectPath = " PCAP/PCAPServices.py"
+        # if platform.system() == 'Darwin':
+        projectPath = "src/main/python/Backend/PCAP/PCAPServices.py"
         self.child = pexpect.spawn("python3.6 " + projectPath,encoding='utf-8')
         self.child.expect("loop",timeout=None)
         print("Creating")
