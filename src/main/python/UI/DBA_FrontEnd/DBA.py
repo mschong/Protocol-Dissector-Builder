@@ -16,6 +16,15 @@ from UI.DBA_FrontEnd.Decision import Decision
 from UI.DBA_FrontEnd.GraphicsProxyWidget import GraphicsProxyWidget
 from UI.DBA_FrontEnd.DropGraphicsScene import DropGraphicsScene
 from UI.DBA_FrontEnd.DragButton import DragButton
+import json
+
+class ComboBox(QtWidgets.QComboBox):
+    popupAboutToBeShown = QtCore.pyqtSignal()
+
+    def showPopup(self):
+        self.popupAboutToBeShown.emit()
+        super(ComboBox,self).showPopup()
+
 class QGraphicsView(QtWidgets.QGraphicsView):
     def __init__(self, parent=None):
         super(QGraphicsView, self).__init__(parent)
@@ -57,10 +66,10 @@ class Ui_Form(object):
         self.toolbox_label.setGeometry(QtCore.QRect(650, 10, 64, 17))
         self.toolbox_label.setObjectName("toolbox_label")
         self.toolBox = QtWidgets.QToolBox(Form)
-        self.toolBox.setGeometry(QtCore.QRect(650, 30, 201, 251))
+        self.toolBox.setGeometry(QtCore.QRect(650, 30, 201, 320))
         self.toolBox.setObjectName("toolBox")
         self.field_tab = QtWidgets.QWidget()
-        self.field_tab.setGeometry(QtCore.QRect(0, 0, 201, 65))
+        self.field_tab.setGeometry(QtCore.QRect(0, 0, 201, 110))
         self.field_tab.setObjectName("field_tab")
         
 
@@ -83,6 +92,17 @@ class Ui_Form(object):
         self.octal_field_button = DragButton('Field (Octal)', self.field_tab)
         self.octal_field_button.setGeometry(QtCore.QRect(20, 145, 100, 30))
         self.octal_field_button.setObjectName("octal_field_button")
+
+        #Code Block
+        self.code_block_button = DragButton('Code Block', self.field_tab)
+        self.code_block_button.setGeometry(QtCore.QRect(20, 180, 100, 30))
+        self.code_block_button.setObjectName("code_block_button")
+
+        self.list_fields_box = ComboBox(self.field_tab)
+        self.list_fields_box.setGeometry(QtCore.QRect(20, 215, 171,30))
+        self.list_fields_box.setObjectName("list_field_label")
+        self.list_fields_box.addItem('Added Fields')
+        self.list_fields_box.popupAboutToBeShown.connect(self.populateConbo)
 
 
         self.toolBox.addItem(self.field_tab, "")
@@ -138,6 +158,13 @@ class Ui_Form(object):
         self.toolBox.setItemText(self.toolBox.indexOf(self.field_tab), _translate("Form", "Field"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.construct_tab), _translate("Form", "Construct"))
 
+    def populateConbo(self):
+        self.list_fields_box.clear()
+        self.list_fields_box.addItem('Added Fields')
+        self.fields = self.scene.proxyFieldWidgetList
+        for field in self.fields:
+            self.list_fields_box.addItem(field.widget().menu().actions()[0].defaultWidget().table.cellWidget(0,1).text())
+        
     def open_field_window(self):
         self.field_win = Field()
         self.field_win.show()
@@ -154,9 +181,10 @@ class Ui_Form(object):
         self.scene.setMode(self.scene.InsertLine_ON)
 
     def save_button_clicked(self):
-        self.scene.save_dissector()
-        
-
+        dissector_dictionary = self.scene.save_dissector()
+        dissector_json = json.dumps(dissector_dictionary)
+        print(dissector_json)
+        #return dissector_json
 
 if __name__ == "__main__":
     import sys
