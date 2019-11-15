@@ -5,3 +5,4 @@ pyshark
 pexpect
 Jinja2
 PyInstaller
+pypiwin32
