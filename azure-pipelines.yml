@@ -70,6 +70,7 @@ jobs:
 
     - script: |
         python -m pip install --upgrade pip
+        pip install pypiwin32
         pip install -r requirements/base.txt
       displayName: 'Install dependencies'
 
