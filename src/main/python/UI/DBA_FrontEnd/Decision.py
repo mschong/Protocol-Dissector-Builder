@@ -44,6 +44,21 @@ class Decision(QWidget):
     def getName(self):
         return self.name
 
+    def setCondition(self, condition):
+        colNum = 0
+        if(len(condition.keys()) > 1):
+            for i in range(int(len(condition.keys())/2)):
+                self.clickMethod()
+        for key, value in condition.items():
+            conditionWidget = self.layout.itemAtPosition(1, colNum).widget()
+            if("operand" == key[0:7]):
+                conditionWidget.setText(value)
+            elif("operator" == key[0:8]):
+                index = conditionWidget.findText(value)
+                conditionWidget.setCurrentIndex(index)
+            colNum += 1
+
+
     def clickMethod(self):
         logical_ops_box = QComboBox()
         logical_ops = ["",">", "<", "=>", "<=", "==", "!=", "AND", "OR"]
