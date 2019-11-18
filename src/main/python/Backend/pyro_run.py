@@ -58,6 +58,9 @@ class Pyro_Run():
         self.child.sendline("print")
         print(self.child.read())
 
+    def load_dissector(self):
+        return self.loader.get_dissector()
+
 
 def main():
     daemon = Pyro4.Daemon()
@@ -68,6 +71,7 @@ def main():
     ns.register("pyro.service",uri)
     print("[+] Pyro4 URI: " + str(uri))
     daemon.requestLoop()
+
 
 if __name__ == "__main__":
     main()
