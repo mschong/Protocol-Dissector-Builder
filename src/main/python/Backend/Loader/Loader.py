@@ -2,11 +2,13 @@ import datetime
 import ntpath
 import sys
 import xml.etree.ElementTree as ET
-sys.path.insert(1, "./")
-sys.path.insert(1, "../../")
-sys.path.insert(1, "../../../../")
+sys.path.insert(1,"./")
+sys.path.insert(1,"../../")
+sys.path.insert(1,"../../../")
+sys.path.insert(1,"../../../../")
 from Project import project
 from Workspace import workspace
+#from ..UI.DBA_FrontEnd import DBA
 import json
 
 
@@ -15,7 +17,9 @@ class Loader():
     workspace = None
 
     def __init__(self):
+        print("sys.path: ", sys.path)
         self.workspace = workspace.Workspace()
+
 
     #WORKSAPCE FUNCTIONS
 
@@ -103,6 +107,12 @@ class Loader():
     def open_project(self,p_name):
         pass
 
+    def get_dissector(self):
+        dissector = DBA.Ui_Form()
+        json_string = dissector.save_button_clicked()
+        f = open("{}.json".format("dissector"), "w+")
+        f.write(json_string)
+        f.close()
 
   
 
