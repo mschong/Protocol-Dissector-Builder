@@ -160,6 +160,8 @@ class Ui_Form(object):
         dissector_dictionary = self.scene.save_dissector()
         dissector_json = json.dumps(dissector_dictionary)
         print(dissector_json)
+        return dissector_json
+
 
 
 if __name__ == "__main__":
