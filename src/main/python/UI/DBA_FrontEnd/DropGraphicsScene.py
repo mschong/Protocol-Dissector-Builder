@@ -13,7 +13,34 @@ from UI.DBA_FrontEnd.Do_Loop import Do_Loop
 from UI.DBA_FrontEnd.Decision import Decision
 from UI.DBA_FrontEnd.GraphicsProxyWidget  import GraphicsProxyWidget
 from UI.DBA_FrontEnd.Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
+from UI.DBA_FrontEnd.CodeBlock import CodeBlock
 import sys
+
+
+class ToolButton(QToolButton):
+    def __init__(self, widget, scene):
+        super().__init__()
+        self.initUI(widget, scene)
+
+    def initUI(self, widget, scene):
+        self.widget = widget
+        self.scene = scene
+        self.setPopupMode(QToolButton.MenuButtonPopup)
+        self.setObjectName("Button")
+        self.setGeometry(QRect(20, 30, 278, 45))
+        self.setText("No Name")
+        menu = QMenu()
+        self.setMenu(menu)
+        action = QWidgetAction(self)
+        action.setDefaultWidget(self.widget)
+        self.menu().addAction(action)
+
+    def mousePressEvent(self, event):
+        if self.hitButton(event.pos()) and self.menu().isHidden():
+            self.showMenu()
+        if self.hitButton(event.pos()) and (not(self.menu().actions()[0].defaultWidget().isHidden())):
+            self.menu().hide()
+            self.setText(self.menu().actions()[0].defaultWidget().table.cellWidget(0,1).text())
 
 class DropGraphicsScene(QGraphicsScene):
     InsertLine_ON, MoveItem = range(2)
@@ -24,6 +51,8 @@ class DropGraphicsScene(QGraphicsScene):
         self.myMode = self.MoveItem
         self.myLineColor = Qt.black
         self.proxyWidgetList = []
+        self.proxyFieldWidgetList= []
+        self.countFields = 0
         self.decision_count = 0
         self.while_count = 0 
         self.doWhile_count = 0
@@ -54,6 +83,7 @@ class DropGraphicsScene(QGraphicsScene):
                                 item.startItem().removeConnector(item)
                                 item.endItem().removeConnector(item)
                             self.removeItem(item)
+                            self.proxyWidgetList.remove(item.widget().text())
                 elif action == change_type_action:
                     dialog = ConnectorTypeDialog(self.items(event.scenePos())[0])
                     dialog.setModal(True)
@@ -75,6 +105,7 @@ class DropGraphicsScene(QGraphicsScene):
                                 item.endItem().removeConnector(item)
                             print(item)
                             self.removeItem(item)
+                            self.proxyWidgetList.remove(item.widget().text())
     
     # The following two functions are only preparing the scene to accept any drag movements
 
@@ -114,6 +145,11 @@ class DropGraphicsScene(QGraphicsScene):
 
 
             proxy = self.addWidgetToScene(octal_field, event.scenePos(), event.mimeData().text())
+            proxy.setPolygon()
+        if(event.mimeData().text() == "Code Block"):
+            code_block = CodeBlock()
+
+            proxy = self.addWidgetToScene(code_block, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "while"):
             name = "While" + str(self.while_count)
@@ -159,7 +195,7 @@ class DropGraphicsScene(QGraphicsScene):
         event.accept()
     def addWidgetToScene(self, widget, pos, text):
         
-        if(text != "End Loop" and text != "do"):
+        if(text != "End Loop" and text != "do" and not(isinstance(widget, Field))):
             button = QToolButton()
             button.setPopupMode(QToolButton.MenuButtonPopup)
             button.setGeometry(QRect(20, 30, 278, 40))
@@ -173,6 +209,15 @@ class DropGraphicsScene(QGraphicsScene):
             button = QPushButton()
             button.setGeometry(QRect(20, 30, 278, 40))
             button.setText(text)
+            
+        if(isinstance(widget,Field)):
+            self.countFields = self.countFields + 1
+            button = ToolButton(widget, self)
+            field_text = button.text() + ' ' + str(self.countFields)
+            button.setText(field_text)
+            button.menu().actions()[0].defaultWidget().table.cellWidget(0,1).setText(field_text)
+
+        
         """ A QGraphicsWidget is a QGraphicsItem and A QGraphicsItem is movable. So I will create
         a parent over the field widget so the field can be movable"""
         parent = QGraphicsWidget()
@@ -188,6 +233,10 @@ class DropGraphicsScene(QGraphicsScene):
         proxy = GraphicsProxyWidget()
         proxy.setWidget(button)
         proxy.setParentItem(parent)
+
+        if(isinstance(proxy.widget().menu().actions()[0].defaultWidget(),Field)):
+           self.proxyFieldWidgetList.append(proxy)
+           
 
         return proxy
         

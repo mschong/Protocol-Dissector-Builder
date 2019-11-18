@@ -20,6 +20,8 @@ lib64/
 parts/
 sdist/
 var/
+sign/
+src/build/settings/secret.json
 wheels/
 pip-wheel-metadata/
 share/python-wheels/

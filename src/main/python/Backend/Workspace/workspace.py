@@ -14,12 +14,14 @@
 import json
 
 
+
 class Workspace:
     name = None
     projects = None
     startDate = None
     editDate = None
-    isEdited = False
+    wpath = None
+
     
    
 
@@ -28,6 +30,7 @@ class Workspace:
         'projects' : {},
         'created' : startDate,
         'edited': editDate,
+        'path' : wpath
 
     }
 
@@ -42,6 +45,7 @@ class Workspace:
            self.projects = JSON['projects']
            self.startDate = JSON['created']
            self.editDate = JSON['edited']
+           self.wpath = JSON['path']
 
        
    
@@ -50,6 +54,7 @@ class Workspace:
         self.JSON['projects'] = self.projects
         self.JSON['created'] = self.startDate
         self.JSON['edited'] = self.editDate
+        self.JSON['path'] = self.wpath
         return self.JSON
 
 
@@ -58,13 +63,12 @@ class Workspace:
     def addProjectToWorkspace(self,project):
         if self.projects == None:
             self.projects = {}
-           
             self.JSON['projects'] = {}
             self.JSON['projects'][0] = project
         else:
-           
             size = len(self.projects)
             self.JSON['projects'][size] = project
+
         self.projects = self.JSON['projects']
 
         

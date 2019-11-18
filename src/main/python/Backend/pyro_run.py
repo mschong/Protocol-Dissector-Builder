@@ -3,8 +3,9 @@ import sys, traceback, time, os, logging
 sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
 from subprocess import Popen
-from Loader import Loader
+from Backend.Loader import Loader
 import pexpect
+import platform
 @Pyro4.expose
 class Pyro_Run():
     loader = None
@@ -23,18 +24,25 @@ class Pyro_Run():
 
     def save_workspace(self):
         return self.loader.save_workspace()
+
     def close_workspace(self):
         return self.loader.close_workspace()
 
     def import_project(self,file):
         return self.loader.import_project(file)
-    
-    def new_project(self,name,author,desc,created,edited):
-        return self.loader.new_project(name,author,desc,created,edited)
-    
+
+    def new_project(self,name,author,desc,created,edited , protocol, change_protocol, src_port, dst_port):
+        return self.loader.new_project(name,author,desc,created,edited,protocol,change_protocol,src_port,dst_port)
+
+    def export_lua_script(self,workspace,project):
+        self.loader.export_lua_script(workspace,project)
+
 
     def createPackets(self,fileName):
-        self.child = pexpect.spawn("python3.6 PCAP/PCAPServices.py",encoding='utf-8')
+        # projectPath = " PCAP/PCAPServices.py"
+        # if platform.system() == 'Darwin':
+        projectPath = "src/main/python/Backend/PCAP/PCAPServices.py"
+        self.child = pexpect.spawn("python3.6 " + projectPath,encoding='utf-8')
         self.child.expect("loop",timeout=None)
         print("Creating")
         self.child.sendline("create " + fileName)
@@ -49,6 +57,7 @@ class Pyro_Run():
         print("dissecting")
         self.child.sendline("dissect")
         print(self.child.read())
+
     def colorCode(self):
         print("Coloring")
         self.child.sendline("colorcode")
@@ -62,15 +71,15 @@ class Pyro_Run():
         return self.loader.get_dissector()
 
 
-def main():
-    daemon = Pyro4.Daemon()
-    Popen("pyro4-ns")
-    time.sleep(5)
-    ns = Pyro4.locateNS()
-    uri = daemon.register(Pyro_Run)
-    ns.register("pyro.service",uri)
-    print("[+] Pyro4 URI: " + str(uri))
-    daemon.requestLoop()
+    def main(self):
+        daemon = Pyro4.Daemon()
+        Popen("pyro4-ns")
+        time.sleep(5)
+        ns = Pyro4.locateNS()
+        uri = daemon.register(Pyro_Run)
+        ns.register("pyro.service",uri)
+        print("[+] Pyro4 URI: " + str(uri))
+        daemon.requestLoop()
 
 
 if __name__ == "__main__":

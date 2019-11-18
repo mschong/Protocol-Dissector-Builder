@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ProjectConfig.ui'
+# Form implementation generated from reading ui file 'projectConfig.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
@@ -26,12 +26,6 @@ class P_Dialog(object):
         self.label_3 = QtWidgets.QLabel(Dialog)
         self.label_3.setGeometry(QtCore.QRect(30, 80, 131, 16))
         self.label_3.setObjectName("label_3")
-        self.label_4 = QtWidgets.QLabel(Dialog)
-        self.label_4.setGeometry(QtCore.QRect(30, 110, 91, 16))
-        self.label_4.setObjectName("label_4")
-        self.label_5 = QtWidgets.QLabel(Dialog)
-        self.label_5.setGeometry(QtCore.QRect(30, 160, 60, 16))
-        self.label_5.setObjectName("label_5")
         self.lineEdit = QtWidgets.QLineEdit(Dialog)
         self.lineEdit.setGeometry(QtCore.QRect(130, 10, 171, 21))
         self.lineEdit.setObjectName("lineEdit")
@@ -41,12 +35,30 @@ class P_Dialog(object):
         self.lineEdit_3 = QtWidgets.QLineEdit(Dialog)
         self.lineEdit_3.setGeometry(QtCore.QRect(160, 80, 171, 21))
         self.lineEdit_3.setObjectName("lineEdit_3")
+        self.lineEdit_4 = QtWidgets.QLineEdit(Dialog)
+        self.lineEdit_4.setGeometry(QtCore.QRect(130, 110, 171, 21))
+        self.lineEdit_4.setObjectName("lineEdit_4")
+        self.label_4 = QtWidgets.QLabel(Dialog)
+        self.label_4.setGeometry(QtCore.QRect(30, 110, 60, 16))
+        self.label_4.setObjectName("label_4")
+        self.label_5 = QtWidgets.QLabel(Dialog)
+        self.label_5.setGeometry(QtCore.QRect(30, 140, 121, 16))
+        self.label_5.setObjectName("label_5")
         self.label_6 = QtWidgets.QLabel(Dialog)
-        self.label_6.setGeometry(QtCore.QRect(150, 110, 60, 16))
+        self.label_6.setGeometry(QtCore.QRect(30, 170, 91, 16))
         self.label_6.setObjectName("label_6")
         self.label_7 = QtWidgets.QLabel(Dialog)
-        self.label_7.setGeometry(QtCore.QRect(140, 160, 60, 16))
+        self.label_7.setGeometry(QtCore.QRect(30, 200, 111, 16))
         self.label_7.setObjectName("label_7")
+        self.lineEdit_5 = QtWidgets.QLineEdit(Dialog)
+        self.lineEdit_5.setGeometry(QtCore.QRect(140, 140, 161, 21))
+        self.lineEdit_5.setObjectName("lineEdit_5")
+        self.lineEdit_6 = QtWidgets.QLineEdit(Dialog)
+        self.lineEdit_6.setGeometry(QtCore.QRect(140, 170, 161, 21))
+        self.lineEdit_6.setObjectName("lineEdit_6")
+        self.lineEdit_7 = QtWidgets.QLineEdit(Dialog)
+        self.lineEdit_7.setGeometry(QtCore.QRect(140, 200, 161, 21))
+        self.lineEdit_7.setObjectName("lineEdit_7")
 
         self.retranslateUi(Dialog)
         self.buttonBox.accepted.connect(Dialog.accept)
@@ -59,8 +71,9 @@ class P_Dialog(object):
         self.label.setText(_translate("Dialog", "Project Name"))
         self.label_2.setText(_translate("Dialog", "Project Author"))
         self.label_3.setText(_translate("Dialog", "Project Description"))
-        self.label_4.setText(_translate("Dialog", "Created Date"))
-        self.label_5.setText(_translate("Dialog", "Edit Date"))
-        self.label_6.setText(_translate("Dialog", "TextLabel"))
-        self.label_7.setText(_translate("Dialog", "TextLabel"))
+        self.label_4.setText(_translate("Dialog", "Protocol"))
+        self.label_5.setText(_translate("Dialog", "Change Protocol"))
+        self.label_6.setText(_translate("Dialog", "Source Port"))
+        self.label_7.setText(_translate("Dialog", "Destination Port"))
+        self.lineEdit_7.setText(_translate("Dialog", "-1"))
 
