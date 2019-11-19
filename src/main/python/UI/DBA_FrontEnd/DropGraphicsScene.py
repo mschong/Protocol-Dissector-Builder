@@ -58,8 +58,6 @@ class DropGraphicsScene(QGraphicsScene):
         self.forloop_count = 0
         self.doWhile_count = 0
         self.codeBlock_count = 0
-        self.dissector_test = {'ForLoop0': {'Expressions': {'exp1': 'a', 'exp2': 'b', 'exp3': 'bbbbbb'}, 'Position': {'x': 199.0, 'y': 24.0}, 'true': 'No Name 2', 'false': 'No Name 1', 'Type': 'for'}, 'End_ForLoop0': {'Position': {'x': 269.0, 'y': 209.0}, 'Type': 'End Loop', 'next_field': 'ForLoop0'}, 'No Name 1': {'Name': 'No Name 1', 'Abbreviation': '', 'Description': '', 'Data Type': 'Select data type', 'Base': 'Select base', 'Mask': '', 'Value Constraint': '', 'Var Size': {'editText': '', 'combobox': 'BYTES'}, 'ID Value': '', 'Required': 'false', 'Position': {'x': 32.0, 'y': 290.0}, 'Type': 'Field', 'next_field': 'END'}, 'No Name 2': {'Name': 'No Name 2', 'Abbreviation': '', 'Description': '', 'Data Type': 'Select data type', 'Base': 'Select base', 'Mask': '', 'Value Constraint': '', 'Var Size': {'editText': '', 'combobox': 'BYTES'}, 'ID Value': '', 'Required': 'false', 'Position': {'x': 453.0, 'y': 118.0}, 'Type': 'Field', 'next_field': 'End_ForLoop0'}}
-
 
     def contextMenuEvent(self, event):
         if(len(self.items(event.scenePos()))):
@@ -242,13 +240,13 @@ class DropGraphicsScene(QGraphicsScene):
 
         return proxy
 
-    def restoreWidgetsToScene(self):
+    def restoreWidgetsToScene(self, dissector):
         nameToProxyDict = {} # Used for filling out the values in connectionsDict
         connectionsDict = {} # Keys and Values are proxywidgets, key widget points to value widget on canvass
 
-        self.dissector_test.pop('START', None) # This is probably a bad idea
-        for key in self.dissector_test.keys():
-            widget = self.dissector_test[key]
+        dissector.pop('START', None) # This is probably a bad idea
+        for key in dissector.keys():
+            widget = dissector[key]
             widgetType = widget["Type"]
             if(widgetType == "Field"):
                 widgetToAdd = Field()
@@ -292,7 +290,7 @@ class DropGraphicsScene(QGraphicsScene):
                 widgetToAdd.setTextBox(widget['Code'])
                 widgetText = "Code Block"
 
-            widgetPosition = QPointF(self.dissector_test[key]["Position"]["x"], self.dissector_test[key]["Position"]["y"])
+            widgetPosition = QPointF(dissector[key]["Position"]["x"], dissector[key]["Position"]["y"])
             proxy = self.addWidgetToScene(widgetToAdd, widgetPosition, widgetText)
             proxy.setPolygon()
             self.proxyWidgetList.append(proxy)
@@ -300,8 +298,8 @@ class DropGraphicsScene(QGraphicsScene):
             nameToProxyDict.update({key: proxy})
             
             if(widgetType == "Field" or widgetType == "do" or widgetType == "End Loop" or widgetType == "CodeBlock"):
-                if(self.dissector_test[key]["next_field"] != "END"):
-                    connectionsDict.update({proxy: self.dissector_test[key]["next_field"]})
+                if(dissector[key]["next_field"] != "END"):
+                    connectionsDict.update({proxy: dissector[key]["next_field"]})
 
             elif(widgetType == "Decision" or widgetType == "while" or widgetType == "do while" or widgetType == "for"):
                 if(widgetType == "for"):
@@ -309,10 +307,10 @@ class DropGraphicsScene(QGraphicsScene):
                 else:
                     widgetToAdd.setCondition(widget["Condition"])
                 conditionConnections = {}
-                if("true" in self.dissector_test[key].keys()):
-                    conditionConnections.update({1: self.dissector_test[key]["true"]})
-                if("false" in self.dissector_test[key].keys()):
-                    conditionConnections.update({0: self.dissector_test[key]["false"]})
+                if("true" in dissector[key].keys()):
+                    conditionConnections.update({1: dissector[key]["true"]})
+                if("false" in dissector[key].keys()):
+                    conditionConnections.update({0: dissector[key]["false"]})
                 connectionsDict.update({proxy: conditionConnections})
 
         # Placing the endItems in the dictionary values
