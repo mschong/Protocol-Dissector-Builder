@@ -53,6 +53,10 @@ class Ui_PackagePreview(object):
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.openFile)
 
+        self.label_3 = QtWidgets.QLabel(PackagePreview)
+        self.label_3.setGeometry(QtCore.QRect(300, 30, 200, 17))
+        self.label_3.setObjectName("label_2")
+
         self.pushButton2 = QtWidgets.QPushButton(PackagePreview)
         self.pushButton2.setGeometry(QtCore.QRect(100, 0, 83, 25))
         self.pushButton2.setObjectName("pushButton2")
@@ -70,10 +74,12 @@ class Ui_PackagePreview(object):
 
     def openFile(self):
         print(os.getcwd())
+        self.label_3.setText("Status: Opening a file...")
         self.model.removeRows(0,self.model.rowCount())
         self.name = QFileDialog.getOpenFileName()
         self.pyro_proxy.createPackets(self.name[0])
         self.pyro_proxy.savePackets()
+        self.label_3.setText("Status: Opening a file...50%")        
         self.pyro_proxy.printPackets()
         fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","r")
         vars = json.loads(fileToRead.read().strip())
@@ -89,12 +95,17 @@ class Ui_PackagePreview(object):
                     ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
                 branch1.appendRow(ProtocolToAdd)
             self.model.appendRow([branch1])
+        self.label_3.setText("Status: File has been opened.")
 
     def dissect(self):
         self.model.removeRows(0,self.model.rowCount())
+        self.pushButton2.setText("ReDissect")
+        self.label_3.setText("Status: Dissecting...: ")
 
 
         self.pyro_proxy.createPackets(self.name[0])
+        self.label_3.setText("Status: Dissecting...: 50%")
+
         self.pyro_proxy.dissectPackets()
         # self.pyro_proxy.colorCode()
         # self.pyro_proxy.savePackets()
@@ -136,6 +147,7 @@ class Ui_PackagePreview(object):
             numberCol = QtGui.QStandardItem(str(colorList[str(index)]))
             self.model.appendRow([branch2,numberCol])
             numberCol.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+        self.label_3.setText("Status: Package has been dissected.")
 
 
 
@@ -147,6 +159,7 @@ class Ui_PackagePreview(object):
         self.pushButton2.setText(_translate("PackagePreview", "Dissect"))
         # self.label.setText(_translate("PackagePreview", "Dissected Data"))
         self.label_2.setText(_translate("PackagePreview", "Packet Stream"))
+        self.label_3.setText(_translate("PackagePreview", "Status: Waiting for Input"))
 
 
 if __name__ == "__main__":
