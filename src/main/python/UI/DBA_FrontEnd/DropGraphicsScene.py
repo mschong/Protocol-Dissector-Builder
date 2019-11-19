@@ -35,12 +35,12 @@ class ToolButton(QToolButton):
         action.setDefaultWidget(self.widget)
         self.menu().addAction(action)
 
-    def mousePressEvent(self, event):
-        if self.hitButton(event.pos()) and self.menu().isHidden():
-            self.showMenu()
-        if self.hitButton(event.pos()) and (not(self.menu().actions()[0].defaultWidget().isHidden())):
-            self.menu().hide()
-            self.setText(self.menu().actions()[0].defaultWidget().table.cellWidget(0,1).text())
+    # def mousePressEvent(self, event):
+    #     if self.hitButton(event.pos()) and self.menu().isHidden():
+    #         self.showMenu()
+    #     if self.hitButton(event.pos()) and (not(self.menu().actions()[0].defaultWidget().isHidden())):
+    #         self.menu().hide()
+    #         self.setText(self.menu().actions()[0].defaultWidget().table.cellWidget(0,1).text())
 
 class DropGraphicsScene(QGraphicsScene):
     InsertLine_ON, MoveItem = range(2)
@@ -55,7 +55,9 @@ class DropGraphicsScene(QGraphicsScene):
         self.countFields = 0
         self.decision_count = 0
         self.while_count = 0 
+        self.forloop_count = 0
         self.doWhile_count = 0
+        self.codeBlock_count = 0
 
     def contextMenuEvent(self, event):
         if(len(self.items(event.scenePos()))):
@@ -83,7 +85,7 @@ class DropGraphicsScene(QGraphicsScene):
                                 item.startItem().removeConnector(item)
                                 item.endItem().removeConnector(item)
                             self.removeItem(item)
-                            self.proxyWidgetList.remove(item.widget().text())
+                            # self.proxyWidgetList.remove(item.widget().text())
                 elif action == change_type_action:
                     dialog = ConnectorTypeDialog(self.items(event.scenePos())[0])
                     dialog.setModal(True)
@@ -103,9 +105,8 @@ class DropGraphicsScene(QGraphicsScene):
                             elif isinstance(item, Connector):
                                 item.startItem().removeConnector(item)
                                 item.endItem().removeConnector(item)
-                            print(item)
                             self.removeItem(item)
-                            self.proxyWidgetList.remove(item.widget().text())
+                            # self.proxyWidgetList.remove(item.widget().text())
     
     # The following two functions are only preparing the scene to accept any drag movements
 
@@ -114,41 +115,35 @@ class DropGraphicsScene(QGraphicsScene):
 
     def dragMoveEvent(self, event):
         event.acceptProposedAction()
+
     # In this function is where we will drop the field to the canvas
     def dropEvent(self, event):
         proxy = GraphicsProxyWidget()
         if(event.mimeData().text() == "Field"):
             field = Field()
-            
             proxy = self.addWidgetToScene(field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "Field (String)"):
             str_field = String_Field()
-            
-
             proxy = self.addWidgetToScene(str_field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "Field (Integer)"):
             int_field = Int_Field()
-
-
             proxy = self.addWidgetToScene(int_field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "Field (Float)"):
             float_field = Float_Field()
-
-
             proxy = self.addWidgetToScene(float_field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "Field (Octal)"):
             octal_field = Octal_Field()
-
-
             proxy = self.addWidgetToScene(octal_field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "Code Block"):
-            code_block = CodeBlock()
+            name = "CodeBlock" + str(self.codeBlock_count)
+            self.codeBlock_count = self.codeBlock_count + 1
 
+            code_block = CodeBlock(name)
             proxy = self.addWidgetToScene(code_block, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "while"):
@@ -157,9 +152,12 @@ class DropGraphicsScene(QGraphicsScene):
 
             while_loop = While_Loop(name)
             proxy = self.addWidgetToScene(while_loop, event.scenePos(), event.mimeData().text())
-            proxy.setPolygon()
+            proxy.setPolygon()            
         if(event.mimeData().text() == "for"):
-            for_loop = For_Loop()
+            name = "ForLoop" + str(self.forloop_count)
+            self.forloop_count += 1
+            
+            for_loop = For_Loop(name)
             proxy = self.addWidgetToScene(for_loop, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "do while"):
@@ -168,7 +166,7 @@ class DropGraphicsScene(QGraphicsScene):
 
             do_loop = Do_Loop(name)
             proxy = self.addWidgetToScene(do_loop, event.scenePos(), event.mimeData().text())
-            proxy.setPolygon()
+            proxy.setPolygon()            
         if(event.mimeData().text() == "Decision"):
             name = "Decision"+str(self.decision_count)
             self.decision_count = self.decision_count + 1
@@ -184,33 +182,34 @@ class DropGraphicsScene(QGraphicsScene):
             do_widget = QWidget()
             proxy = self.addWidgetToScene(do_widget, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-
+        
         if ((proxy.scenePos().x() + proxy.size().width()) > self.width()):
             self.updateScene(proxy.size().width(), True)
         if ((proxy.scenePos().y() + proxy.size().height()) > self.height()):
             self.updateScene(proxy.size().height(), False)
 
         self.proxyWidgetList.append(proxy)
-
         event.accept()
+
     def addWidgetToScene(self, widget, pos, text):
         
-        if(text != "End Loop" and text != "do" and not(isinstance(widget, Field))):
-            button = QToolButton()
-            button.setPopupMode(QToolButton.MenuButtonPopup)
-            button.setGeometry(QRect(20, 30, 278, 40))
-            button.setText(text)
-            menu = QMenu()
-            button.setMenu(menu)
-            action = QWidgetAction(button)
-            action.setDefaultWidget(widget)
-            button.menu().addAction(action)
+        if(text != "End Loop" and text != "do"):
+            if(not(isinstance(widget, Field)) or text != "Field"):
+                button = QToolButton()
+                button.setPopupMode(QToolButton.MenuButtonPopup)
+                button.setGeometry(QRect(20, 30, 278, 40))
+                button.setText(text)
+                menu = QMenu()
+                button.setMenu(menu)
+                action = QWidgetAction(button)
+                action.setDefaultWidget(widget)
+                button.menu().addAction(action)
         else:
             button = QPushButton()
             button.setGeometry(QRect(20, 30, 278, 40))
             button.setText(text)
-            
-        if(isinstance(widget,Field)):
+        
+        if(isinstance(widget,Field) and text == "Field"):
             self.countFields = self.countFields + 1
             button = ToolButton(widget, self)
             field_text = button.text() + ' ' + str(self.countFields)
@@ -234,12 +233,125 @@ class DropGraphicsScene(QGraphicsScene):
         proxy.setWidget(button)
         proxy.setParentItem(parent)
 
-        if(isinstance(proxy.widget().menu().actions()[0].defaultWidget(),Field)):
-           self.proxyFieldWidgetList.append(proxy)
-           
+        # if(isinstance(proxy.widget().menu().actions()[0].defaultWidget(),Field)):
+        #    self.proxyFieldWidgetList.append(proxy)
+        if(isinstance(widget, Field)):
+            self.proxyFieldWidgetList.append(proxy)
 
         return proxy
-        
+
+    def restoreWidgetsToScene(self, dissector):
+        nameToProxyDict = {} # Used for filling out the values in connectionsDict
+        connectionsDict = {} # Keys and Values are proxywidgets, key widget points to value widget on canvass
+
+        dissector.pop('START', None) # This is probably a bad idea
+        for key in dissector.keys():
+            widget = dissector[key]
+            widgetType = widget["Type"]
+            if(widgetType == "Field"):
+                widgetToAdd = Field()
+                widgetToAdd.setName(widget["Name"])
+                widgetToAdd.setAbbreviation(widget["Abbreviation"])
+                widgetToAdd.setDescription(widget["Description"])
+                widgetToAdd.setDataType(widget["Data Type"])
+                widgetToAdd.setBase(widget["Base"])
+                widgetToAdd.setMask(widget["Mask"])
+                widgetToAdd.setValueConstraint(widget["Value Constraint"])
+                widgetToAdd.setSize(widget["Var Size"]['editText'], widget["Var Size"]["combobox"])
+                widgetToAdd.setID(widget["ID Value"])
+                widgetToAdd.setRequired(widget["Required"])
+                widgetText = widget["Name"]
+
+            elif(widgetType == "Decision"):
+                widgetToAdd = Decision(key)
+                self.decision_count += 1
+                widgetText = "Decision"
+            elif(widgetType == "while"):
+                widgetToAdd = While_Loop(key)
+                self.while_count += 1
+                widgetText = "while"
+            elif(widgetType == "do while"):
+                widgetToAdd = Do_Loop(key)
+                self.doWhile_count += 1
+                widgetText = "do while"
+            elif(widgetType == "for"):
+                widgetToAdd = For_Loop(key)
+                self.forloop_count += 1
+                widgetText = "for"
+            elif(widgetType == "do"):
+                widgetToAdd = QWidget()
+                widgetText = "do"
+            elif(widgetType == "End Loop"):
+                widgetToAdd = QWidget()
+                widgetText = "End Loop"
+            elif(widgetType == "CodeBlock"):
+                widgetToAdd = CodeBlock(key)
+                self.codeBlock_count += 1
+                widgetToAdd.setTextBox(widget['Code'])
+                widgetText = "Code Block"
+
+            widgetPosition = QPointF(dissector[key]["Position"]["x"], dissector[key]["Position"]["y"])
+            proxy = self.addWidgetToScene(widgetToAdd, widgetPosition, widgetText)
+            proxy.setPolygon()
+            self.proxyWidgetList.append(proxy)
+
+            nameToProxyDict.update({key: proxy})
+            
+            if(widgetType == "Field" or widgetType == "do" or widgetType == "End Loop" or widgetType == "CodeBlock"):
+                if(dissector[key]["next_field"] != "END"):
+                    connectionsDict.update({proxy: dissector[key]["next_field"]})
+
+            elif(widgetType == "Decision" or widgetType == "while" or widgetType == "do while" or widgetType == "for"):
+                if(widgetType == "for"):
+                    widgetToAdd.setExpressions(widget["Expressions"])
+                else:
+                    widgetToAdd.setCondition(widget["Condition"])
+                conditionConnections = {}
+                if("true" in dissector[key].keys()):
+                    conditionConnections.update({1: dissector[key]["true"]})
+                if("false" in dissector[key].keys()):
+                    conditionConnections.update({0: dissector[key]["false"]})
+                connectionsDict.update({proxy: conditionConnections})
+
+        # Placing the endItems in the dictionary values
+        for key, value in nameToProxyDict.items():
+            for startItem, endItem in connectionsDict.items():
+                # if there are more than one next_field and key is one of them
+                if(type(endItem) is dict and key in endItem.values()):
+                    for path, innerEndItem in endItem.items():
+                        if(innerEndItem == key):
+                            connectionsDict[startItem][path] = value
+                            break
+                    continue
+                elif(endItem == key):
+                    connectionsDict[startItem] = value
+                    continue
+
+        self.restoreConnectorsToScene(connectionsDict)
+
+    def restoreConnectorsToScene(self, connectionsDict):
+        for startItem, endItem in connectionsDict.items():
+            # if there is more than one endItem (false,true)
+            if(type(endItem) is dict):
+                for path, innerEndItem in endItem.items():
+                    connector = Connector(startItem, innerEndItem)
+                    if(path == 0):
+                        connector.setType("False")
+                    else:
+                        connector.setType("True")
+                    startItem.addConnector(connector)
+                    innerEndItem.addConnector(connector)
+                    connector.setZValue(-1000.0)
+                    self.addItem(connector)
+                    connector.updatePosition()
+            else:
+                connector = Connector(startItem, endItem)
+                connector.setColor(self.myLineColor)
+                startItem.addConnector(connector)
+                endItem.addConnector(connector)
+                connector.setZValue(-1000.0)
+                self.addItem(connector)
+                connector.updatePosition()
 
     def updateScene(self, widgetSize, isX):
         rec = self.sceneRect()
@@ -312,6 +424,7 @@ class DropGraphicsScene(QGraphicsScene):
                     y_position = proxyWidget.scenePos().y()
                     position = {'x': x_position, 'y': y_position}
                     endLoop = {'Position': position}
+                    endLoop.update({'Type': "End Loop"})
 
                     end_item = ""
                     for connector in proxyWidget.connectors:
@@ -329,6 +442,7 @@ class DropGraphicsScene(QGraphicsScene):
                     y_position = proxyWidget.scenePos().y()
                     position = {'x': x_position, 'y': y_position}
                     doWhile_start = {'Position': position}
+                    doWhile_start.update({'Type': "do"})
                     
                     for connector in proxyWidget.connectors:
                         if connector.endItem().widget() is proxyWidget.widget():
@@ -337,6 +451,10 @@ class DropGraphicsScene(QGraphicsScene):
                         doWhile_start.update({'next_field': end_item})
 
                     name = self.getDoWidgetName(proxyWidget)
+
+                    if(self.isStartField(proxyWidget)):
+                        dissector.update({'START': name})
+
                     dissector.update({name: doWhile_start})
                 continue # continue proxyWidgetList for-loop
 
@@ -352,6 +470,7 @@ class DropGraphicsScene(QGraphicsScene):
                 y_position = proxyWidget.scenePos().y()
                 position = {'x': x_position, 'y': y_position}
                 field.update({'Position': position})
+                field.update({'Type': "Field"})
 
                 # Getting "next field"
                 for connector in proxyWidget.connectors:
@@ -371,23 +490,55 @@ class DropGraphicsScene(QGraphicsScene):
 
                 dissector.update({field['Name']: field})
 
+            # Saving Codeblock into dictionary
+            elif(isinstance(defaultWidget, CodeBlock)):
+                codeBlock = defaultWidget.saveMethod()
+                codeBlockName = defaultWidget.getName()
+
+                x_position = proxyWidget.scenePos().x()
+                y_position = proxyWidget.scenePos().y()
+                position = {'x': x_position, 'y': y_position}
+                codeBlock.update({'Position': position})
+                codeBlock.update({'Type': "CodeBlock"})
+
+                # Getting "next field"
+                for connector in proxyWidget.connectors:
+                    # Skip if this widget is the endItem of the connector
+                    if(not isinstance(connector.endItem().widget(), QPushButton)):
+                        if(self.getDefaultWidget(connector.endItem()) is defaultWidget):
+                            continue # continue connector for-loop
+
+                    end_item = self.getNextWidgetName(connector.endItem())
+                    codeBlock.update({'next_field': end_item})
+
+                if(self.isEndField(codeBlock)):
+                    codeBlock.update({'next_field': "END"})
+                if(self.isStartField(proxyWidget)):
+                    dissector.update({'START': codeBlockName})
+                dissector.update({codeBlockName: codeBlock})
+
             # Saving Decision information into dictionary
             elif(isinstance(defaultWidget, Decision)):
                 decision = self.saveConditionWidget(proxyWidget)
+                decision[list(decision.keys())[0]].update({'Type': "Decision"})
                 dissector.update(decision)
 
             # Saving While loop information into dictionary
             elif(isinstance(defaultWidget, While_Loop)):
                 whileLoop = self.saveConditionWidget(proxyWidget)
+                whileLoop[list(whileLoop.keys())[0]].update({'Type': "while"})
                 dissector.update(whileLoop)
 
             # Saving Do While loop information into dictionary
             elif(isinstance(defaultWidget, Do_Loop)):
                 doWhile = self.saveConditionWidget(proxyWidget)
+                doWhile[list(doWhile.keys())[0]].update({'Type': "do while"})
                 dissector.update(doWhile)
 
             elif(isinstance(defaultWidget, For_Loop)):
-                pass
+                forLoop = self.saveConditionWidget(proxyWidget)
+                forLoop[list(forLoop.keys())[0]].update({'Type': "for"})
+                dissector.update(forLoop)
 
         return dissector
 
@@ -395,8 +546,13 @@ class DropGraphicsScene(QGraphicsScene):
     def saveConditionWidget(self, proxyWidget):
         defaultWidget = self.getDefaultWidget(proxyWidget)
         widget_name = defaultWidget.getName()
-        condition = defaultWidget.saveMethod()
-        widget_properties = {'Condition': condition}
+        
+        if(isinstance(defaultWidget, For_Loop)):
+            expressions = defaultWidget.saveMethod()
+            widget_properties = {'Expressions': expressions}
+        else:
+            condition = defaultWidget.saveMethod()
+            widget_properties = {'Condition': condition}
 
         x_position = proxyWidget.scenePos().x()
         y_position = proxyWidget.scenePos().y()
@@ -432,6 +588,9 @@ class DropGraphicsScene(QGraphicsScene):
             if(not isinstance(connector.endItem().widget(), QPushButton)):
                 if(connector.endItem() is proxyWidget):
                     return False # false if this widget is pointed to by a connector
+            else:
+                if(connector.endItem() is proxyWidget and connector.getType() != "True"):
+                    return False
         return True # true if no connectors are pointed to this widget
 
     # endItem is connector.endItem()
@@ -447,6 +606,9 @@ class DropGraphicsScene(QGraphicsScene):
                     endItem_name = "End_" + connectedLoopWidget_name
                     return endItem_name
 
+                    # Need error handling in case this is a leaf node in the tree
+
+
         if(isinstance(endItem.widget(), QPushButton) and endItem.widget().text() == "do"):
             return self.getDoWidgetName(endItem)
 
@@ -455,7 +617,7 @@ class DropGraphicsScene(QGraphicsScene):
             endItem_name = endItem_Widget.table.cellWidget(0,1).text()
 
         elif(isinstance(endItem_Widget, Decision) or isinstance(endItem_Widget,While_Loop) or
-             isinstance(endItem_Widget,Do_Loop)):
+             isinstance(endItem_Widget,Do_Loop) or isinstance(endItem_Widget, For_Loop)):
             endItem_name = endItem_Widget.getName()
 
         return endItem_name
@@ -475,6 +637,7 @@ class DropGraphicsScene(QGraphicsScene):
         # Gives default name
         doWidget_name = "do_" + str(self.while_count)
         return doWidget_name
+
 
 
             

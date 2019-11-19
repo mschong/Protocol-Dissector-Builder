@@ -48,7 +48,9 @@ class Project:
            
 
  
-
+    def add_fields(self,JSON):
+        self.dissector = JSON
+       
      
    
     def get_JSON(self):
@@ -62,6 +64,8 @@ class Project:
         self.JSON['dst_port'] = self.dst_port
         self.JSON['author'] = self.author
         self.JSON['path'] = self.path
+        self.JSON['dissector'] = self.dissector
+
         return self.JSON
 
 

@@ -31,6 +31,8 @@ class UiMainWindow(object):
     workspace_label_hlayout = None
     projectView_canvas_hlayout = None
     packetPreview_hlayout = None
+    project_canvas_splitter = None
+    packetpreview_splitter = None
 
     def setupUi(self, MainWindow):
         ## Pyro
@@ -39,9 +41,8 @@ class UiMainWindow(object):
         self.pyro_proxy = Pyro4.Proxy(uri)
 
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1200, 800)
-        MainWindow.setMinimumSize(QtCore.QSize(400, 400))
-        #MainWindow.setMaximumSize(QtCore.QSize(1200, 800))
+        MainWindow.resize(1200, 600)
+        # MainWindow.setMinimumSize(QtCore.QSize(400, 400))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -49,23 +50,41 @@ class UiMainWindow(object):
         self.workspace_label_hlayout = QtWidgets.QHBoxLayout()
         self.projectView_canvas_hlayout = QtWidgets.QHBoxLayout()
         self.packetPreview_hlayout = QtWidgets.QHBoxLayout()
+        self.project_canvas_splitter = QtWidgets.QSplitter()
+        self.project_canvas_splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.packetpreview_splitter = QtWidgets.QSplitter()
+        self.packetpreview_splitter.setOrientation(QtCore.Qt.Vertical)
 
         self.treeView = QtWidgets.QTreeView(self.centralwidget)
-        self.treeView.setMaximumSize(QtCore.QSize(200, 4096))
+        # self.treeView.setMaximumSize(QtCore.QSize(300, 4096))
+        # self.treeView.resize(QtCore.QSize(300, 500))
         self.treeView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.treeView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.treeView.setObjectName("treeView")
         self.treeview_model = self.createProjectTreeViewModel(self.treeView)
         self.treeView.setModel(self.treeview_model)
-        self.projectView_canvas_hlayout.addWidget(self.treeView)
+        self.treeView.clicked.connect(self.change_project)
+        # self.projectView_canvas_hlayout.addWidget(self.treeView)
+        self.project_canvas_splitter.addWidget(self.treeView)
 
         self.canvasFrame = QtWidgets.QScrollArea(self.centralwidget)
-        self.canvasFrame.setMinimumSize(QtCore.QSize(200, 300))
+        # self.canvasFrame.setMinimumSize(QtCore.QSize(200, 300))
         self.canvasFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.canvasFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.canvasFrame.setObjectName("canvasFrame")
         self.canvasFrame.setWidgetResizable(True)
-        self.projectView_canvas_hlayout.addWidget(self.canvasFrame)
+        # self.projectView_canvas_hlayout.addWidget(self.canvasFrame)
+        self.project_canvas_splitter.addWidget(self.canvasFrame)
+        self.project_canvas_splitter.setSizes([200, self.project_canvas_splitter.size().width()])
+        project_tree_index = self.project_canvas_splitter.indexOf(self.treeView)
+        self.project_canvas_splitter.setCollapsible(project_tree_index, False)
+        canvas_dba_index = self.project_canvas_splitter.indexOf(self.canvasFrame)
+        self.project_canvas_splitter.setCollapsible(canvas_dba_index, False)
+
+        self.projectView_canvas_hlayout.addWidget(self.project_canvas_splitter)
+
+        self.project_canvas_parentwidget = QtWidgets.QWidget()
+        self.project_canvas_parentwidget.setLayout(self.projectView_canvas_hlayout)
 
         dba_form = QtWidgets.QWidget()
         dba_ui = DBA.Ui_Form()
@@ -79,12 +98,15 @@ class UiMainWindow(object):
         self.workspace_label_hlayout.addWidget(self.workspaceLabel)
 
         self.packetPreviewFrame = QtWidgets.QScrollArea(self.centralwidget)
-        self.packetPreviewFrame.setMinimumSize(QtCore.QSize(200, 300))
+        # self.packetPreviewFrame.setMinimumSize(QtCore.QSize(200, 300))
         self.packetPreviewFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.packetPreviewFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.packetPreviewFrame.setObjectName("packetPreviewFrame")
         self.packetPreviewFrame.setWidgetResizable(True)
         self.packetPreview_hlayout.addWidget(self.packetPreviewFrame)
+
+        self.packetpreview_parentwidget = QtWidgets.QWidget()
+        self.packetpreview_parentwidget.setLayout(self.packetPreview_hlayout)
 
         ## Packet Preview Pane
         packetpreview_form = QtWidgets.QWidget()
@@ -92,11 +114,23 @@ class UiMainWindow(object):
         self.packetpreview_ui.setupUi(packetpreview_form)
         self.packetPreviewFrame.setWidget(packetpreview_form)
 
+        self.packetpreview_splitter.addWidget(self.project_canvas_parentwidget)
+        self.packetpreview_splitter.addWidget(self.packetpreview_parentwidget)
+        canvasparent_index = self.packetpreview_splitter.indexOf(self.project_canvas_parentwidget)
+        self.packetpreview_splitter.setCollapsible(canvasparent_index, False)
+        packetpreview_index = self.packetpreview_splitter.indexOf(self.packetpreview_parentwidget)
+        self.packetpreview_splitter.setCollapsible(packetpreview_index, False)
+
+        self.bottom_hlayout = QtWidgets.QHBoxLayout()
+        self.bottom_hlayout.addWidget(self.packetpreview_splitter)
+
         self.parent_vlayout.addLayout(self.workspace_label_hlayout)
-        self.parent_vlayout.addLayout(self.projectView_canvas_hlayout)
-        self.parent_vlayout.addLayout(self.packetPreview_hlayout)
+        # self.parent_vlayout.addLayout(self.projectView_canvas_hlayout)
+        # self.parent_vlayout.addLayout(self.packetPreview_hlayout)
+        self.parent_vlayout.addLayout(self.bottom_hlayout)
+        # self.parent_vlayout.addStretch(1)
         spacerItem = QtWidgets.QSpacerItem(20, 245, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.parent_vlayout.addItem(spacerItem)
+        # self.parent_vlayout.addItem(spacerItem)
 
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -109,6 +143,7 @@ class UiMainWindow(object):
         self.menuEdit.setObjectName("menuEdit")
         self.menuAbout = QtWidgets.QMenu(self.menubar)
         self.menuAbout.setObjectName("menuAbout")
+        
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -132,13 +167,15 @@ class UiMainWindow(object):
         self.new_proj = QtWidgets.QAction("New Project",self.menubar)
         self.import_proj =  QtWidgets.QAction("Import Project",self.menubar)
         self.export_lua = QtWidgets.QAction("Export Lua Script",self.menubar)
+        self.save_all = QtWidgets.QAction("Save All",self.menubar)
         #Project options functions
         self.new_proj.triggered.connect(self.openProjectConfigDialog)
         self.import_proj.triggered.connect(self.openProjectDialog)
         self.export_lua.triggered.connect(self.export_lua_script)
+        self.save_all.triggered.connect(self.save_all_dissector)
 
 
-        self.options = [self.new_ws,self.open_ws,self.close_ws,self.config_ws,self.new_proj,self.import_proj,self.export_lua]
+        self.options = [self.new_ws,self.open_ws,self.close_ws,self.config_ws,self.new_proj,self.import_proj,self.export_lua,self.save_all]
         self.menuFile.addActions(self.options)
       
         MainWindow.setMenuBar(self.menubar)
@@ -259,15 +296,11 @@ class UiMainWindow(object):
                     
                     self.loadWorkspace()
  
-   
-    
-
-   
 
     #PROJECT FUNCTIONS
     def export_lua_script(self):
-        selected_project = "MyDNS"
-        self.pyro_proxy.export_lua_script(self.workspace_file,selected_project)
+        
+        self.pyro_proxy.export_lua_script(self.workspace_file,self.selected_project)
        
     def openProjectConfigDialog(self,pname=None,pauthor = None,pdesc=None,created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         dialog = QtWidgets.QDialog()
@@ -313,12 +346,28 @@ class UiMainWindow(object):
     def createProjectTreeViewModel(self, treeView):
         model = QtGui.QStandardItemModel(0, 1, treeView)
         model.setHeaderData(0, QtCore.Qt.Horizontal, "Projects")
+ 
         return model
 
     def addProjectToTreeView(self, model, project_name):
         
         model.insertRow(0)
         model.setData(model.index(0, 0), project_name)
+        
+        
 
     def clearProjectTreview(self):
         self.treeview_model.removeRows(0, self.treeview_model.rowCount())
+
+    def change_project(self):
+        index = self.treeView.selectedIndexes()[0]
+        text = index.data()
+        self.selected_project = text
+        ws,p = self.pyro_proxy.set_workspace(workspace = None,selected_project = self.selected_project)
+        self.packetpreview_ui.set_pyro_workspace(ws,p)
+        #self.pyro_proxy.get_current_project_dissector(selected_project)
+        #self.dba_ui.restore_widgets_to_scene(dissector_json)
+
+    def save_all_dissector(self):
+        dissector_json = self.dba_ui.save_button_clicked()
+        self.pyro_proxy.save_dissector_attributes(dissector_json,self.workspace_file,self.selected_project)

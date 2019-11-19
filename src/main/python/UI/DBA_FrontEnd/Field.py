@@ -28,7 +28,9 @@ class Field(QWidget):
         column_1_text = ["Name","Abbreviation","Description", "Data Type", "Base", "Mask", "Value Constraint", "Var Size", "ID Value", "Required"]
         i = 0
         while i < self.table.rowCount():
-            self.table.setItem(i, 0, QTableWidgetItem(column_1_text[i]))
+            item = QTableWidgetItem(column_1_text[i])
+            item.setFlags(item.flags() ^ Qt.ItemIsEditable)
+            self.table.setItem(i, 0, item)
             i += 1
 
         widgets = []
@@ -101,6 +103,48 @@ class Field(QWidget):
             j += 1
         self.table.setColumnWidth(1, 138)
         self.table.resizeRowsToContents()
+
+    def setName(self, name):
+        self.table.cellWidget(0,1).setText(name)
+
+    def setAbbreviation(self, abbr):
+        self.table.cellWidget(1,1).setText(abbr)
+
+    def setDescription(self, description):
+        self.table.cellWidget(2,1).setText(description)
+
+    def setDataType(self, dataType):
+        combo = self.table.cellWidget(3,1)
+        index = combo.findText(dataType)
+        combo.setCurrentIndex(index)
+
+    def setBase(self, base_value):
+        combo = self.table.cellWidget(4,1)
+        index = combo.findText(base_value)
+        combo.setCurrentIndex(index)
+
+    def setMask(self, mask):
+        self.table.cellWidget(5,1).setText(mask)
+
+    def setValueConstraint(self, constraint):
+        self.table.cellWidget(6,1).setText(constraint)
+
+    def setSize(self, value, unit):
+        # setting lineEdit String
+        self.table.cellWidget(7,1).children()[1].setText(value)
+        # setting combobox data
+        combo = self.table.cellWidget(7,1).children()[2]
+        index = combo.findText(unit)
+        combo.setCurrentIndex(index)
+
+    def setID(self, id_value):
+        self.table.cellWidget(8,1).setText(id_value)
+
+    def setRequired(self, isChecked):
+        if(isChecked == "true"):
+            self.table.cellWidget(9,1).children()[1].setChecked(True)
+        else:
+            self.table.cellWidget(9,1).children()[1].setChecked(False)
 
     def saveMethod(self):
         field_properties = dict({'Name': self.table.cellWidget(0,1).text(), 'Abbreviation': self.table.cellWidget(1,1).text(), 'Description': self.table.cellWidget(2,1).text(), 'Data Type': self.table.cellWidget(3,1).currentText(), 'Base': self.table.cellWidget(4,1).currentText(), 'Mask': self.table.cellWidget(5,1).text(), 'Value Constraint': self.table.cellWidget(6,1).text(), 'Var Size': {'editText': self.table.cellWidget(7,1).children()[1].text(), 'combobox': self.table.cellWidget(7,1).children()[2].currentText()}, 'ID Value': self.table.cellWidget(8,1).text()})
