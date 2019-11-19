@@ -14,17 +14,7 @@ class PCap:
         self.colorList = {}
     def convertPCAP(self):
         print("Opening file with PyShark")
-        try:
-            varSize= os.path.getsize(self.fileLocation)
-        except Exception as e:
-            print(str(e))
-            print("File doesnt exist! ")
-            return
-        if(varSize >= 50e7):
-            print("File size is huge,(" + str(varSize/1e6) + " MB) want to proceed?[Y/N]")
-            answer = input()
-            if(not answer) or (answer.lower()[0] != 'y'):
-                return
+
         # How 2 dissect using MyDNS
         # param = {"-X": 'lua_script:/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
         # self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
@@ -43,8 +33,8 @@ class PCap:
         fields = {}
         output = []
         try:
-            os.remove("../UI/MainPane/dictColor.log")
-            os.remove("../UI/MainPane/dict.log")
+            os.remove(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log")
+            os.remove(os.getcwd() + "/src/main/python/UI/MainPane/dict.log")
         except:
             pass
 
