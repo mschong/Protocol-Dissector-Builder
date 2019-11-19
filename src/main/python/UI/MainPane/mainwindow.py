@@ -69,8 +69,8 @@ class UiMainWindow(object):
         self.projectView_canvas_hlayout.addWidget(self.canvasFrame)
 
         dba_form = QtWidgets.QWidget()
-        dba_ui = DBA.Ui_Form()
-        dba_ui.setupUi(dba_form)
+        self.dba_ui = DBA.Ui_Form()
+        self.dba_ui.setupUi(dba_form)
         self.canvasFrame.setWidget(dba_form)
         self.dba_pool.append(dba_ui)
 
@@ -110,6 +110,7 @@ class UiMainWindow(object):
         self.menuEdit.setObjectName("menuEdit")
         self.menuAbout = QtWidgets.QMenu(self.menubar)
         self.menuAbout.setObjectName("menuAbout")
+        
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -133,10 +134,12 @@ class UiMainWindow(object):
         self.new_proj = QtWidgets.QAction("New Project",self.menubar)
         self.import_proj =  QtWidgets.QAction("Import Project",self.menubar)
         self.export_lua = QtWidgets.QAction("Export Lua Script",self.menubar)
+        self.save_all = QtWidgets.QAction("Save All",self.menubar)
         #Project options functions
         self.new_proj.triggered.connect(self.openProjectConfigDialog)
         self.import_proj.triggered.connect(self.openProjectDialog)
         self.export_lua.triggered.connect(self.export_lua_script)
+        self.save_all.triggered.connect(self.save_all)
 
 
         self.options = [self.new_ws,self.open_ws,self.close_ws,self.config_ws,self.new_proj,self.import_proj,self.export_lua]
@@ -331,3 +334,7 @@ class UiMainWindow(object):
         index = self.treeView.selectedIndexes()[0]
         text = index.data()
         self.selected_project = text
+
+    def save_all(self):
+        dissector_json = self.dba_ui.save_button_clicked()
+        self.pyro_proxy.f()

@@ -37,6 +37,8 @@ class Pyro_Run():
     def export_lua_script(self,workspace,project):
         self.loader.export_lua_script(workspace,project)
 
+    def save_dissector_attributes(self,dissector,workspace,project):
+        self.loader.save_dissector_attributes(dissector,workspace,project)
     
 
     def createPackets(self,fileName):
