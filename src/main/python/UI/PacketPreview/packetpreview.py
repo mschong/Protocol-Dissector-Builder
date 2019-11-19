@@ -73,29 +73,29 @@ class Ui_PackagePreview(object):
         QtCore.QMetaObject.connectSlotsByName(PackagePreview)
 
     def openFile(self):
-        print(os.getcwd())
         self.label_3.setText("Status: Opening a file...")
         self.model.removeRows(0,self.model.rowCount())
         self.name = QFileDialog.getOpenFileName()
-        self.pyro_proxy.createPackets(self.name[0])
-        self.pyro_proxy.savePackets()
-        self.label_3.setText("Status: Opening a file...50%")        
-        self.pyro_proxy.printPackets()
-        fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","r")
-        vars = json.loads(fileToRead.read().strip())
-        packetDict = vars[0]
-        protocolDict = vars[1]
-        for number,packet in packetDict.items():
-            branch1= QtGui.QStandardItem("Packet #" + str(number))
-            for protocol,fields in packet.items():
-                ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
-                for name,value in fields.items():
-                    ProtocolField = QtGui.QStandardItem(name)
-                    ProtocolValue = QtGui.QStandardItem(value)
-                    ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
-                branch1.appendRow(ProtocolToAdd)
-            self.model.appendRow([branch1])
-        self.label_3.setText("Status: File has been opened.")
+        if(self.name[0]):
+            self.pyro_proxy.createPackets(self.name[0])
+            self.pyro_proxy.savePackets()
+            self.label_3.setText("Status: Opening a file...50%")
+            self.pyro_proxy.printPackets()
+            fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","r")
+            vars = json.loads(fileToRead.read().strip())
+            packetDict = vars[0]
+            protocolDict = vars[1]
+            for number,packet in packetDict.items():
+                branch1= QtGui.QStandardItem("Packet #" + str(number))
+                for protocol,fields in packet.items():
+                    ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
+                    for name,value in fields.items():
+                        ProtocolField = QtGui.QStandardItem(name)
+                        ProtocolValue = QtGui.QStandardItem(value)
+                        ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
+                    branch1.appendRow(ProtocolToAdd)
+                self.model.appendRow([branch1])
+            self.label_3.setText("Status: File has been opened.")
 
     def dissect(self):
         self.model.removeRows(0,self.model.rowCount())
