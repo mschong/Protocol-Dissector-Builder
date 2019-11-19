@@ -4,9 +4,10 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 class CodeBlock(QWidget):
-    def __init__(self):
+    def __init__(self, name):
 
         super().__init__()
+        self.name = name
         self.initUI()
 
     def initUI(self):
@@ -24,6 +25,11 @@ class CodeBlock(QWidget):
 
         self.show()
 
+    def getName(self):
+        return self.name
+
+    def setTextBox(self, code):
+        self.textBox.setPlainText(code)
 
     def saveMethod(self):
         code_block_properties = dict({'Code':self.textBox.toPlainText()})

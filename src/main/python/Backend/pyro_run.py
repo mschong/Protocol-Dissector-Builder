@@ -70,6 +70,8 @@ class Pyro_Run():
         self.child.sendline("print")
         print(self.child.read())
 
+ 
+
 
     def main(self):
         daemon = Pyro4.Daemon()
@@ -80,6 +82,7 @@ class Pyro_Run():
         ns.register("pyro.service",uri)
         print("[+] Pyro4 URI: " + str(uri))
         daemon.requestLoop()
+
 
 if __name__ == "__main__":
     main()

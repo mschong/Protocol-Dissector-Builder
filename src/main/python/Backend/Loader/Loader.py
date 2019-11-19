@@ -18,8 +18,10 @@ class Loader():
     
 
     def __init__(self):
+        print("sys.path: ", sys.path)
         self.workspace = workspace.Workspace()
         
+
 
     #WORKSAPCE FUNCTIONS
 
