@@ -72,7 +72,7 @@ class UiMainWindow(object):
         self.dba_ui = DBA.Ui_Form()
         self.dba_ui.setupUi(dba_form)
         self.canvasFrame.setWidget(dba_form)
-        self.dba_pool.append(dba_ui)
+        self.dba_pool.append(self.dba_ui)
 
         self.workspaceLabel = QtWidgets.QLabel(self.centralwidget)
         self.workspaceLabel.setText("No Workspace Selected")
@@ -139,10 +139,10 @@ class UiMainWindow(object):
         self.new_proj.triggered.connect(self.openProjectConfigDialog)
         self.import_proj.triggered.connect(self.openProjectDialog)
         self.export_lua.triggered.connect(self.export_lua_script)
-        self.save_all.triggered.connect(self.save_all)
+        self.save_all.triggered.connect(self.save_all_dissector)
 
 
-        self.options = [self.new_ws,self.open_ws,self.close_ws,self.config_ws,self.new_proj,self.import_proj,self.export_lua]
+        self.options = [self.new_ws,self.open_ws,self.close_ws,self.config_ws,self.new_proj,self.import_proj,self.export_lua,self.save_all]
         self.menuFile.addActions(self.options)
       
         MainWindow.setMenuBar(self.menubar)
@@ -330,7 +330,9 @@ class UiMainWindow(object):
         index = self.treeView.selectedIndexes()[0]
         text = index.data()
         self.selected_project = text
+        #self.pyro_proxy.get_current_project_dissector(selected_project)
+        #self.dba_ui.restore_widgets_to_scene(dissector_json)
 
-    def save_all(self):
+    def save_all_dissector(self):
         dissector_json = self.dba_ui.save_button_clicked()
-        self.pyro_proxy.f()
+        self.pyro_proxy.save_dissector_attributes(dissector_json,self.workspace_file,self.selected_project)
