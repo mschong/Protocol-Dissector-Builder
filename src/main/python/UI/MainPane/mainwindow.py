@@ -57,6 +57,7 @@ class UiMainWindow(object):
         self.treeView.setObjectName("treeView")
         self.treeview_model = self.createProjectTreeViewModel(self.treeView)
         self.treeView.setModel(self.treeview_model)
+        self.treeView.clicked.connect(self.change_project)
         self.projectView_canvas_hlayout.addWidget(self.treeView)
 
         self.canvasFrame = QtWidgets.QScrollArea(self.centralwidget)
@@ -266,8 +267,8 @@ class UiMainWindow(object):
 
     #PROJECT FUNCTIONS
     def export_lua_script(self):
-        selected_project = "MyDNS"
-        self.pyro_proxy.export_lua_script(self.workspace_file,selected_project)
+        
+        self.pyro_proxy.export_lua_script(self.workspace_file,self.selected_project)
        
     def openProjectConfigDialog(self,pname=None,pauthor = None,pdesc=None,created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         dialog = QtWidgets.QDialog()
@@ -313,12 +314,20 @@ class UiMainWindow(object):
     def createProjectTreeViewModel(self, treeView):
         model = QtGui.QStandardItemModel(0, 1, treeView)
         model.setHeaderData(0, QtCore.Qt.Horizontal, "Projects")
+ 
         return model
 
     def addProjectToTreeView(self, model, project_name):
         
         model.insertRow(0)
         model.setData(model.index(0, 0), project_name)
+        
+        
 
     def clearProjectTreview(self):
         self.treeview_model.removeRows(0, self.treeview_model.rowCount())
+
+    def change_project(self):
+        index = self.treeView.selectedIndexes()[0]
+        text = index.data()
+        self.selected_project = text

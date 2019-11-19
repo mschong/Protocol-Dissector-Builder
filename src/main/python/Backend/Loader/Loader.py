@@ -111,6 +111,16 @@ class Loader():
         pass
 
 
+    def save_dissector_attributes(self,fields,workspace,project):
+        ws_json = self.loadworkspace(workspace)
+        p_path = "{}/{}.json".format(ws_json['path'],project)
+        with open(p_path) as f:
+            p_json = json.loads(f.read())
+            print("JSON = {}".format(p_json))
+      
+        project = project.Project(JSON=p_json)
+        project.addFields(fields)
+        self.save_project(p_path,project)
   
     def export_lua_script(self,workspace,project):
         ws_json = self.loadworkspace(workspace)
@@ -123,5 +133,6 @@ class Loader():
         # generator.export_lua(workspace)
         generator.mock_run(ws_json['path'])
 
+    
 
   
