@@ -76,7 +76,7 @@ class Ui_PackagePreview(object):
         self.label_3.setText("Status: Opening a file...")
         self.model.removeRows(0,self.model.rowCount())
         self.name = QFileDialog.getOpenFileName()
-        if(self.name[0]):
+        if(self.name[0] and ".pcap" in self.name[0] ):
             self.pyro_proxy.createPackets(self.name[0])
             self.pyro_proxy.savePackets()
             self.label_3.setText("Status: Opening a file...50%")
@@ -98,57 +98,60 @@ class Ui_PackagePreview(object):
             self.label_3.setText("Status: File has been opened.")
 
     def dissect(self):
-        self.model.removeRows(0,self.model.rowCount())
-        self.pushButton2.setText("ReDissect")
-        self.label_3.setText("Status: Dissecting...: ")
+        try:
+            if(self.name[0] and ".pcap" in self.name[0] ):
+                self.model.removeRows(0,self.model.rowCount())
+                self.pushButton2.setText("ReDissect")
+                self.label_3.setText("Status: Dissecting...: ")
 
 
-        self.pyro_proxy.createPackets(self.name[0])
-        self.label_3.setText("Status: Dissecting...: 50%")
+                self.pyro_proxy.createPackets(self.name[0])
+                self.label_3.setText("Status: Dissecting...: 50%")
 
-        self.pyro_proxy.dissectPackets()
-        # self.pyro_proxy.colorCode()
-        # self.pyro_proxy.savePackets()
+                self.pyro_proxy.dissectPackets()
+                # self.pyro_proxy.colorCode()
+                # self.pyro_proxy.savePackets()
 
-        fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","r")
-        vars = json.loads(fileToRead.read().strip())
-        packetDict = vars[0]
-        protocolDict = vars[1]
-        colorList = vars[2]
-        color = QColor(255,0,0) #red
-        i=0
-        j=0
-        print(colorList)
-        for pkt in colorList:
-
-            j= j+1
-        for number,packet in packetDict.items():
-            branch2= QtGui.QStandardItem("Packet # " + str(number))
-            index = int(number) -1
-            if colorList[str(index)] == "Green":
-                color = QColor(0,255,0)#green
-            elif colorList[str(index)] == "Red":
+                fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","r")
+                vars = json.loads(fileToRead.read().strip())
+                packetDict = vars[0]
+                protocolDict = vars[1]
+                colorList = vars[2]
                 color = QColor(255,0,0) #red
-            else:
-                color = QColor(255,255,0) #yellow
-            for protocol,fields in packet.items():
-                ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
-                ProtocolToAdd.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+                i=0
+                j=0
+                print(colorList)
+                for pkt in colorList:
 
-                for name,value in fields.items():
-                    ProtocolField = QtGui.QStandardItem(name)
-                    ProtocolValue = QtGui.QStandardItem(value)
-                    ProtocolValue.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-                    ProtocolField.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+                    j= j+1
+                for number,packet in packetDict.items():
+                    branch2= QtGui.QStandardItem("Packet # " + str(number))
+                    index = int(number) -1
+                    if colorList[str(index)] == "Green":
+                        color = QColor(0,255,0)#green
+                    elif colorList[str(index)] == "Red":
+                        color = QColor(255,0,0) #red
+                    else:
+                        color = QColor(255,255,0) #yellow
+                    for protocol,fields in packet.items():
+                        ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
+                        ProtocolToAdd.setData(QBrush(color), QtCore.Qt.BackgroundRole)
 
-                    ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
-                branch2.appendRow(ProtocolToAdd)
-                branch2.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-            numberCol = QtGui.QStandardItem(str(colorList[str(index)]))
-            self.model.appendRow([branch2,numberCol])
-            numberCol.setData(QBrush(color), QtCore.Qt.BackgroundRole)
-        self.label_3.setText("Status: Package has been dissected.")
+                        for name,value in fields.items():
+                            ProtocolField = QtGui.QStandardItem(name)
+                            ProtocolValue = QtGui.QStandardItem(value)
+                            ProtocolValue.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+                            ProtocolField.setData(QBrush(color), QtCore.Qt.BackgroundRole)
 
+                            ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
+                        branch2.appendRow(ProtocolToAdd)
+                        branch2.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+                    numberCol = QtGui.QStandardItem(str(colorList[str(index)]))
+                    self.model.appendRow([branch2,numberCol])
+                    numberCol.setData(QBrush(color), QtCore.Qt.BackgroundRole)
+                self.label_3.setText("Status: Package has been dissected.")
+        except:
+                pass
 
 
 
