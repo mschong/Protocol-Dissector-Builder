@@ -259,10 +259,6 @@ class UiMainWindow(object):
                     
                     self.loadWorkspace()
  
-   
-    
-
-   
 
     #PROJECT FUNCTIONS
     def export_lua_script(self):

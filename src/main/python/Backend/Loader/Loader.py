@@ -9,7 +9,6 @@ from Backend.Project import project
 from Backend.Workspace import workspace
 from Backend.Dissector import dissector
 import os
-#from ..UI.DBA_FrontEnd import DBA
 import json
 
 
@@ -113,12 +112,6 @@ class Loader():
     def open_project(self,p_name):
         pass
 
-    def get_dissector(self):
-        dissector = DBA.Ui_Form()
-        json_string = dissector.save_button_clicked()
-        f = open("{}.json".format("dissector"), "w+")
-        f.write(json_string)
-        f.close()
 
   
     def export_lua_script(self,workspace,project):

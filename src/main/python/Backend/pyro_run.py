@@ -67,8 +67,7 @@ class Pyro_Run():
         self.child.sendline("print")
         print(self.child.read())
 
-    def load_dissector(self):
-        return self.loader.get_dissector()
+ 
 
 
     def main(self):
