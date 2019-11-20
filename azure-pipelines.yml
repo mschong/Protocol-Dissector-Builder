@@ -129,7 +129,7 @@ jobs:
         justInclude: 'yes'
         includeMorePlugins: 'no'
     - script: |
-        fbs freeze
+        fbs freeze --debug
         fbs installer
       displayName: 'freeze app and build installer'
 
