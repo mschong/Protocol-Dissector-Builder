@@ -139,11 +139,6 @@ class Ui_Form(object):
         self.connector_button.setObjectName("connector_button")
         self.connector_button.clicked.connect(self.connector_button_clicked)
 
-        self.save_button = QtWidgets.QPushButton('Save', self.construct_tab)
-        self.save_button.setGeometry(QtCore.QRect(0,150,83,25))
-        self.save_button.setObjectName("save_button")
-        self.save_button.clicked.connect(self.save_button_clicked)
-
         self.toolBox.addItem(self.construct_tab, "")
 
         self.retranslateUi(Form)
