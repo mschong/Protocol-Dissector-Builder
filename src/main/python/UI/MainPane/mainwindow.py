@@ -352,6 +352,8 @@ class UiMainWindow(object):
         index = self.treeView.selectedIndexes()[0]
         text = index.data()
         self.selected_project = text
+        ws,p = self.pyro_proxy.set_workspace(workspace = None,selected_project = self.selected_project)
+        self.packetpreview_ui.set_pyro_workspace(ws,p)
         #self.pyro_proxy.get_current_project_dissector(selected_project)
         #self.dba_ui.restore_widgets_to_scene(dissector_json)
 

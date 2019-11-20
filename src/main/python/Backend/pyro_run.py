@@ -9,9 +9,21 @@ import platform
 @Pyro4.expose
 class Pyro_Run():
     loader = None
+    workspace_file = None
+    selected_project = None
     def __init__(self):
         self.loader = Loader.Loader()
+    
 
+    def set_workspace(self,workspace = None ,selected_project = None):
+        if workspace != None:
+            self.workspace_file = workspace
+        else:
+            self.workspace_file = self.get_current_workspace()['path']
+        
+        self.selected_project = selected_project
+        print("project changed to {}/{}".format(self.workspace_file,self.selected_project))
+        return self.workspace_file,self.selected_project
 
     def load_workspace(self, file):
         return self.loader.loadworkspace(file)
@@ -58,7 +70,10 @@ class Pyro_Run():
 
     def dissectPackets(self):
         print("dissecting")
-        self.child.sendline("dissect")
+        print(self.workspace_file)
+        print(self.selected_project)
+        self.child.sendline("dissect {} {}".format(self.workspace_file,self.selected_project))
+        
         print(self.child.read())
 
     def colorCode(self):
@@ -71,7 +86,7 @@ class Pyro_Run():
         print(self.child.read())
 
  
-
+    
 
     def main(self):
         daemon = Pyro4.Daemon()

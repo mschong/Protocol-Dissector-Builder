@@ -164,7 +164,9 @@ class Ui_PackagePreview(object):
         self.label_2.setText(_translate("PackagePreview", "Packet Stream"))
         self.label_3.setText(_translate("PackagePreview", "Status: Waiting for Input"))
 
-
+    def set_pyro_workspace(self,workspace,project):
+        self.pyro_proxy.set_workspace(workspace,project)
+        
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     PackagePreview = QtWidgets.QWidget()

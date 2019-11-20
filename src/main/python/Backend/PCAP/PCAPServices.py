@@ -16,7 +16,8 @@ while(1):
         PCAPFile.savePackets()
         print("saved")
     elif currCommand[0] == "dissect":
-        PCAPFile.dissectPCAP()
+        
+        PCAPFile.dissectPCAP(currCommand[1],currCommand[2])
         PCAPFile.colorFilter()
         PCAPFile.savePackets()
         print("dissected")

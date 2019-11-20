@@ -139,7 +139,7 @@ assert(ProtoExpert.new, "Wireshark does not have the ProtoExpert class, so it's 
 
 ----------------------------------------
 -- creates a Proto object, but doesn't register it yet
-local dns = Proto("jdjdj","ee")
+local dns = Proto("mydns","MyDNS Protocol")
 
 ----------------------------------------
 -- multiple ways to do the same thing: create a protocol field (but not register it yet)
