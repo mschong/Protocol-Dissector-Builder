@@ -4,4 +4,4 @@ fbs
 pyshark
 pexpect
 Jinja2
-PyInstaller
+PyInstaller==3.4
