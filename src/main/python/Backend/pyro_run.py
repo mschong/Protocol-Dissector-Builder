@@ -51,7 +51,9 @@ class Pyro_Run():
 
     def save_dissector_attributes(self,dissector,workspace,project):
         self.loader.save_dissector_attributes(dissector,workspace,project)
-    
+
+    def get_dissector_attributes(self,workspace,project):
+        return self.loader.get_dissector_attributes(workspace,project)
 
     def createPackets(self,fileName):
         # projectPath = " PCAP/PCAPServices.py"

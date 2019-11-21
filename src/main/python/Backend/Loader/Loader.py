@@ -109,8 +109,6 @@ class Loader():
         self.save_project(p.path,p)
 
             
-    def open_project(self,p_name):
-        pass
 
 
     def save_dissector_attributes(self,fields,workspace,p_name):
@@ -123,7 +121,18 @@ class Loader():
         p = project.Project(JSON=p_json)
         p.add_fields(fields)
         self.save_project(p_path,p)
-  
+    
+    def get_dissector_attributes(self,workspace,p_name):
+    
+        ws_json = self.loadworkspace(workspace)
+        print("ws json: {}".format(ws_json))
+        p_path = "{}/{}.json".format(ws_json['path'],p_name)
+        print("project path: {}".format(p_path))
+        with open(p_path) as f:
+            p_json = json.loads(f.read())
+        print("project json: {}".format(p_json))
+        return p_json['dissector']
+
     def export_lua_script(self,workspace,project):
         ws_json = self.loadworkspace(workspace)
         p_path = "{}/{}.json".format(ws_json['path'],project)
