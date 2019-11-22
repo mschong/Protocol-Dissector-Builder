@@ -9,7 +9,7 @@ from UI.DBA_FrontEnd.Field import Field
 from UI.DBA_FrontEnd.Connector import Connector
 from UI.DBA_FrontEnd.While_Loop import While_Loop
 from UI.DBA_FrontEnd.For_Loop import For_Loop
-from UI.DBA_FrontEnd.Do_Loop import Do_Loop
+# from UI.DBA_FrontEnd.Do_Loop import Do_Loop
 from UI.DBA_FrontEnd.Decision import Decision
 from UI.DBA_FrontEnd.GraphicsProxyWidget  import GraphicsProxyWidget
 from UI.DBA_FrontEnd.Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
