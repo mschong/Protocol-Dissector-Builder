@@ -9,7 +9,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 #from StartField import StartField
-
+import sys
 from UI.DBA_FrontEnd.Field import Field
 from UI.DBA_FrontEnd.While_Loop import While_Loop
 from UI.DBA_FrontEnd.Decision import Decision
@@ -17,13 +17,6 @@ from UI.DBA_FrontEnd.GraphicsProxyWidget import GraphicsProxyWidget
 from UI.DBA_FrontEnd.DropGraphicsScene import DropGraphicsScene
 from UI.DBA_FrontEnd.DragButton import DragButton
 import json
-
-class ComboBox(QtWidgets.QComboBox):
-    popupAboutToBeShown = QtCore.pyqtSignal()
-
-    def showPopup(self):
-        self.popupAboutToBeShown.emit()
-        super(ComboBox,self).showPopup()
 
 class QGraphicsView(QtWidgets.QGraphicsView):
     def __init__(self, parent=None):
@@ -66,10 +59,10 @@ class Ui_Form(object):
         self.toolbox_label.setGeometry(QtCore.QRect(650, 10, 64, 17))
         self.toolbox_label.setObjectName("toolbox_label")
         self.toolBox = QtWidgets.QToolBox(Form)
-        self.toolBox.setGeometry(QtCore.QRect(650, 30, 201, 320))
+        self.toolBox.setGeometry(QtCore.QRect(650, 30, 250, 320))
         self.toolBox.setObjectName("toolBox")
         self.field_tab = QtWidgets.QWidget()
-        self.field_tab.setGeometry(QtCore.QRect(0, 0, 201, 110))
+        self.field_tab.setGeometry(QtCore.QRect(0, 0, 250, 210))
         self.field_tab.setObjectName("field_tab")
         
 
@@ -98,16 +91,21 @@ class Ui_Form(object):
         self.code_block_button.setGeometry(QtCore.QRect(20, 180, 100, 30))
         self.code_block_button.setObjectName("code_block_button")
 
-        self.list_fields_box = ComboBox(self.field_tab)
-        self.list_fields_box.setGeometry(QtCore.QRect(20, 215, 171,30))
-        self.list_fields_box.setObjectName("list_field_label")
-        self.list_fields_box.addItem('Added Fields')
-        self.list_fields_box.popupAboutToBeShown.connect(self.populateConbo)
+        self.define_field_button = DragButton('Defined Field', self.field_tab)
+        self.define_field_button.setGeometry(QtCore.QRect(20, 215, 97, 30))
+        self.define_field_button.setObjectName("define_field_button")
 
+        self.list_fields_button = QtWidgets.QToolButton(self.field_tab)
+        self.list_fields_button.setGeometry(QtCore.QRect(120,215,105,30))
+        self.list_fields_button.setText("Defined Fields")
+        self.list_fields_button.setObjectName("list_fields_button")
+        menu = QtWidgets.QMenu()
+        self.list_fields_button.setMenu(menu)
+        self.list_fields_button.clicked.connect(self.populateListButton)
 
         self.toolBox.addItem(self.field_tab, "")
         self.construct_tab = QtWidgets.QWidget()
-        self.construct_tab.setGeometry(QtCore.QRect(0, 0, 201, 189))
+        self.construct_tab.setGeometry(QtCore.QRect(0, 0, 201, 214))
         self.construct_tab.setObjectName("construct_tab")
         self.decision_button = DragButton("Decision", self.construct_tab)
         self.decision_button.setGeometry(QtCore.QRect(0, 0, 83, 25))
@@ -122,9 +120,9 @@ class Ui_Form(object):
         self.for_loop_button.setGeometry(QtCore.QRect(0, 60, 83, 25))
         self.for_loop_button.setObjectName("for_loop_button")
 
-        self.do_loop_button =DragButton("do while", self.construct_tab)
-        self.do_loop_button.setGeometry(QtCore.QRect(0, 90, 83, 25))
-        self.do_loop_button.setObjectName("do_loop_button")
+        # self.do_loop_button =DragButton("do while", self.construct_tab)
+        # self.do_loop_button.setGeometry(QtCore.QRect(0, 90, 83, 25))
+        # self.do_loop_button.setObjectName("do_loop_button")
 
         self.end_loop_button = DragButton("End Loop", self.construct_tab)
         self.end_loop_button.setGeometry(QtCore.QRect(90, 0, 83, 25))
@@ -152,14 +150,23 @@ class Ui_Form(object):
         self.toolbox_label.setText(_translate("Form", "Toolbox"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.field_tab), _translate("Form", "Field"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.construct_tab), _translate("Form", "Construct"))
-
-    def populateConbo(self):
-        self.list_fields_box.clear()
-        self.list_fields_box.addItem('Added Fields')
-        self.fields = self.scene.proxyFieldWidgetList
-        for field in self.fields:
-            self.list_fields_box.addItem(field.widget().menu().actions()[0].defaultWidget().table.cellWidget(0,1).text())
+    
+    def populateListButton(self):
+        self.list_fields_button.menu().clear()
+        self.fields = self.scene.proxyDefinedFieldList
         
+        for field in self.fields:
+            action = QtWidgets.QAction(self.field_tab)
+            action.setText(field.widget().text())
+            action.triggered.connect(self.prepareDefinedFieldButton)
+            self.list_fields_button.menu().addAction(action)
+        
+        self.list_fields_button.showMenu()
+    
+    def prepareDefinedFieldButton(self, checked):
+        action = self.field_tab.sender()
+        self.define_field_button.setText(action.text())
+    
     def open_field_window(self):
         self.field_win = Field()
         self.field_win.show()
@@ -177,11 +184,9 @@ class Ui_Form(object):
 
     def save_button_clicked(self):
         dissector_dictionary = self.scene.save_dissector()
-        dissector_json = json.dumps(dissector_dictionary)
         return dissector_dictionary
 
-    def restore_widgets_to_scene(self, dissector_json):
-    	dissector_dictionary = json.loads(dissector_json)
+    def restore_widgets_to_scene(self, dissector_dictionary):
     	self.scene.restoreWidgetsToScene(dissector_dictionary)
 
 if __name__ == "__main__":
