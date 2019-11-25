@@ -51,11 +51,23 @@ class Pyro_Run():
 
     def save_dissector_attributes(self,dissector,workspace,project):
         self.loader.save_dissector_attributes(dissector,workspace,project)
-    
+
+    def get_dissector_attributes(self,workspace,project):
+        return self.loader.get_dissector_attributes(workspace,project)
 
     def createPackets(self,fileName):
         # projectPath = " PCAP/PCAPServices.py"
         # if platform.system() == 'Darwin':
+        try:
+            varSize= os.path.getsize(fileName)
+        except Exception as e:
+            print("File doesnt exist! ")
+            return
+        if(varSize >= 50e7):
+            print("File size is huge,(" + str(varSize/1e6) + " MB) want to proceed?[Y/N]")
+            answer = input()
+            if(not answer) or (answer.lower()[0] != 'y'):
+                return
         projectPath = "src/main/python/Backend/PCAP/PCAPServices.py"
         self.child = pexpect.spawn("python3.6 " + projectPath,encoding='utf-8')
         self.child.expect("loop",timeout=None)

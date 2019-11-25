@@ -1,13 +1,12 @@
 # Protocol-Dissector-Builder
 
-The protocol dissector builder is a system to generate protocol dissectors using drag and drop functioanlities. The generated dissectors can be saved in LUA format and applied to dissected PCAP files.
+The protocol dissector builder is a system to generate protocol dissectors using drag and drop functioanlities. The generated dissectors can be saved in LUA format and applied to PCAP files.
 
 # Running
 ### Python and pip
 
 ```
-pip install requirements/base.txt
-sh start-pyro-service.sh
+pip install -r requirements/base.txt
 fbs run
 ```
 

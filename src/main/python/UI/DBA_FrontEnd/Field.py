@@ -3,6 +3,29 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
+class FieldOKDialog(QDialog):
+    def __init__(self, text):
+        super().__init__()
+
+        self.title = "ERROR"
+        self.initUI(text)
+
+    def initUI(self, text):
+        self.textToDisplay = text
+        self.setWindowTitle(self.title)
+        self.layout = QVBoxLayout()
+        self.label = QLabel(self.textToDisplay)
+        self.okButton = QPushButton('OK')
+        self.okButton.clicked.connect(self.ok_button_clicked)
+        self.layout.addWidget(self.label)
+        self.layout.addWidget(self.okButton)
+        self.setLayout(self.layout)
+        self.layout.setAlignment(Qt.AlignCenter)
+        self.show()
+
+    def ok_button_clicked(self):
+        self.close()
+
 class Field(QWidget):
     def __init__(self):
 
@@ -17,6 +40,9 @@ class Field(QWidget):
         self.draw_field_table()
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.table)
+        self.okButton = QPushButton("OK")
+        self.okButton.clicked.connect(self.clickOKMethod)
+        self.layout.addWidget(self.okButton)
         self.setLayout(self.layout)
 
         self.show()
@@ -25,11 +51,11 @@ class Field(QWidget):
         # Making the indexes of rows and columns invisible to user
         self.table.verticalHeader().setVisible(False)
         self.table.horizontalHeader().setVisible(False)
-        column_1_text = ["Name","Abbreviation","Description", "Data Type", "Base", "Mask", "Value Constraint", "Var Size", "ID Value", "Required"]
+        column_1_text = ["Name *","Abbreviation *","Description *", "Data Type *", "Base", "Mask", "Value Constraint", "Var Size *", "ID Value", "Required"]
         i = 0
         while i < self.table.rowCount():
             item = QTableWidgetItem(column_1_text[i])
-            item.setFlags(item.flags() ^ Qt.ItemIsEditable)
+            item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
             self.table.setItem(i, 0, item)
             i += 1
 
@@ -38,11 +64,18 @@ class Field(QWidget):
     # Creating line To get Name
 
         name_line = QLineEdit()
+        name_line_exp_validator = QRegExp("[A-za-z0-9_\s]+")
+        name_line_validator = QRegExpValidator(name_line_exp_validator)
+        name_line.setValidator(name_line_validator)
         widgets.append(name_line)
 
         # Creating line To get Abbreviation
         abbr_line = QLineEdit()
+        abbr_line_exp_validator = QRegExp("[A-za-z0-9\.]+")
+        abbr_line_validator = QRegExpValidator(abbr_line_exp_validator)
+        abbr_line.setValidator(abbr_line_validator)
         widgets.append(abbr_line)
+
 
         # Creating line To get Description
         desc_line = QLineEdit()
@@ -78,6 +111,9 @@ class Field(QWidget):
         for choice in var_choices:
             var_choice.addItem(choice)
         var_size_line = QLineEdit()
+        var_size_line_exp_validator = QRegExp("[0-9]+")
+        var_size_line_validator = QRegExpValidator(var_size_line_exp_validator)
+        var_size_line.setValidator(var_size_line_validator)
         var_size_row_layout.addWidget(var_size_line)
         var_size_row_layout.addWidget(var_choice)
         var_size_cell = QWidget()
@@ -104,6 +140,31 @@ class Field(QWidget):
         self.table.setColumnWidth(1, 138)
         self.table.resizeRowsToContents()
 
+    def clickOKMethod(self):
+        if self.table.cellWidget(0, 1).text() == "":
+            text = "No name declared. Please declare a name"
+            dialog = FieldOKDialog(text)
+            dialog.exec()
+        elif self.table.cellWidget(1, 1).text() == "":
+            text = "No abbreviation declared. Please declare a abbreviation"
+            dialog = FieldOKDialog(text)
+            dialog.exec()
+        elif self.table.cellWidget(2, 1).text() == "":
+            text = "No description declared. Please declare a description"
+            dialog = FieldOKDialog(text)
+            dialog.exec()
+        elif self.table.cellWidget(3, 1).currentText() == "Select data type":
+            text = "No Data Type selected. If field has no type then select NONE otherwise please select a type"
+            dialog = FieldOKDialog(text)
+            dialog.exec()
+
+        elif self.table.cellWidget(7, 1).children()[1].text() == "":
+            text = "No size declared. Please declare a size"
+            dialog = FieldOKDialog(text)
+            dialog.exec()
+
+        else:
+            self.toolButton.setText(self.table.cellWidget(0, 1).text())
     def setName(self, name):
         self.table.cellWidget(0,1).setText(name)
 
@@ -148,13 +209,15 @@ class Field(QWidget):
 
     def saveMethod(self):
         field_properties = dict({'Name': self.table.cellWidget(0,1).text(), 'Abbreviation': self.table.cellWidget(1,1).text(), 'Description': self.table.cellWidget(2,1).text(), 'Data Type': self.table.cellWidget(3,1).currentText(), 'Base': self.table.cellWidget(4,1).currentText(), 'Mask': self.table.cellWidget(5,1).text(), 'Value Constraint': self.table.cellWidget(6,1).text(), 'Var Size': {'editText': self.table.cellWidget(7,1).children()[1].text(), 'combobox': self.table.cellWidget(7,1).children()[2].currentText()}, 'ID Value': self.table.cellWidget(8,1).text()})
-        if self.table.cellWidget(9,1).children()[1].isTristate():
+        if self.table.cellWidget(9,1).children()[1].isChecked():
             field_properties.update({'Required': 'true'})
         else:
             field_properties.update({'Required': 'false'})
 
         return field_properties
-
+    
+    def setButton(self, toolButton):
+        self.toolButton = toolButton
 if __name__ == '__main__':
     app = QApplication([])
     test = Field()
