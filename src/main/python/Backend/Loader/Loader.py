@@ -33,7 +33,7 @@ class Loader():
             JSON = self.workspace.get_JSON()
             print(JSON)
            
-            f = open("{}/{}.json".format(self.workspace.wpath.strip(),self.workspace.name.strip()) ,"w+")
+            f = open("{}/{}.pdbws".format(self.workspace.wpath.strip(),self.workspace.name.strip()) ,"w+")
             f.write(json.dumps(JSON))
             f.close()
     '''
@@ -79,7 +79,7 @@ class Loader():
         p.dateCreated = p_created
         p.editDate =p_edited
         p.author = p_author
-        p.path = "{}/{}.json".format(self.workspace.wpath,p.name)
+        p.path = "{}/{}.pdbproj".format(self.workspace.wpath,p.name)
         p.protocol  = protocol
         p.change_protocol = change_protocol
         p.src_port = src_port
@@ -104,18 +104,16 @@ class Loader():
             print("DATA PRINTED")
 
         p = project.Project(JSON = data)
-        p.path = "{}/{}.json".format(self.workspace.wpath,p.name) 
+        p.path = "{}/{}.pdbproj".format(self.workspace.wpath,p.name) 
         self.workspace.addProjectToWorkspace(p.path)
         self.save_project(p.path,p)
 
             
-    def open_project(self,p_name):
-        pass
 
 
     def save_dissector_attributes(self,fields,workspace,p_name):
         ws_json = self.loadworkspace(workspace)
-        p_path = "{}/{}.json".format(ws_json['path'],p_name)
+        p_path = "{}/{}.pdbproj".format(ws_json['path'],p_name)
         with open(p_path) as f:
             p_json = json.loads(f.read())
             print("JSON = {}".format(p_json))
@@ -123,17 +121,28 @@ class Loader():
         p = project.Project(JSON=p_json)
         p.add_fields(fields)
         self.save_project(p_path,p)
-  
+    
+    def get_dissector_attributes(self,workspace,p_name):
+    
+        ws_json = self.loadworkspace(workspace)
+        print("ws json: {}".format(ws_json))
+        p_path = "{}/{}.pdbproj".format(ws_json['path'],p_name)
+        print("project path: {}".format(p_path))
+        with open(p_path) as f:
+            p_json = json.loads(f.read())
+        print("project json: {}".format(p_json))
+        return p_json['dissector']
+
     def export_lua_script(self,workspace,project):
         ws_json = self.loadworkspace(workspace)
-        p_path = "{}/{}.json".format(ws_json['path'],project)
+        p_path = "{}/{}.pdbproj".format(ws_json['path'],project)
         with open(p_path) as f:
             p_json = json.loads(f.read())
             print("JSON = {}".format(p_json))
         generator = dissector.Dissector_Generator()
-        # generator.parse_json(p_json)
-        # generator.export_lua(workspace)
-        generator.mock_run(ws_json['path'])
+        generator.parse_json(p_json)
+        generator.export_lua(ws_json['path'])
+        #generator.mock_run(ws_json['path'])
 
     
 

@@ -87,10 +87,10 @@ class UiMainWindow(object):
         self.project_canvas_parentwidget.setLayout(self.projectView_canvas_hlayout)
 
         dba_form = QtWidgets.QWidget()
-        dba_ui = DBA.Ui_Form()
-        dba_ui.setupUi(dba_form)
+        self.dba_ui = DBA.Ui_Form()
+        self.dba_ui.setupUi(dba_form)
         self.canvasFrame.setWidget(dba_form)
-        self.dba_pool.append(dba_ui)
+        self.dba_pool.append(self.dba_ui)
 
         self.workspaceLabel = QtWidgets.QLabel(self.centralwidget)
         self.workspaceLabel.setText("No Workspace Selected")
@@ -291,7 +291,7 @@ class UiMainWindow(object):
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
                 if wcUi.workspaceFileLineEdit.text() != wsName:
                     wsName = wcUi.workspaceFileLineEdit.text()
-                    self.workspace_file ="{}/{}.json".format(self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate),wsName.strip())
+                    self.workspace_file ="{}/{}.pdbws".format(self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate),wsName.strip())
                     self.workspaceLabel.setText("Workspace: " + wsName)
                     
                     self.loadWorkspace()
@@ -365,8 +365,10 @@ class UiMainWindow(object):
         self.selected_project = text
         ws,p = self.pyro_proxy.set_workspace(workspace = None,selected_project = self.selected_project)
         self.packetpreview_ui.set_pyro_workspace(ws,p)
-        #self.pyro_proxy.get_current_project_dissector(selected_project)
-        #self.dba_ui.restore_widgets_to_scene(dissector_json)
+       
+        dissector_json = self.pyro_proxy.get_dissector_attributes(self.workspace_file,p)
+        
+        self.dba_ui.restore_widgets_to_scene(dissector_json)
 
     def save_all_dissector(self):
         dissector_json = self.dba_ui.save_button_clicked()

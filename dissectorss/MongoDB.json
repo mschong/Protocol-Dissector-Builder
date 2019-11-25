@@ -1,0 +1,99 @@
+{
+    "name": "MongoDB",
+    "created": "11/24/2019 23:05:24",
+    "edited": "11/24/2019 23:05:24",
+    "description": "MongoDB Protocol",
+    "protocol": "tcp",
+    "change_protocol": "mongodb",
+    "src_port": "59274",
+    "dst_port": "-1",
+    "author": "Practicum",
+    "dissector": {
+        "START": "message_length",
+        "message_length": {
+            "Name": "message_length",
+            "Abbreviation": "mongodb.messagelen",
+            "Description": "messageLength",
+            "Data Type": "INT8",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BITS"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "Position": {
+                "x": 148.0,
+                "y": 13.0
+            },
+            "Type": "Field",
+            "next_field": "request_id"
+        },
+        "request_id": {
+            "Name": "request_id",
+            "Abbreviation": "mongodb.requestid",
+            "Description": "requestID",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BITS"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "Position": {
+                "x": 279.0,
+                "y": 73.0
+            },
+            "Type": "Field",
+            "next_field": "response_to"
+        },
+        "response_to": {
+            "Name": "response_to",
+            "Abbreviation": "mongodb.response",
+            "Description": "responseTo",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BITS"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "Position": {
+                "x": 288.0,
+                "y": 144.0
+            },
+            "Type": "Field",
+            "next_field": "opcode"
+        },
+        "opcode": {
+            "Name": "opcode",
+            "Abbreviation": "mongodb.opcode",
+            "Description": "Opcode",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "2",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "Position": {
+                "x": 289.0,
+                "y": 229.0
+            },
+            "Type": "Field",
+            "next_field": "END"
+        }
+    },
+    "path": "/Users/danielornelas/projects/protocol-dissector-builder/Protocol-Dissector-Builder/dissectorss/MongoDB.json"
+}

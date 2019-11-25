@@ -34,7 +34,7 @@ class Ui_OpenWorkspaceDialog(object):
     def openworkspace(self):
         title = "Please select Workspace"
         directory = "./"
-        ftype = "JSON files (*.json)"
+        ftype = "JSON files (*.pdbws)"
         dialog = QtWidgets.QFileDialog(None, title, directory, ftype)
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.filename = str(dialog.selectedFiles()[0])

@@ -44,7 +44,7 @@ class Ui_Dialog(object):
     def openProject(self):
         title = "Please select Project"
         directory = "./"
-        ftype = "JSON files (*.json)"
+        ftype = "JSON files (*.pdbproj)"
         dialog = QtWidgets.QFileDialog(None, title, directory, ftype)
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.filename = str(dialog.selectedFiles()[0])

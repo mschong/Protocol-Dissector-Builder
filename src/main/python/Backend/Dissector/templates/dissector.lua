@@ -25,5 +25,5 @@ function protocol.dissector(buffer, pinfo, tree)
   
 end
 
-local tcp_port = DissectorTable.get("{{dis.port_type}}.port")
-tcp_port:add({{dis.port_number}}, protocol)
+local port = DissectorTable.get("{{dis.port_type}}.port")
+port:add({{dis.port_number}}, protocol)
