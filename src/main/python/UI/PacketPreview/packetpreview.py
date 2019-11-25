@@ -16,7 +16,7 @@ import json
 import Pyro4
 import Pyro4.util
 import os
-
+from UI.PacketPreview.customSort import sortableElement
 
 class Ui_PackagePreview(object):
     def setupUi(self, PackagePreview):
@@ -86,9 +86,14 @@ class Ui_PackagePreview(object):
             packetDict = vars[0]
             protocolDict = vars[1]
             for number,packet in packetDict.items():
-                branch1= QtGui.QStandardItem("Packet #" + str(number))
+                branch1 = sortableElement()
+                branch1.setData("Packet #" + str(number),QtCore.Qt.EditRole)
+
+                # branch1= QtGui.QStandardItem("Packet #" + str(number))
                 for protocol,fields in packet.items():
-                    ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
+                    # ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
+                    ProtocolToAdd = sortableElement()
+                    ProtocolToAdd.setData("Protocol: " + protocol,QtCore.Qt.EditRole)
                     for name,value in fields.items():
                         ProtocolField = QtGui.QStandardItem(name)
                         ProtocolValue = QtGui.QStandardItem(value)
@@ -109,8 +114,6 @@ class Ui_PackagePreview(object):
                 self.label_3.setText("Status: Dissecting...: 50%")
 
                 self.pyro_proxy.dissectPackets()
-                # self.pyro_proxy.colorCode()
-                # self.pyro_proxy.savePackets()
 
                 fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","r")
                 vars = json.loads(fileToRead.read().strip())
@@ -125,7 +128,9 @@ class Ui_PackagePreview(object):
 
                     j= j+1
                 for number,packet in packetDict.items():
-                    branch2= QtGui.QStandardItem("Packet # " + str(number))
+                    # branch2= QtGui.QStandardItem("Packet # " + str(number))
+                    branch2 = sortableElement()
+                    branch2.setData("Packet #" + str(number),QtCore.Qt.EditRole)
                     index = int(number) -1
                     if colorList[str(index)] == "Green":
                         color = QColor(0,255,0)#green
@@ -166,7 +171,7 @@ class Ui_PackagePreview(object):
 
     def set_pyro_workspace(self,workspace,project):
         self.pyro_proxy.set_workspace(workspace,project)
-        
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     PackagePreview = QtWidgets.QWidget()
