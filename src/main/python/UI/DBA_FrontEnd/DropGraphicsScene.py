@@ -2,20 +2,14 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import * 
 from PyQt5.QtGui import *
 from UI.DBA_FrontEnd.Field import Field
-# from UI.DBA_FrontEnd.String_Field import String_Field
-# from UI.DBA_FrontEnd.Int_Field import Int_Field
-# from UI.DBA_FrontEnd.Float_Field import Float_Field
-# from UI.DBA_FrontEnd.Octal_Field import Octal_Field
 from UI.DBA_FrontEnd.Connector import Connector
 from UI.DBA_FrontEnd.While_Loop import While_Loop
 from UI.DBA_FrontEnd.For_Loop import For_Loop
-# from UI.DBA_FrontEnd.Do_Loop import Do_Loop
 from UI.DBA_FrontEnd.Decision import Decision
 from UI.DBA_FrontEnd.GraphicsProxyWidget  import GraphicsProxyWidget
 from UI.DBA_FrontEnd.Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
 from UI.DBA_FrontEnd.CodeBlock import CodeBlock
 import sys
-
 
 class ToolButton(QToolButton):
     def __init__(self, widget, scene):
@@ -50,7 +44,7 @@ class DropGraphicsScene(QGraphicsScene):
         self.decision_count = 0
         self.while_count = 0 
         self.forloop_count = 0
-        self.doWhile_count = 0
+        # self.doWhile_count = 0
         self.codeBlock_count = 0
 
     def contextMenuEvent(self, event):
@@ -117,41 +111,41 @@ class DropGraphicsScene(QGraphicsScene):
             field = Field()
             proxy = self.addWidgetToScene(field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-        if(event.mimeData().text() == "Field (String)"):
+        elif(event.mimeData().text() == "Field (String)"):
             str_field = Field()
             str_field.setDataType("STRING")
             proxy = self.addWidgetToScene(str_field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-        if(event.mimeData().text() == "Field (Integer)"):
+        elif(event.mimeData().text() == "Field (Integer)"):
             int_field = Field()
             int_field.setDataType("INT32")
             proxy = self.addWidgetToScene(int_field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-        if(event.mimeData().text() == "Field (Float)"):
+        elif(event.mimeData().text() == "Field (Float)"):
             float_field = Field()
             float_field.setDataType("FLOAT")
             proxy = self.addWidgetToScene(float_field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-        if(event.mimeData().text() == "Field (Octal)"):
+        elif(event.mimeData().text() == "Field (Octal)"):
             octal_field = Field()
             octal_field.setBase("OCT")
             proxy = self.addWidgetToScene(octal_field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-        if(event.mimeData().text() == "Code Block"):
+        elif(event.mimeData().text() == "Code Block"):
             name = "CodeBlock" + str(self.codeBlock_count)
             self.codeBlock_count = self.codeBlock_count + 1
 
             code_block = CodeBlock(name)
             proxy = self.addWidgetToScene(code_block, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-        if(event.mimeData().text() == "while"):
+        elif(event.mimeData().text() == "while"):
             name = "While" + str(self.while_count)
             self.while_count = self.while_count + 1
 
             while_loop = While_Loop(name)
             proxy = self.addWidgetToScene(while_loop, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()            
-        if(event.mimeData().text() == "for"):
+        elif(event.mimeData().text() == "for"):
             name = "ForLoop" + str(self.forloop_count)
             self.forloop_count += 1
             
@@ -165,18 +159,18 @@ class DropGraphicsScene(QGraphicsScene):
         #     do_loop = Do_Loop(name)
         #     proxy = self.addWidgetToScene(do_loop, event.scenePos(), event.mimeData().text())
         #     proxy.setPolygon()            
-        if(event.mimeData().text() == "Decision"):
+        elif(event.mimeData().text() == "Decision"):
             name = "Decision"+str(self.decision_count)
             self.decision_count = self.decision_count + 1
 
             decision = Decision(name)
             proxy = self.addWidgetToScene(decision, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-        if(event.mimeData().text() == "End Loop"):
+        elif(event.mimeData().text() == "End Loop"):
             end_loop = QWidget()
             proxy = self.addWidgetToScene(end_loop, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-        if(event.mimeData().text() == "do"):
+        elif(event.mimeData().text() == "do"):
             do_widget = QWidget()
             proxy = self.addWidgetToScene(do_widget, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
@@ -201,9 +195,10 @@ class DropGraphicsScene(QGraphicsScene):
         event.accept()
 
     def addWidgetToScene(self, widget, pos, text):
-        
+
+        button = None        
         if(text != "End Loop" and text != "do"):
-            if(not(isinstance(widget, Field)) or ("Field (" in str(text))):
+            if(not(isinstance(widget, Field))):
                 button = QToolButton()
                 button.setPopupMode(QToolButton.MenuButtonPopup)
                 button.setGeometry(QRect(20, 30, 278, 40))
@@ -214,18 +209,23 @@ class DropGraphicsScene(QGraphicsScene):
                 action.setDefaultWidget(widget)
                 button.menu().addAction(action)
             if(isinstance(widget, Field)):
-                if(text == "Field"):
+                if(text[0:5] == "Field"):
                     self.countFields = self.countFields + 1
                     button = ToolButton(widget, self)
                     field_text = button.text() + ' ' + str(self.countFields)
                     button.setText(field_text)
                     button.menu().actions()[0].defaultWidget().table.cellWidget(0,1).setText(field_text)
                     widget.setButton(button)
-                if(text == "Defined Field"):
+                elif(text == "Defined Field"):
                     self.countFields = self.countFields + 1
                     button = ToolButton(widget, self)
                     field_text = button.widget.table.cellWidget(0,1).text()
                     button.setText(field_text)
+                    widget.setButton(button)
+                else:
+                    self.countFields = self.countFields + 1
+                    button = ToolButton(widget, self)
+                    button.setText(text)
                     widget.setButton(button)
 
             
@@ -282,7 +282,7 @@ class DropGraphicsScene(QGraphicsScene):
         nameToProxyDict = {} # Used for filling out the values in connectionsDict
         connectionsDict = {} # Keys and Values are proxywidgets, key widget points to value widget on canvass
 
-        dissector.pop('START', None) # This is probably a bad idea
+        dissector.pop('START', None)
         for key in dissector.keys():
             widget = dissector[key]
             widgetType = widget["Type"]
@@ -330,8 +330,10 @@ class DropGraphicsScene(QGraphicsScene):
 
             widgetPosition = QPointF(dissector[key]["Position"]["x"], dissector[key]["Position"]["y"])
             proxy = self.addWidgetToScene(widgetToAdd, widgetPosition, widgetText)
+
             proxy.setPolygon()
             self.proxyWidgetList.append(proxy)
+            self.proxyDefinedFieldList.append(proxy)
 
             nameToProxyDict.update({key: proxy})
             
@@ -346,9 +348,11 @@ class DropGraphicsScene(QGraphicsScene):
                     widgetToAdd.setCondition(widget["Condition"])
                 conditionConnections = {}
                 if("true" in dissector[key].keys()):
-                    conditionConnections.update({1: dissector[key]["true"]})
+                    if(dissector[key]["true"] != None):
+                        conditionConnections.update({1: dissector[key]["true"]})
                 if("false" in dissector[key].keys()):
-                    conditionConnections.update({0: dissector[key]["false"]})
+                    if(dissector[key]["false"] != None):
+                        conditionConnections.update({0: dissector[key]["false"]})
                 connectionsDict.update({proxy: conditionConnections})
 
         # Placing the endItems in the dictionary values
@@ -608,6 +612,13 @@ class DropGraphicsScene(QGraphicsScene):
                 widget_properties.update({'true': end_item})
             elif(connector.getType() == "False"):
                 widget_properties.update({'false': end_item})
+
+            ###### TEST THIS ########################## then add to restore widgets
+            if('true' not in widget_properties.keys()):
+                widget_properties.update({'true': None})
+            if('false' not in widget_properties.keys()):
+                widget_properties.update({'false': None})
+
         if(self.isStartField(proxyWidget)):
             return {widget_name: widget_properties, 'START': widget_name}
         else:
