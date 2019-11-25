@@ -291,7 +291,7 @@ class UiMainWindow(object):
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
                 if wcUi.workspaceFileLineEdit.text() != wsName:
                     wsName = wcUi.workspaceFileLineEdit.text()
-                    self.workspace_file ="{}/{}.json".format(self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate),wsName.strip())
+                    self.workspace_file ="{}/{}.pdbws".format(self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate),wsName.strip())
                     self.workspaceLabel.setText("Workspace: " + wsName)
                     
                     self.loadWorkspace()
