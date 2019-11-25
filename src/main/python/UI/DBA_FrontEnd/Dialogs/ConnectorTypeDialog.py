@@ -11,7 +11,7 @@ class ConnectorTypeDialog(QDialog):
 		self.title = "Settings"
 		self.type_selected = "Normal"
 		self.connector = connector
-
+		self.setModal(True)
 		self.InitUI()
 
 	def InitUI(self):
@@ -35,10 +35,10 @@ class ConnectorTypeDialog(QDialog):
 			self.false_button.setChecked(True)
 		self.false_button.toggled.connect(lambda:self.state_changed(self.false_button))
 
-		self.loop_button = QRadioButton("Loop")
-		if(self.connector.getType() == "Loop"):
-			self.loop_button.setChecked(True)
-		self.loop_button.toggled.connect(lambda:self.state_changed(self.loop_button))
+		# self.loop_button = QRadioButton("Loop")
+		# if(self.connector.getType() == "Loop"):
+		# 	self.loop_button.setChecked(True)
+		# self.loop_button.toggled.connect(lambda:self.state_changed(self.loop_button))
 
 		self.ok_button = QPushButton("Exit")
 		self.ok_button.clicked.connect(self.ok_button_clicked)
@@ -47,7 +47,7 @@ class ConnectorTypeDialog(QDialog):
 		vbox.addWidget(self.normal_button)
 		vbox.addWidget(self.true_button)
 		vbox.addWidget(self.false_button)
-		vbox.addWidget(self.loop_button)
+		# vbox.addWidget(self.loop_button)
 		vbox.addWidget(self.ok_button)
 
 		self.setLayout(vbox)
@@ -55,7 +55,6 @@ class ConnectorTypeDialog(QDialog):
 		self.show()
 
 	def state_changed(self, btn):
-		# self.type_selected = btn.text()
 		self.connector.setType(btn.text())
 
 	def ok_button_clicked(self, e):

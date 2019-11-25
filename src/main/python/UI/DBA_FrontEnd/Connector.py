@@ -23,10 +23,10 @@ class Connector(QGraphicsLineItem):
         self.update()
 
     def setType(self, connectorType):
-        if(connectorType == "Loop"):
-            self.connectorType = "Loop"
-            self.setColor(Qt.blue)
-        elif(connectorType == "True"):
+        # if(connectorType == "Loop"):
+        #     self.connectorType = "Loop"
+        #     self.setColor(Qt.blue)
+        if(connectorType == "True"):
             self.connectorType = "True"
             self.setColor(Qt.green)
         elif(connectorType == "False"):

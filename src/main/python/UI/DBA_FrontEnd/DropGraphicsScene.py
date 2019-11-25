@@ -2,14 +2,14 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import * 
 from PyQt5.QtGui import *
 from UI.DBA_FrontEnd.Field import Field
-from UI.DBA_FrontEnd.String_Field import String_Field
-from UI.DBA_FrontEnd.Int_Field import Int_Field
-from UI.DBA_FrontEnd.Float_Field import Float_Field
-from UI.DBA_FrontEnd.Octal_Field import Octal_Field
+# from UI.DBA_FrontEnd.String_Field import String_Field
+# from UI.DBA_FrontEnd.Int_Field import Int_Field
+# from UI.DBA_FrontEnd.Float_Field import Float_Field
+# from UI.DBA_FrontEnd.Octal_Field import Octal_Field
 from UI.DBA_FrontEnd.Connector import Connector
 from UI.DBA_FrontEnd.While_Loop import While_Loop
 from UI.DBA_FrontEnd.For_Loop import For_Loop
-from UI.DBA_FrontEnd.Do_Loop import Do_Loop
+# from UI.DBA_FrontEnd.Do_Loop import Do_Loop
 from UI.DBA_FrontEnd.Decision import Decision
 from UI.DBA_FrontEnd.GraphicsProxyWidget  import GraphicsProxyWidget
 from UI.DBA_FrontEnd.Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
@@ -34,13 +34,7 @@ class ToolButton(QToolButton):
         action = QWidgetAction(self)
         action.setDefaultWidget(self.widget)
         self.menu().addAction(action)
-
-    # def mousePressEvent(self, event):
-    #     if self.hitButton(event.pos()) and self.menu().isHidden():
-    #         self.showMenu()
-    #     if self.hitButton(event.pos()) and (not(self.menu().actions()[0].defaultWidget().isHidden())):
-    #         self.menu().hide()
-    #         self.setText(self.menu().actions()[0].defaultWidget().table.cellWidget(0,1).text())
+        
 
 class DropGraphicsScene(QGraphicsScene):
     InsertLine_ON, MoveItem = range(2)
@@ -51,7 +45,7 @@ class DropGraphicsScene(QGraphicsScene):
         self.myMode = self.MoveItem
         self.myLineColor = Qt.black
         self.proxyWidgetList = []
-        self.proxyFieldWidgetList= []
+        self.proxyDefinedFieldList= []
         self.countFields = 0
         self.decision_count = 0
         self.while_count = 0 
@@ -88,8 +82,8 @@ class DropGraphicsScene(QGraphicsScene):
                             # self.proxyWidgetList.remove(item.widget().text())
                 elif action == change_type_action:
                     dialog = ConnectorTypeDialog(self.items(event.scenePos())[0])
-                    dialog.setModal(True)
-                    dialog.exec()
+                    # dialog.setModal(True)
+                    dialog.exec_()
             else:
                 deleteAction = menu.addAction("Delete")
                 action = menu.exec_(event.screenPos())
@@ -124,19 +118,23 @@ class DropGraphicsScene(QGraphicsScene):
             proxy = self.addWidgetToScene(field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "Field (String)"):
-            str_field = String_Field()
+            str_field = Field()
+            str_field.setDataType("STRING")
             proxy = self.addWidgetToScene(str_field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "Field (Integer)"):
-            int_field = Int_Field()
+            int_field = Field()
+            int_field.setDataType("INT32")
             proxy = self.addWidgetToScene(int_field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "Field (Float)"):
-            float_field = Float_Field()
+            float_field = Field()
+            float_field.setDataType("FLOAT")
             proxy = self.addWidgetToScene(float_field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "Field (Octal)"):
-            octal_field = Octal_Field()
+            octal_field = Field()
+            octal_field.setBase("OCT")
             proxy = self.addWidgetToScene(octal_field, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         if(event.mimeData().text() == "Code Block"):
@@ -160,13 +158,13 @@ class DropGraphicsScene(QGraphicsScene):
             for_loop = For_Loop(name)
             proxy = self.addWidgetToScene(for_loop, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-        if(event.mimeData().text() == "do while"):
-            name = "DoWhile" + str(self.doWhile_count)
-            self.doWhile_count = self.doWhile_count + 1
+        # if(event.mimeData().text() == "do while"):
+        #     name = "DoWhile" + str(self.doWhile_count)
+        #     self.doWhile_count = self.doWhile_count + 1
 
-            do_loop = Do_Loop(name)
-            proxy = self.addWidgetToScene(do_loop, event.scenePos(), event.mimeData().text())
-            proxy.setPolygon()            
+        #     do_loop = Do_Loop(name)
+        #     proxy = self.addWidgetToScene(do_loop, event.scenePos(), event.mimeData().text())
+        #     proxy.setPolygon()            
         if(event.mimeData().text() == "Decision"):
             name = "Decision"+str(self.decision_count)
             self.decision_count = self.decision_count + 1
@@ -182,19 +180,30 @@ class DropGraphicsScene(QGraphicsScene):
             do_widget = QWidget()
             proxy = self.addWidgetToScene(do_widget, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
-        
+        else: 
+            for field in self.proxyWidgetList:
+                if(event.mimeData().text() == field.widget().text()):
+                    definedFieldPos = event.scenePos()
+                    definedField = self.prepareDefinedFieldForDrop(event.mimeData().text())
+                    proxy = self.addWidgetToScene(definedField, definedFieldPos, 'Defined Field')
+                    proxy.setPolygon()
+                    self.proxyWidgetList.append(proxy)
+                    event.accept()
+                    return
+
         if ((proxy.scenePos().x() + proxy.size().width()) > self.width()):
             self.updateScene(proxy.size().width(), True)
         if ((proxy.scenePos().y() + proxy.size().height()) > self.height()):
             self.updateScene(proxy.size().height(), False)
 
         self.proxyWidgetList.append(proxy)
+        self.proxyDefinedFieldList.append(proxy)
         event.accept()
 
     def addWidgetToScene(self, widget, pos, text):
         
         if(text != "End Loop" and text != "do"):
-            if(not(isinstance(widget, Field)) or text != "Field"):
+            if(not(isinstance(widget, Field)) or ("Field (" in str(text))):
                 button = QToolButton()
                 button.setPopupMode(QToolButton.MenuButtonPopup)
                 button.setGeometry(QRect(20, 30, 278, 40))
@@ -204,18 +213,29 @@ class DropGraphicsScene(QGraphicsScene):
                 action = QWidgetAction(button)
                 action.setDefaultWidget(widget)
                 button.menu().addAction(action)
+            if(isinstance(widget, Field)):
+                if(text == "Field"):
+                    self.countFields = self.countFields + 1
+                    button = ToolButton(widget, self)
+                    field_text = button.text() + ' ' + str(self.countFields)
+                    button.setText(field_text)
+                    button.menu().actions()[0].defaultWidget().table.cellWidget(0,1).setText(field_text)
+                    widget.setButton(button)
+                if(text == "Defined Field"):
+                    self.countFields = self.countFields + 1
+                    button = ToolButton(widget, self)
+                    field_text = button.widget.table.cellWidget(0,1).text()
+                    button.setText(field_text)
+                    widget.setButton(button)
+
+            
+
         else:
             button = QPushButton()
             button.setGeometry(QRect(20, 30, 278, 40))
             button.setText(text)
         
-        if(isinstance(widget,Field) and text == "Field"):
-            self.countFields = self.countFields + 1
-            button = ToolButton(widget, self)
-            field_text = button.text() + ' ' + str(self.countFields)
-            button.setText(field_text)
-            button.menu().actions()[0].defaultWidget().table.cellWidget(0,1).setText(field_text)
-
+        
         
         """ A QGraphicsWidget is a QGraphicsItem and A QGraphicsItem is movable. So I will create
         a parent over the field widget so the field can be movable"""
@@ -235,10 +255,28 @@ class DropGraphicsScene(QGraphicsScene):
 
         # if(isinstance(proxy.widget().menu().actions()[0].defaultWidget(),Field)):
         #    self.proxyFieldWidgetList.append(proxy)
-        if(isinstance(widget, Field)):
-            self.proxyFieldWidgetList.append(proxy)
+        #if(isinstance(widget, Field)):
+         #   self.proxyFieldWidgetList.append(proxy)
 
         return proxy
+
+
+    def prepareDefinedFieldForDrop(self, text):
+        definedField = Field()
+        for field in self.proxyWidgetList:
+            if text == field.widget().text():
+                defined_field_properties = field.widget().menu().actions()[0].defaultWidget().saveMethod()
+                definedField.setName(defined_field_properties.get('Name'))
+                definedField.setAbbreviation(defined_field_properties.get('Abbreviation'))
+                definedField.setDescription(defined_field_properties.get('Description'))
+                definedField.setDataType(defined_field_properties.get('Data Type'))
+                definedField.setBase(defined_field_properties.get('Base'))
+                definedField.setMask(defined_field_properties.get('Mask'))
+                definedField.setValueConstraint(defined_field_properties.get('Value Constraint'))
+                definedField.setSize(defined_field_properties.get('Var Size').get('editText'), defined_field_properties.get('Var Size').get('combobox'))
+                definedField.setID(defined_field_properties.get('ID Value'))
+                definedField.setRequired(defined_field_properties.get('Required'))
+        return definedField
 
     def restoreWidgetsToScene(self, dissector):
         nameToProxyDict = {} # Used for filling out the values in connectionsDict
@@ -270,10 +308,10 @@ class DropGraphicsScene(QGraphicsScene):
                 widgetToAdd = While_Loop(key)
                 self.while_count += 1
                 widgetText = "while"
-            elif(widgetType == "do while"):
-                widgetToAdd = Do_Loop(key)
-                self.doWhile_count += 1
-                widgetText = "do while"
+            # elif(widgetType == "do while"):
+            #     widgetToAdd = Do_Loop(key)
+            #     self.doWhile_count += 1
+            #     widgetText = "do while"
             elif(widgetType == "for"):
                 widgetToAdd = For_Loop(key)
                 self.forloop_count += 1
@@ -530,10 +568,10 @@ class DropGraphicsScene(QGraphicsScene):
                 dissector.update(whileLoop)
 
             # Saving Do While loop information into dictionary
-            elif(isinstance(defaultWidget, Do_Loop)):
-                doWhile = self.saveConditionWidget(proxyWidget)
-                doWhile[list(doWhile.keys())[0]].update({'Type': "do while"})
-                dissector.update(doWhile)
+            # elif(isinstance(defaultWidget, Do_Loop)):
+            #     doWhile = self.saveConditionWidget(proxyWidget)
+            #     doWhile[list(doWhile.keys())[0]].update({'Type': "do while"})
+            #     dissector.update(doWhile)
 
             elif(isinstance(defaultWidget, For_Loop)):
                 forLoop = self.saveConditionWidget(proxyWidget)
@@ -613,6 +651,7 @@ class DropGraphicsScene(QGraphicsScene):
             return self.getDoWidgetName(endItem)
 
         endItem_Widget = self.getDefaultWidget(endItem)
+        endItem_name = ""
         if(isinstance(endItem_Widget,Field)):
             endItem_name = endItem_Widget.table.cellWidget(0,1).text()
 
