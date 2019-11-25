@@ -95,8 +95,16 @@ class Ui_PackagePreview(object):
                     ProtocolToAdd = sortableElement()
                     ProtocolToAdd.setData("Protocol: " + protocol,QtCore.Qt.EditRole)
                     for name,value in fields.items():
-                        ProtocolField = QtGui.QStandardItem(name)
-                        ProtocolValue = QtGui.QStandardItem(value)
+
+                        # ProtocolField = QtGui.QStandardItem(name)
+                        # ProtocolValue = QtGui.QStandardItem(value)
+
+                        ProtocolField = sortableElement()
+                        ProtocolField.setData(name,QtCore.Qt.EditRole)
+
+                        ProtocolValue = sortableElement()
+                        ProtocolValue.setData(value,QtCore.Qt.EditRole)
+
                         ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
                     branch1.appendRow(ProtocolToAdd)
                 self.model.appendRow([branch1])
@@ -139,12 +147,20 @@ class Ui_PackagePreview(object):
                     else:
                         color = QColor(255,255,0) #yellow
                     for protocol,fields in packet.items():
-                        ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
+                        # ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
+                        ProtocolToAdd = sortableElement()
+                        ProtocolToAdd.setData("Protocol: " + protocol,QtCore.Qt.EditRole)
                         ProtocolToAdd.setData(QBrush(color), QtCore.Qt.BackgroundRole)
 
                         for name,value in fields.items():
-                            ProtocolField = QtGui.QStandardItem(name)
-                            ProtocolValue = QtGui.QStandardItem(value)
+                            # ProtocolField = QtGui.QStandardItem(name)
+                            # ProtocolValue = QtGui.QStandardItem(value)
+                            ProtocolField = sortableElement()
+                            ProtocolField.setData(name,QtCore.Qt.EditRole)
+
+                            ProtocolValue = sortableElement()
+                            ProtocolValue.setData(value,QtCore.Qt.EditRole)
+
                             ProtocolValue.setData(QBrush(color), QtCore.Qt.BackgroundRole)
                             ProtocolField.setData(QBrush(color), QtCore.Qt.BackgroundRole)
 
