@@ -367,7 +367,7 @@ class UiMainWindow(object):
         self.packetpreview_ui.set_pyro_workspace(ws,p)
        
         dissector_json = self.pyro_proxy.get_dissector_attributes(self.workspace_file,p)
-        
+        print("ATTRIBUTES: {}".format(dissector_json))
         self.dba_ui.restore_widgets_to_scene(dissector_json)
 
     def save_all_dissector(self):

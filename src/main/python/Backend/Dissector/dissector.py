@@ -9,6 +9,7 @@ class Dissector_Generator():
         self.file_loader = FileSystemLoader('src/main/python/Backend/Dissector/templates')
         self.env = Environment(loader=self.file_loader)
         self.template = self.env.get_template('dissector.lua')
+        
        
     
     def parse_json(self,JSON):
@@ -19,23 +20,41 @@ class Dissector_Generator():
         self.dissector['port_type'] = JSON['protocol'] #NEED TO ADD THIS FIELD
         self.dissector['port_number'] = JSON['src_port']
         self.dissector['fields'] = []
+        self.dissector['decisions'] = []
 
         value = JSON['dissector']['START']
         print(value)
 
         while str(value) != 'END':
-            temp = {}
-            temp['name'] = JSON['dissector'][value]['Name']
-            temp['type'] = JSON['dissector'][value]['Data Type'].lower()
-            temp['filter'] = JSON['dissector'][value]['Abbreviation']
-            temp['label'] = JSON['dissector'][value]['Description']
-            temp['size'] = int(self.get_size(JSON['dissector'][value]['Var Size']))
-            temp['display_type'] = JSON['dissector'][value]['Base']
-            self.dissector['fields'].append(temp)
+            wtype = JSON['dissector'][value]['Type']
+            if  wtype == 'Field':
+                parse_field(JSON['dissector'][value])
+            elif wtype == 'Decision':
+                parse_decision(JSON['dissector'][value])
             value = JSON['dissector'][value]['next_field']
             print(value)
         print("Done parsing lua file")
     
+    def parse_field(self,fieldJSON):
+        temp = {}
+        temp['name'] = fieldJSON['Name']
+        temp['type'] = fieldJSON['Data Type'].lower()
+        temp['abbrev'] = fieldJSON['Abbreviation']
+        temp['desc'] = fieldJSON['Description']
+        temp['size'] = int(self.get_size(fieldJSON['Var Size']))
+        temp['display_type'] = ['Base']
+        self.dissector['fields'].append(temp)
+
+    def parse_decision(self,decisionJSON):
+        temp = {}
+        conditions = decisionJSON['Condition']
+        temp['operand1'] = conditions['operand1']
+        temp['operator1'] = conditions['operator1']
+        temp['operand2'] = conditions['operand2']
+        
+        #HANDLE TRUE OR FALSE
+
+
     def get_size(self,sizeJSON):
         size = sizeJSON['editText']
         if sizeJSON['combobox'] == "BYTES":

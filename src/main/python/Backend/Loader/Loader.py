@@ -123,7 +123,6 @@ class Loader():
         self.save_project(p_path,p)
     
     def get_dissector_attributes(self,workspace,p_name):
-    
         ws_json = self.loadworkspace(workspace)
         print("ws json: {}".format(ws_json))
         p_path = "{}/{}.pdbproj".format(ws_json['path'],p_name)

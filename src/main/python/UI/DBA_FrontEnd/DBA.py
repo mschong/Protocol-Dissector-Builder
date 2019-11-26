@@ -177,7 +177,8 @@ class Ui_Form(object):
         return dissector_dictionary
 
     def restore_widgets_to_scene(self, dissector_json):
-    	self.scene.restoreWidgetsToScene(dissector_json)
+        print("RESTORE {}".format(dissector_json))
+        self.scene.restoreWidgetsToScene(dissector_json)
        
 
    
