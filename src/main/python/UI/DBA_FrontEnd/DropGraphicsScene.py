@@ -688,6 +688,13 @@ class DropGraphicsScene(QGraphicsScene):
         doWidget_name = "do_" + str(self.while_count)
         return doWidget_name
 
+    def clearCanvass(self):
+        for item in self.proxyWidgetList:
+            item.removeConnectors()
+            self.removeItem(item)
+        self.proxyWidgetList.clear()
+        self.proxyDefinedFieldList.clear()
+
 
 
             
