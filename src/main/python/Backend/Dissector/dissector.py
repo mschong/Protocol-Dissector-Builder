@@ -39,7 +39,8 @@ class Dissector_Generator():
         temp['desc'] = fieldJSON['Description']
         temp['size'] = int(self.get_size(fieldJSON['Var Size']))
         temp['display_type'] = fieldJSON['Base']
-        self.dissector['fields'].append(temp)
+        if temp not in self.dissector['fields']:
+            self.dissector['fields'].append(temp)
  
     def get_size(self,sizeJSON):
         size = int(sizeJSON['editText'])
@@ -74,15 +75,15 @@ class Dissector_Generator():
             return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset)
         elif wtype == 'Decision':
             decision = curr['Condition']
-            r = "\t if {} {} {} then \n".format(decision['operand1'],decision['operator1'],decision['operand2'])
+            r = "\t if {} {} {} then \n \t".format(decision['operand1'],decision['operator1'],decision['operand2'])
             
             result += self.logic_to_lua_aux(curr['true'],r,JSON,offset)
             
-            r = "\t else \n"
+            r = "\t else \n \t"
            
             result += self.logic_to_lua_aux(curr['false'],r,JSON,offset)
             
-            result += '\t end \n'
+            result += '\t end \n \t'
             return result
         elif wtype == 'While':
             pass
