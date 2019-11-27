@@ -28,7 +28,7 @@ class Ui_PackagePreview(object):
         PackagePreview.resize(400, 200)
         PackagePreview.setMinimumSize(QtCore.QSize(100, 454))
         self.treeView = QtWidgets.QTreeView(PackagePreview)
-        self.treeView.setGeometry(QtCore.QRect(0, 50, 400, 401))
+        self.treeView.setGeometry(QtCore.QRect(0, 50, 800, 401))
         self.treeView.setObjectName("treeView")
         self.treeView.setSortingEnabled(True)
 
@@ -55,7 +55,7 @@ class Ui_PackagePreview(object):
         self.pushButton.clicked.connect(self.openFile)
 
         self.label_3 = QtWidgets.QLabel(PackagePreview)
-        self.label_3.setGeometry(QtCore.QRect(300, 30, 200, 17))
+        self.label_3.setGeometry(QtCore.QRect(300, 30, 500, 17))
         self.label_3.setObjectName("label_2")
 
         self.pushButton2 = QtWidgets.QPushButton(PackagePreview)
