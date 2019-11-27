@@ -1,14 +1,4 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'dissectorbuilderarea.ui'
-#
-# Created by: PyQt5 UI code generator 5.13.0
-#
-# WARNING! All changes made in this file will be lost!
-
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-#from StartField import StartField
 import sys
 from UI.DBA_FrontEnd.Field import Field
 from UI.DBA_FrontEnd.While_Loop import While_Loop
@@ -50,16 +40,16 @@ class Ui_Form(object):
         self.dba_label.setGeometry(QtCore.QRect(120, 10, 151, 16))
         self.dba_label.setObjectName("dba_label")
         self.graphicsView = QGraphicsView(Form)
-        self.graphicsView.setGeometry(QtCore.QRect(35, 31, 600, 500))
+        self.graphicsView.setGeometry(QtCore.QRect(35, 31, 800, 500))
         self.graphicsView.setObjectName("graphicsView")
         self.scene = DropGraphicsScene(QtCore.QRectF(0,0,self.graphicsView.width(), self.graphicsView.height()))
         self.graphicsView.setScene(self.scene)
         self.graphicsView.setSceneRect(QtCore.QRectF(0, 0, 6000, 6000))
         self.toolbox_label = QtWidgets.QLabel(Form)
-        self.toolbox_label.setGeometry(QtCore.QRect(650, 10, 64, 17))
+        self.toolbox_label.setGeometry(QtCore.QRect(850, 10, 64, 17))
         self.toolbox_label.setObjectName("toolbox_label")
         self.toolBox = QtWidgets.QToolBox(Form)
-        self.toolBox.setGeometry(QtCore.QRect(650, 30, 250, 320))
+        self.toolBox.setGeometry(QtCore.QRect(850, 30, 250, 320))
         self.toolBox.setObjectName("toolBox")
         self.field_tab = QtWidgets.QWidget()
         self.field_tab.setGeometry(QtCore.QRect(0, 0, 250, 210))
@@ -184,12 +174,13 @@ class Ui_Form(object):
 
     def save_button_clicked(self):
         dissector_dictionary = self.scene.save_dissector()
-        #dissector_json = json.dumps(dissector_dictionary)
         return dissector_dictionary
 
     def restore_widgets_to_scene(self, dissector_json):
-    	#dissector_dictionary = json.loads(dissector_json)
     	self.scene.restoreWidgetsToScene(dissector_json)
+
+    def clear_widgets_from_canvass(self):
+        self.scene.clearCanvass()
        
 
    

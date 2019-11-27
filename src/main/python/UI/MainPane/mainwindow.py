@@ -222,6 +222,7 @@ class UiMainWindow(object):
         self.workspace_file = None
         self.pyro_proxy.close_workspace()
         self.clearProjectTreview()
+        self.dba_ui.clear_widgets_from_canvass()
 
     def loadWorkspace(self):
         if self.workspace_file == None or self.workspace_file == "":
@@ -367,7 +368,8 @@ class UiMainWindow(object):
         self.packetpreview_ui.set_pyro_workspace(ws,p)
        
         dissector_json = self.pyro_proxy.get_dissector_attributes(self.workspace_file,p)
-        
+        print("ATTRIBUTES: {}".format(dissector_json))
+        self.dba_ui.clear_widgets_from_canvass()
         self.dba_ui.restore_widgets_to_scene(dissector_json)
 
     def save_all_dissector(self):

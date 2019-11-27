@@ -16,7 +16,8 @@ import json
 import Pyro4
 import Pyro4.util
 import os
-
+import subprocess
+from UI.PacketPreview.customSort import sortableElement
 
 class Ui_PackagePreview(object):
     def setupUi(self, PackagePreview):
@@ -27,7 +28,7 @@ class Ui_PackagePreview(object):
         PackagePreview.resize(400, 200)
         PackagePreview.setMinimumSize(QtCore.QSize(100, 454))
         self.treeView = QtWidgets.QTreeView(PackagePreview)
-        self.treeView.setGeometry(QtCore.QRect(0, 50, 400, 401))
+        self.treeView.setGeometry(QtCore.QRect(0, 50, 800, 401))
         self.treeView.setObjectName("treeView")
         self.treeView.setSortingEnabled(True)
 
@@ -54,7 +55,7 @@ class Ui_PackagePreview(object):
         self.pushButton.clicked.connect(self.openFile)
 
         self.label_3 = QtWidgets.QLabel(PackagePreview)
-        self.label_3.setGeometry(QtCore.QRect(300, 30, 200, 17))
+        self.label_3.setGeometry(QtCore.QRect(300, 30, 500, 17))
         self.label_3.setObjectName("label_2")
 
         self.pushButton2 = QtWidgets.QPushButton(PackagePreview)
@@ -76,28 +77,43 @@ class Ui_PackagePreview(object):
         self.label_3.setText("Status: Opening a file...")
         self.model.removeRows(0,self.model.rowCount())
         self.name = QFileDialog.getOpenFileName()
+        p = subprocess.Popen(['python3.6', 'src/main/python/UI/PacketPreview/demo.py'])
         if(self.name[0] and ".pcap" in self.name[0] ):
             self.pyro_proxy.createPackets(self.name[0])
             self.pyro_proxy.savePackets()
-            self.label_3.setText("Status: Opening a file...50%")
+            self.label_3.setText(" ")
             self.pyro_proxy.printPackets()
             fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","r")
             vars = json.loads(fileToRead.read().strip())
             packetDict = vars[0]
             protocolDict = vars[1]
             for number,packet in packetDict.items():
-                branch1= QtGui.QStandardItem("Packet #" + str(number))
+                branch1 = sortableElement()
+                branch1.setData("Packet #" + str(number),QtCore.Qt.EditRole)
+
+                # branch1= QtGui.QStandardItem("Packet #" + str(number))
                 for protocol,fields in packet.items():
-                    ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
+                    # ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
+                    ProtocolToAdd = sortableElement()
+                    ProtocolToAdd.setData("Protocol: " + protocol,QtCore.Qt.EditRole)
                     for name,value in fields.items():
-                        ProtocolField = QtGui.QStandardItem(name)
-                        ProtocolValue = QtGui.QStandardItem(value)
+
+                        # ProtocolField = QtGui.QStandardItem(name)
+                        # ProtocolValue = QtGui.QStandardItem(value)
+
+                        ProtocolField = sortableElement()
+                        ProtocolField.setData(name,QtCore.Qt.EditRole)
+
+                        ProtocolValue = sortableElement()
+                        ProtocolValue.setData(value,QtCore.Qt.EditRole)
+
                         ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
                     branch1.appendRow(ProtocolToAdd)
                 self.model.appendRow([branch1])
-            self.label_3.setText("Status: File has been opened.")
+        p.terminate()
 
     def dissect(self):
+        p = subprocess.Popen(['python3.6', 'src/main/python/UI/PacketPreview/demo.py'])
         try:
             if(self.name[0] and ".pcap" in self.name[0] ):
                 self.model.removeRows(0,self.model.rowCount())
@@ -109,8 +125,6 @@ class Ui_PackagePreview(object):
                 self.label_3.setText("Status: Dissecting...: 50%")
 
                 self.pyro_proxy.dissectPackets()
-                # self.pyro_proxy.colorCode()
-                # self.pyro_proxy.savePackets()
 
                 fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","r")
                 vars = json.loads(fileToRead.read().strip())
@@ -125,7 +139,9 @@ class Ui_PackagePreview(object):
 
                     j= j+1
                 for number,packet in packetDict.items():
-                    branch2= QtGui.QStandardItem("Packet # " + str(number))
+                    # branch2= QtGui.QStandardItem("Packet # " + str(number))
+                    branch2 = sortableElement()
+                    branch2.setData("Packet #" + str(number),QtCore.Qt.EditRole)
                     index = int(number) -1
                     if colorList[str(index)] == "Green":
                         color = QColor(0,255,0)#green
@@ -134,12 +150,20 @@ class Ui_PackagePreview(object):
                     else:
                         color = QColor(255,255,0) #yellow
                     for protocol,fields in packet.items():
-                        ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
+                        # ProtocolToAdd = QtGui.QStandardItem("Protocol:" + protocol)
+                        ProtocolToAdd = sortableElement()
+                        ProtocolToAdd.setData("Protocol: " + protocol,QtCore.Qt.EditRole)
                         ProtocolToAdd.setData(QBrush(color), QtCore.Qt.BackgroundRole)
 
                         for name,value in fields.items():
-                            ProtocolField = QtGui.QStandardItem(name)
-                            ProtocolValue = QtGui.QStandardItem(value)
+                            # ProtocolField = QtGui.QStandardItem(name)
+                            # ProtocolValue = QtGui.QStandardItem(value)
+                            ProtocolField = sortableElement()
+                            ProtocolField.setData(name,QtCore.Qt.EditRole)
+
+                            ProtocolValue = sortableElement()
+                            ProtocolValue.setData(value,QtCore.Qt.EditRole)
+
                             ProtocolValue.setData(QBrush(color), QtCore.Qt.BackgroundRole)
                             ProtocolField.setData(QBrush(color), QtCore.Qt.BackgroundRole)
 
@@ -152,7 +176,7 @@ class Ui_PackagePreview(object):
                 self.label_3.setText("Status: Package has been dissected.")
         except:
                 pass
-
+        p.terminate()
 
 
     def retranslateUi(self, PackagePreview):
@@ -166,7 +190,7 @@ class Ui_PackagePreview(object):
 
     def set_pyro_workspace(self,workspace,project):
         self.pyro_proxy.set_workspace(workspace,project)
-        
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     PackagePreview = QtWidgets.QWidget()
