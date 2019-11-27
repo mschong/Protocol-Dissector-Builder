@@ -81,7 +81,7 @@ class Ui_PackagePreview(object):
         if(self.name[0] and ".pcap" in self.name[0] ):
             self.pyro_proxy.createPackets(self.name[0])
             self.pyro_proxy.savePackets()
-            self.label_3.setText("Status: Opening a file...50%")
+            self.label_3.setText(" ")
             self.pyro_proxy.printPackets()
             fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","r")
             vars = json.loads(fileToRead.read().strip())
@@ -110,7 +110,6 @@ class Ui_PackagePreview(object):
                         ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
                     branch1.appendRow(ProtocolToAdd)
                 self.model.appendRow([branch1])
-            self.label_3.setText("Status: File has been opened.")
         p.terminate()
 
     def dissect(self):
