@@ -24,7 +24,7 @@ class Dissector_Generator():
         if str(value) == 'END':
             return
         wtype = JSON['dissector'][value]['Type']
-        if  wtype == 'Field':
+        if  wtype == 'Field' or wtype =='CodeBlock' or wtype == 'Variable':
             self.parse_field(JSON['dissector'][value])
             return self.parse_aux(JSON['dissector'][value]['next_field'],JSON)
         else :
@@ -86,6 +86,14 @@ class Dissector_Generator():
             result += '\t end \n \t'
             return result
         elif wtype == 'While':
+            pass
+        elif wtype == 'For':
+            pass
+        elif wtype == 'Do While':
+            pass
+        elif wtype == 'CodeBlock':
+            pass
+        elif wtype == 'Variable': 
             pass
             
     def no_jinja_headers(self,workspace,JSON):
