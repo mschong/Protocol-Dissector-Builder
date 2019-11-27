@@ -137,10 +137,11 @@ class Loader():
         p_path = "{}/{}.pdbproj".format(ws_json['path'],project)
         with open(p_path) as f:
             p_json = json.loads(f.read())
-            print("JSON = {}".format(p_json))
+        print("JSON = {}".format(p_json))
         generator = dissector.Dissector_Generator()
         generator.parse_json(p_json)
-        generator.export_lua(ws_json['path'])
+        generator.no_jinja_headers(ws_json['path'],p_json)
+        # generator.export_lua(ws_json['path'])
         #generator.mock_run(ws_json['path'])
 
     
