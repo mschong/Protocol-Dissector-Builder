@@ -15,21 +15,27 @@ class Dissector_Generator():
         self.dissector['port_number'] = JSON['src_port']
         self.dissector['fields'] = []
         value = JSON['dissector']['START']
-        self.parse_aux(value,JSON)
+        seen = set()
+        self.parse_aux(value,JSON,seen)
         print("Done parsing lua file")
 
   
 
-    def parse_aux(self,value,JSON):
+    def parse_aux(self,value,JSON,seen):
         if str(value) == 'END':
             return
+        if value in seen:
+            return
         wtype = JSON['dissector'][value]['Type']
-        if  wtype == 'Field' or wtype =='CodeBlock' or wtype == 'Variable':
+        seen.add(value)
+        if wtype == 'Decision' or wtype == 'while' or wtype == 'for':
+            self.parse_aux(JSON['dissector'][value]['true'],JSON,seen)
+            self.parse_aux(JSON['dissector'][value]['false'],JSON,seen)
+            return
+        elif  wtype == 'Field':
             self.parse_field(JSON['dissector'][value])
-            return self.parse_aux(JSON['dissector'][value]['next_field'],JSON)
-        else :
-            self.parse_aux(JSON['dissector'][value]['true'],JSON)
-            self.parse_aux(JSON['dissector'][value]['false'],JSON)
+        return self.parse_aux(JSON['dissector'][value]['next_field'],JSON,seen)
+            
     
     def parse_field(self,fieldJSON):
         temp = {}
@@ -63,11 +69,13 @@ class Dissector_Generator():
         return data
 
     def logic_to_lua_aux(self,value,result,JSON,offset):
+        print("curr : {}".format(value))
         if str(value) == 'END':
-    
             return result
         curr = JSON['dissector'][value]
         wtype = JSON['dissector'][value]['Type']
+        if wtype == 'End Loop':
+            return result
         if  wtype == 'Field':
             r = "\t subtree:add({},buffer({},{})) \n".format(curr['Name'],offset,int(self.get_size(curr['Var Size'])))
             offset += int(self.get_size(curr['Var Size']))
@@ -85,15 +93,31 @@ class Dissector_Generator():
             
             result += '\t end \n \t'
             return result
-        elif wtype == 'While':
-            pass
-        elif wtype == 'For':
+        elif wtype == 'while':
+            loop = curr['Condition']
+            r = "\t while({} {} {})\n do \n \t".format(loop['operand1'],loop['operator1'],loop['operand2'])
+            result += self.logic_to_lua_aux(curr['true'],r,JSON,offset)
+            result += '\t end \n \t'
+            r = " "
+            result += self.logic_to_lua_aux(curr['false'],r,JSON,offset)
+            result += '\n'
+            return result
+        elif wtype == 'for':
+            loop = curr['Expressions']
+            r = "\t for {}, {}, {} \n \t do \n \t".format(loop['exp1'],loop['exp2'],loop['exp3'])
+            result += self.logic_to_lua_aux(curr['true'],r,JSON,offset)
+            result += '\t end \n \t'
+            r = " "
+            result += self.logic_to_lua_aux(curr['false'],r,JSON,offset)
+            result += '\n'
+            return result
+        elif wtype == 'CodeBlock':
+            result += curr['Code']
+            result += "\n \t"
+            return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset)
+        elif wtype == 'Variable': 
             pass
         elif wtype == 'Do While':
-            pass
-        elif wtype == 'CodeBlock':
-            pass
-        elif wtype == 'Variable': 
             pass
             
     def no_jinja_headers(self,workspace,JSON):
@@ -111,9 +135,9 @@ class Dissector_Generator():
         for field in self.dissector['fields']:
             if field == self.dissector['fields'][-1]:
                 f.write(f"{field['name']} ")
-                f.write("} \n")
             else :
                 f.write("{}, ".format(field['name']))
+        f.write("} \n")
         print("Fields completed")
         f.write("\n -- Dissector function \n")
         f.write("function protocol.dissector(buffer,pinfo,tree) \n")
