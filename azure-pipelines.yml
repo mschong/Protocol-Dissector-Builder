@@ -30,6 +30,7 @@ jobs:
       displayName: 'Install dependencies'
 
     - script: |
+        sudo apt-get update
         sudo apt-get remove ruby
         sudo apt-get install ruby ruby-dev rubygems build-essential
         sudo gem install --no-ri --no-rdoc fpm

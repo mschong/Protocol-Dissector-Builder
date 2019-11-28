@@ -9,7 +9,9 @@ from UI.DBA_FrontEnd.Decision import Decision
 from UI.DBA_FrontEnd.GraphicsProxyWidget  import GraphicsProxyWidget
 from UI.DBA_FrontEnd.Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
 from UI.DBA_FrontEnd.CodeBlock import CodeBlock
+from UI.DBA_FrontEnd.Variable import Variable
 import sys
+
 
 class ToolButton(QToolButton):
     def __init__(self, widget, scene):
@@ -40,6 +42,7 @@ class DropGraphicsScene(QGraphicsScene):
         self.myLineColor = Qt.black
         self.proxyWidgetList = []
         self.proxyDefinedFieldList= []
+        self.variableList = []
         self.countFields = 0
         self.decision_count = 0
         self.while_count = 0 
@@ -50,52 +53,34 @@ class DropGraphicsScene(QGraphicsScene):
     def contextMenuEvent(self, event):
         if(len(self.items(event.scenePos()))):
             menu = QMenu()
-
-            deleteAction = QAction()
-            
-
             if isinstance(self.items(event.scenePos())[0], Connector):
-                change_type_action = QAction()
                 change_type_action = menu.addAction("Change Type")
-
-                deleteAction = menu.addAction("Delete")
+                delete_action = menu.addAction("Delete")
 
                 action = menu.exec_(event.screenPos())
-                
-                if action == deleteAction:
-                    itemToRemove = QGraphicsWidget()
+
+                if(action == delete_action):
                     for item in self.items(event.scenePos()):
-                        if item.scene():
-                            # Following two if statements remove field's connectors
-                            if isinstance(item, GraphicsProxyWidget):
-                                item.removeConnectors()
-                            elif isinstance(item, Connector):
-                                item.startItem().removeConnector(item)
-                                item.endItem().removeConnector(item)
+                        if(item.scene()):
+                            item.startItem().removeConnector(item)
+                            item.endItem().removeConnector(item)
                             self.removeItem(item)
-                            # self.proxyWidgetList.remove(item.widget().text())
                 elif action == change_type_action:
                     dialog = ConnectorTypeDialog(self.items(event.scenePos())[0])
-                    # dialog.setModal(True)
                     dialog.exec_()
             else:
-                deleteAction = menu.addAction("Delete")
+                delete_action = menu.addAction("Delete")
                 action = menu.exec_(event.screenPos())
-                
-                if action == deleteAction:
-                    itemToRemove = QGraphicsWidget()
+
+                if action == delete_action:
                     for item in self.items(event.scenePos()):
                         if item.scene():
-                            # Following two if statements remove field's connectors
-                            if isinstance(item, GraphicsProxyWidget):
-                                item.removeConnectors()
-                                self.proxyWidgetList.remove(item)
-                            elif isinstance(item, Connector):
-                                item.startItem().removeConnector(item)
-                                item.endItem().removeConnector(item)
+                            item.removeConnectors()
+                            self.proxyWidgetList.remove(item)
+                            self.proxyDefinedFieldList.remove(item)
                             self.removeItem(item)
-                            # self.proxyWidgetList.remove(item.widget().text())
-    
+
+
     # The following two functions are only preparing the scene to accept any drag movements
 
     def dragEnterEvent(self, event):
@@ -174,16 +159,23 @@ class DropGraphicsScene(QGraphicsScene):
             do_widget = QWidget()
             proxy = self.addWidgetToScene(do_widget, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
+        elif(event.mimeData().text() == "Variable"):
+            variable = Variable()
+            proxy = self.addWidgetToScene(variable, event.scenePos(), event.mimeData().text())
+            self.variableList.append(proxy)
+            proxy.setPolygon()
         else: 
-            for field in self.proxyWidgetList:
-                if(event.mimeData().text() == field.widget().text()):
-                    definedFieldPos = event.scenePos()
-                    definedField = self.prepareDefinedFieldForDrop(event.mimeData().text())
-                    proxy = self.addWidgetToScene(definedField, definedFieldPos, 'Defined Field')
-                    proxy.setPolygon()
-                    self.proxyWidgetList.append(proxy)
-                    event.accept()
-                    return
+            for widget in self.proxyWidgetList:
+                if(event.mimeData().text() == widget.widget().text()):
+                    definedWidgetPos = event.scenePos()
+                    if(isinstance(widget.widget().menu().actions()[0].defaultWidget(), Field)):
+                        definedWidget = self.prepareDefinedWidgetForDrop(event.mimeData().text(),'Field')
+                        proxy = self.addWidgetToScene(definedWidget, definedWidgetPos, 'Defined Field')
+                        proxy.setPolygon()
+                    else:
+                        definedWidget = self.prepareDefinedWidgetForDrop(event.mimeData().text(),'Variable')
+                        proxy = self.addWidgetToScene(definedWidget, definedWidgetPos, 'Defined Variable')
+                        proxy.setPolygon()
 
         if ((proxy.scenePos().x() + proxy.size().width()) > self.width()):
             self.updateScene(proxy.size().width(), True)
@@ -199,15 +191,28 @@ class DropGraphicsScene(QGraphicsScene):
         button = None        
         if(text != "End Loop" and text != "do"):
             if(not(isinstance(widget, Field))):
-                button = QToolButton()
-                button.setPopupMode(QToolButton.MenuButtonPopup)
-                button.setGeometry(QRect(20, 30, 278, 40))
-                button.setText(text)
-                menu = QMenu()
-                button.setMenu(menu)
-                action = QWidgetAction(button)
-                action.setDefaultWidget(widget)
-                button.menu().addAction(action)
+                if(isinstance(widget, Variable)):
+                    button = ToolButton(widget, self)
+                    button.setText(text)
+                    widget.setButton(button)
+                    if(text=='Defined Variable'):
+                        variable_name = button.widget.nameLineEdit.text()
+                        button.setText(variable_name)
+                    else:
+                        button.setText('No Name Variable')
+
+                
+                else:
+                    button = QToolButton()
+                    button.setPopupMode(QToolButton.MenuButtonPopup)
+                    button.setGeometry(QRect(20, 30, 278, 40))
+                    button.setText(text)
+                    menu = QMenu()
+                    button.setMenu(menu)
+                    action = QWidgetAction(button)
+                    action.setDefaultWidget(widget)
+                    button.menu().addAction(action)
+                
             if(isinstance(widget, Field)):
                 if(text[0:5] == "Field"):
                     self.countFields = self.countFields + 1
@@ -227,9 +232,6 @@ class DropGraphicsScene(QGraphicsScene):
                     button = ToolButton(widget, self)
                     button.setText(text)
                     widget.setButton(button)
-
-            
-
         else:
             button = QPushButton()
             button.setGeometry(QRect(20, 30, 278, 40))
@@ -242,6 +244,7 @@ class DropGraphicsScene(QGraphicsScene):
         parent = QGraphicsWidget()
         parent.setCursor(Qt.SizeAllCursor)
         parent.setGeometry((pos.x())-70, (pos.y())-70, 80, 90)
+        # parent.setGeometry((pos.x()), (pos.y()), 80, 90)
         parent.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
         """ Here we are 'dropping' the item to the scene.
          We needed to create a parent over the widget because if would add the widget to scene 
@@ -261,22 +264,34 @@ class DropGraphicsScene(QGraphicsScene):
         return proxy
 
 
-    def prepareDefinedFieldForDrop(self, text):
-        definedField = Field()
-        for field in self.proxyWidgetList:
-            if text == field.widget().text():
-                defined_field_properties = field.widget().menu().actions()[0].defaultWidget().saveMethod()
-                definedField.setName(defined_field_properties.get('Name'))
-                definedField.setAbbreviation(defined_field_properties.get('Abbreviation'))
-                definedField.setDescription(defined_field_properties.get('Description'))
-                definedField.setDataType(defined_field_properties.get('Data Type'))
-                definedField.setBase(defined_field_properties.get('Base'))
-                definedField.setMask(defined_field_properties.get('Mask'))
-                definedField.setValueConstraint(defined_field_properties.get('Value Constraint'))
-                definedField.setSize(defined_field_properties.get('Var Size').get('editText'), defined_field_properties.get('Var Size').get('combobox'))
-                definedField.setID(defined_field_properties.get('ID Value'))
-                definedField.setRequired(defined_field_properties.get('Required'))
-        return definedField
+    def prepareDefinedWidgetForDrop(self, text, typeWidget):
+        if(typeWidget == 'Field'):
+            definedField = Field()
+            for field in self.proxyWidgetList:
+                if text == field.widget().text():
+                    defined_field_properties = field.widget().menu().actions()[0].defaultWidget().saveMethod()
+                    definedField.setName(defined_field_properties.get('Name'))
+                    definedField.setAbbreviation(defined_field_properties.get('Abbreviation'))
+                    definedField.setDescription(defined_field_properties.get('Description'))
+                    definedField.setDataType(defined_field_properties.get('Data Type'))
+                    definedField.setBase(defined_field_properties.get('Base'))
+                    definedField.setMask(defined_field_properties.get('Mask'))
+                    definedField.setValueConstraint(defined_field_properties.get('Value Constraint'))
+                    definedField.setSize(defined_field_properties.get('Var Size').get('editText'), defined_field_properties.get('Var Size').get('combobox'))
+                    definedField.setID(defined_field_properties.get('ID Value'))
+                    definedField.setRequired(defined_field_properties.get('Required'))
+            return definedField
+        else:
+            definedVariable = Variable()
+            for variable in self.variableList:
+                if text == variable.widget().text():
+                    defined_variable_properties = variable.widget().menu().actions()[0].defaultWidget().saveMethod()
+                    definedVariable.setScope(defined_variable_properties.get('Scope'))
+                    definedVariable.setName(defined_variable_properties.get('Name'))
+                    definedVariable.setDataType(defined_variable_properties.get('Data Type'))
+                    definedVariable.setValue(defined_variable_properties.get('Value'))
+            return definedVariable
+
 
     def restoreWidgetsToScene(self, dissector):
         nameToProxyDict = {} # Used for filling out the values in connectionsDict
@@ -327,6 +342,8 @@ class DropGraphicsScene(QGraphicsScene):
                 self.codeBlock_count += 1
                 widgetToAdd.setTextBox(widget['Code'])
                 widgetText = "Code Block"
+            elif(widgetType == "VarField"):
+                pass
 
             widgetPosition = QPointF(dissector[key]["Position"]["x"], dissector[key]["Position"]["y"])
             proxy = self.addWidgetToScene(widgetToAdd, widgetPosition, widgetText)
@@ -347,9 +364,11 @@ class DropGraphicsScene(QGraphicsScene):
                 else:
                     widgetToAdd.setCondition(widget["Condition"])
                 conditionConnections = {}
+                # if field has a true key and it's not None
                 if("true" in dissector[key].keys()):
                     if(dissector[key]["true"] != None):
                         conditionConnections.update({1: dissector[key]["true"]})
+                # if field has a false key and it's not None
                 if("false" in dissector[key].keys()):
                     if(dissector[key]["false"] != None):
                         conditionConnections.update({0: dissector[key]["false"]})
@@ -358,8 +377,9 @@ class DropGraphicsScene(QGraphicsScene):
         # Placing the endItems in the dictionary values
         for key, value in nameToProxyDict.items():
             for startItem, endItem in connectionsDict.items():
-                # if there are more than one next_field and key is one of them
+                # if there are more than one next_field and key is one of those fields
                 if(type(endItem) is dict and key in endItem.values()):
+                    # path 0 innerEndItem is for false, path 1 innerEndItem is for true
                     for path, innerEndItem in endItem.items():
                         if(innerEndItem == key):
                             connectionsDict[startItem][path] = value
@@ -462,8 +482,8 @@ class DropGraphicsScene(QGraphicsScene):
             # Saving "end loop" or "do" widgets into a dictionary
             if(isinstance(proxyWidget.widget(), QPushButton)):
                 if(proxyWidget.widget().text() == "End Loop"):
-                    x_position = proxyWidget.scenePos().x()
-                    y_position = proxyWidget.scenePos().y()
+                    x_position = proxyWidget.scenePos().x()+70
+                    y_position = proxyWidget.scenePos().y()+70
                     position = {'x': x_position, 'y': y_position}
                     endLoop = {'Position': position}
                     endLoop.update({'Type': "End Loop"})
@@ -480,8 +500,8 @@ class DropGraphicsScene(QGraphicsScene):
                     
                     
                 elif(proxyWidget.widget().text() == "do"):
-                    x_position = proxyWidget.scenePos().x()
-                    y_position = proxyWidget.scenePos().y()
+                    x_position = proxyWidget.scenePos().x()+70
+                    y_position = proxyWidget.scenePos().y()+70
                     position = {'x': x_position, 'y': y_position}
                     doWhile_start = {'Position': position}
                     doWhile_start.update({'Type': "do"})
@@ -508,9 +528,10 @@ class DropGraphicsScene(QGraphicsScene):
             if(isinstance(defaultWidget, Field)):
                 field = defaultWidget.saveMethod()
 
-                x_position = proxyWidget.scenePos().x()
-                y_position = proxyWidget.scenePos().y()
+                x_position = proxyWidget.scenePos().x()+70
+                y_position = proxyWidget.scenePos().y()+70
                 position = {'x': x_position, 'y': y_position}
+
                 field.update({'Position': position})
                 field.update({'Type': "Field"})
 
@@ -537,8 +558,8 @@ class DropGraphicsScene(QGraphicsScene):
                 codeBlock = defaultWidget.saveMethod()
                 codeBlockName = defaultWidget.getName()
 
-                x_position = proxyWidget.scenePos().x()
-                y_position = proxyWidget.scenePos().y()
+                x_position = proxyWidget.scenePos().x()+70
+                y_position = proxyWidget.scenePos().y()+70
                 position = {'x': x_position, 'y': y_position}
                 codeBlock.update({'Position': position})
                 codeBlock.update({'Type': "CodeBlock"})
@@ -558,6 +579,11 @@ class DropGraphicsScene(QGraphicsScene):
                 if(self.isStartField(proxyWidget)):
                     dissector.update({'START': codeBlockName})
                 dissector.update({codeBlockName: codeBlock})
+
+            ################################################################
+            # elif(isinstance(defaultWidget, varField)):
+                # pass
+            ################################################################
 
             # Saving Decision information into dictionary
             elif(isinstance(defaultWidget, Decision)):
@@ -596,8 +622,8 @@ class DropGraphicsScene(QGraphicsScene):
             condition = defaultWidget.saveMethod()
             widget_properties = {'Condition': condition}
 
-        x_position = proxyWidget.scenePos().x()
-        y_position = proxyWidget.scenePos().y()
+        x_position = proxyWidget.scenePos().x()+70
+        y_position = proxyWidget.scenePos().y()+70
         position = {'x': x_position, 'y': y_position}
         widget_properties.update({'Position': position})
 
@@ -613,7 +639,6 @@ class DropGraphicsScene(QGraphicsScene):
             elif(connector.getType() == "False"):
                 widget_properties.update({'false': end_item})
 
-            ###### TEST THIS ########################## then add to restore widgets
             if('true' not in widget_properties.keys()):
                 widget_properties.update({'true': None})
             if('false' not in widget_properties.keys()):
@@ -627,6 +652,11 @@ class DropGraphicsScene(QGraphicsScene):
     # widget must be a GraphicsProxyWidget
     def getDefaultWidget(self, widget):
         return widget.widget().menu().actions()[0].defaultWidget()
+
+    def getAbsolutePosition(self, widget):
+        point = widget.mapFromScene(0.0,0.0)
+        return({'x': abs(point.x()), 'y': abs(point.y())})
+        
 
     # widget properties is a dictionary
     def isEndField(self, widget_properties):
@@ -655,8 +685,6 @@ class DropGraphicsScene(QGraphicsScene):
                     endItem_name = "End_" + connectedLoopWidget_name
                     return endItem_name
 
-                    # Need error handling in case this is a leaf node in the tree
-
 
         if(isinstance(endItem.widget(), QPushButton) and endItem.widget().text() == "do"):
             return self.getDoWidgetName(endItem)
@@ -667,7 +695,7 @@ class DropGraphicsScene(QGraphicsScene):
             endItem_name = endItem_Widget.table.cellWidget(0,1).text()
 
         elif(isinstance(endItem_Widget, Decision) or isinstance(endItem_Widget,While_Loop) or
-             isinstance(endItem_Widget,Do_Loop) or isinstance(endItem_Widget, For_Loop)):
+             isinstance(endItem_Widget, For_Loop)):
             endItem_name = endItem_Widget.getName()
 
         return endItem_name
@@ -677,7 +705,7 @@ class DropGraphicsScene(QGraphicsScene):
         # Checks if connected to a while already
         for connector in doProxyWidget.connectors:
             if(connector.endItem() is doProxyWidget and 
-                (isinstance(self.getDefaultWidget(connector.startItem()), While_Loop) or isinstance(self.getDefaultWidget(connector.startItem()), Do_Loop))):
+                (isinstance(self.getDefaultWidget(connector.startItem()), While_Loop))):
                 whileWidget = self.getDefaultWidget(connector.startItem())
                 connectedWhileWidget_name = whileWidget.getName()
 
@@ -695,6 +723,3 @@ class DropGraphicsScene(QGraphicsScene):
         self.proxyWidgetList.clear()
         self.proxyDefinedFieldList.clear()
 
-
-
-            

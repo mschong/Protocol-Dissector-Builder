@@ -165,6 +165,7 @@ class Field(QWidget):
 
         else:
             self.toolButton.setText(self.table.cellWidget(0, 1).text())
+    
     def setName(self, name):
         self.table.cellWidget(0,1).setText(name)
 
