@@ -77,7 +77,10 @@ class DropGraphicsScene(QGraphicsScene):
                         if item.scene():
                             item.removeConnectors()
                             self.proxyWidgetList.remove(item)
-                            self.proxyDefinedFieldList.remove(item)
+                            if(isinstance(self.getDefaultWidget(item), Variable)):
+                                self.variableList.remove(item)
+                            else:
+                                self.proxyDefinedFieldList.remove(item)
                             self.removeItem(item)
 
 
@@ -205,7 +208,7 @@ class DropGraphicsScene(QGraphicsScene):
                 else:
                     button = QToolButton()
                     button.setPopupMode(QToolButton.MenuButtonPopup)
-                    button.setGeometry(QRect(20, 30, 278, 40))
+                    button.setGeometry(QRect(20, 30, 278, 40)) 
                     button.setText(text)
                     menu = QMenu()
                     button.setMenu(menu)
@@ -342,19 +345,28 @@ class DropGraphicsScene(QGraphicsScene):
                 self.codeBlock_count += 1
                 widgetToAdd.setTextBox(widget['Code'])
                 widgetText = "Code Block"
-            elif(widgetType == "VarField"):
-                pass
+            elif(widgetType == "Variable"):
+                widgetToAdd = Variable()
+                widgetToAdd.setName(widget['Name'])
+                widgetToAdd.setValue(widget['Value'])
+                widgetToAdd.setScope(widget['Scope'])
+                widgetToAdd.setDataType(widget['Data Type'])
+                widgetText = 'Defined Variable'
+
 
             widgetPosition = QPointF(dissector[key]["Position"]["x"], dissector[key]["Position"]["y"])
             proxy = self.addWidgetToScene(widgetToAdd, widgetPosition, widgetText)
 
             proxy.setPolygon()
             self.proxyWidgetList.append(proxy)
-            self.proxyDefinedFieldList.append(proxy)
+            if(widgetType == "Field"):
+                self.proxyDefinedFieldList.append(proxy)
+            elif(widgetType == "Variable"):
+                self.variableList.append(proxy)
 
             nameToProxyDict.update({key: proxy})
             
-            if(widgetType == "Field" or widgetType == "do" or widgetType == "End Loop" or widgetType == "CodeBlock"):
+            if(widgetType == "Field" or widgetType == "do" or widgetType == "End Loop" or widgetType == "CodeBlock" or widgetType == "Variable"):
                 if(dissector[key]["next_field"] != "END"):
                     connectionsDict.update({proxy: dissector[key]["next_field"]})
 
@@ -580,10 +592,32 @@ class DropGraphicsScene(QGraphicsScene):
                     dissector.update({'START': codeBlockName})
                 dissector.update({codeBlockName: codeBlock})
 
-            ################################################################
-            # elif(isinstance(defaultWidget, varField)):
-                # pass
-            ################################################################
+            # Saving Variable informatin into dictionary
+            elif(isinstance(defaultWidget, Variable)):
+                variableProperties = defaultWidget.saveMethod()
+                variableName = variableProperties["Name"]
+
+                x_position = proxyWidget.scenePos().x()+70
+                y_position = proxyWidget.scenePos().y()+70
+                position = {'x': x_position, 'y': y_position}
+                variableProperties.update({'Position': position})
+                variableProperties.update({'Type': "Variable"})
+
+                # Getting "next field"
+                for connector in proxyWidget.connectors:
+                    # Skip if this widget is the endItem of the connector
+                    if(not isinstance(connector.endItem().widget(), QPushButton)):
+                        if(self.getDefaultWidget(connector.endItem()) is defaultWidget):
+                            continue # continue connector for-loop
+
+                    end_item = self.getNextWidgetName(connector.endItem())
+                    variableProperties.update({'next_field': end_item})
+
+                if(self.isEndField(variableProperties)):
+                    variableProperties.update({'next_field': "END"})
+                if(self.isStartField(proxyWidget)):
+                    dissector.update({'START': variableName})
+                dissector.update({variableName: variableProperties})
 
             # Saving Decision information into dictionary
             elif(isinstance(defaultWidget, Decision)):
@@ -663,10 +697,17 @@ class DropGraphicsScene(QGraphicsScene):
         return not 'next_field' in widget_properties
 
     def isStartField(self, proxyWidget):
+        loop_endItem_count = 0
         for connector in proxyWidget.connectors:
             if(not isinstance(connector.endItem().widget(), QPushButton)):
                 if(connector.endItem() is proxyWidget):
-                    return False # false if this widget is pointed to by a connector
+                    if(not isinstance(connector.endItem(), While_Loop) or not isinstance(connector.endItem(), For_Loop)):
+                        return False # false if this widget is pointed to by a connector
+                    else:
+                        if(loop_endItem_count == 0):
+                            loop_endItem_count += 1
+                        else:
+                            return False
             else:
                 if(connector.endItem() is proxyWidget and connector.getType() != "True"):
                     return False
