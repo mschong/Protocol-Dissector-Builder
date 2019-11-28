@@ -79,7 +79,7 @@ class DropGraphicsScene(QGraphicsScene):
                             self.proxyWidgetList.remove(item)
                             if(isinstance(self.getDefaultWidget(item), Variable)):
                                 self.variableList.remove(item)
-                            else:
+                            elif(isinstance(self.getDefaultWidget(item), Field)):
                                 self.proxyDefinedFieldList.remove(item)
                             self.removeItem(item)
 
@@ -186,7 +186,8 @@ class DropGraphicsScene(QGraphicsScene):
             self.updateScene(proxy.size().height(), False)
 
         self.proxyWidgetList.append(proxy)
-        self.proxyDefinedFieldList.append(proxy)
+        if(event.mimeData().text()[0:5] == "Field"):
+            self.proxyDefinedFieldList.append(proxy)
         event.accept()
 
     def addWidgetToScene(self, widget, pos, text):
@@ -300,7 +301,8 @@ class DropGraphicsScene(QGraphicsScene):
         nameToProxyDict = {} # Used for filling out the values in connectionsDict
         connectionsDict = {} # Keys and Values are proxywidgets, key widget points to value widget on canvass
 
-        dissector.pop('START', None)
+        if('START' in dissector.keys()):
+            dissector.pop('START', None)
         for key in dissector.keys():
             widget = dissector[key]
             widgetType = widget["Type"]
@@ -699,13 +701,15 @@ class DropGraphicsScene(QGraphicsScene):
     def isStartField(self, proxyWidget):
         loop_endItem_count = 0
         for connector in proxyWidget.connectors:
+            
             if(not isinstance(connector.endItem().widget(), QPushButton)):
                 if(connector.endItem() is proxyWidget):
-                    if(not isinstance(connector.endItem(), While_Loop) or not isinstance(connector.endItem(), For_Loop)):
+                    if(not isinstance(self.getDefaultWidget(proxyWidget), While_Loop) and not isinstance(self.getDefaultWidget(proxyWidget), For_Loop)):
                         return False # false if this widget is pointed to by a connector
                     else:
-                        if(loop_endItem_count == 0):
+                        if(loop_endItem_count < 2):
                             loop_endItem_count += 1
+                            continue
                         else:
                             return False
             else:
