@@ -211,7 +211,6 @@ class Ui_Form(object):
 
     def save_button_clicked(self):
         dissector_dictionary = self.scene.save_dissector()
-        print(dissector_dictionary)
         return dissector_dictionary
 
     def restore_widgets_to_scene(self, dissector_json):

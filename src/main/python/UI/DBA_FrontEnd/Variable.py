@@ -28,7 +28,7 @@ class Variable(QWidget):
         for choice in scope_choices:
             self.scope_choice.addItem(choice)
         self.data_type_combo = QComboBox()
-        data_types = ['string', 'number', 'nil', 'boolean', 'function', 'thread', 'userdata', 'table']
+        data_types = ['string', 'number', 'boolean', 'thread', 'table']
         for data_type in data_types:
             self.data_type_combo.addItem(data_type)
         name_label = QLabel('Name')
