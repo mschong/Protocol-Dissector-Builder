@@ -49,10 +49,10 @@ class Ui_Form(object):
         self.toolbox_label.setGeometry(QtCore.QRect(850, 10, 64, 17))
         self.toolbox_label.setObjectName("toolbox_label")
         self.toolBox = QtWidgets.QToolBox(Form)
-        self.toolBox.setGeometry(QtCore.QRect(850, 30, 250, 320))
+        self.toolBox.setGeometry(QtCore.QRect(850, 30, 250, 400))
         self.toolBox.setObjectName("toolBox")
         self.field_tab = QtWidgets.QWidget()
-        self.field_tab.setGeometry(QtCore.QRect(0, 0, 250, 210))
+        self.field_tab.setGeometry(QtCore.QRect(0, 0, 250, 350))
         self.field_tab.setObjectName("field_tab")
         
 
@@ -92,6 +92,23 @@ class Ui_Form(object):
         menu = QtWidgets.QMenu()
         self.list_fields_button.setMenu(menu)
         self.list_fields_button.clicked.connect(self.populateListButton)
+
+        self.variable_button = DragButton('Variable', self.field_tab)
+        self.variable_button.setGeometry(QtCore.QRect(20, 250, 100, 30))
+
+        self.define_variable_button = DragButton('Defined Variable', self.field_tab)
+        self.define_variable_button.setGeometry(QtCore.QRect(20, 285, 97, 30))
+        self.define_variable_button.setObjectName("define_variable")
+        self.define_variable_button.setStyleSheet("QPushButton {font-size: 8.5pt}")
+
+        self.list_variables_button = QtWidgets.QToolButton(self.field_tab)
+        self.list_variables_button.setGeometry(QtCore.QRect(120,285,105,30))
+        self.list_variables_button.setText("Defined Variables")
+        self.list_variables_button.setObjectName("list_variables")
+        self.list_variables_button.setStyleSheet("QToolButton {font-size: 8pt}")
+        menu = QtWidgets.QMenu()
+        self.list_variables_button.setMenu(menu)
+        self.list_variables_button.clicked.connect(self.populateVariableListButton)
 
         self.toolBox.addItem(self.field_tab, "")
         self.construct_tab = QtWidgets.QWidget()
@@ -141,6 +158,26 @@ class Ui_Form(object):
         self.toolBox.setItemText(self.toolBox.indexOf(self.field_tab), _translate("Form", "Field"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.construct_tab), _translate("Form", "Construct"))
     
+    def populateVariableListButton(self):
+        self.list_variables_button.menu().clear()
+        self.variables = self.scene.variableList
+        
+        for variable in self.variables:
+            action = QtWidgets.QAction(self.field_tab)
+            action.setText(variable.widget().text())
+            action.triggered.connect(self.prepareDefinedVariableButton)
+            self.list_variables_button.menu().addAction(action)
+        
+        self.list_variables_button.showMenu()
+
+    def prepareDefinedVariableButton(self, checked):
+        action = self.field_tab.sender()
+        self.define_variable_button.setText(action.text())
+
+    def prepareDefinedFieldButton(self, checked):
+        action = self.field_tab.sender()
+        self.define_field_button.setText(action.text())
+
     def populateListButton(self):
         self.list_fields_button.menu().clear()
         self.fields = self.scene.proxyDefinedFieldList
@@ -174,6 +211,7 @@ class Ui_Form(object):
 
     def save_button_clicked(self):
         dissector_dictionary = self.scene.save_dissector()
+        print(dissector_dictionary)
         return dissector_dictionary
 
     def restore_widgets_to_scene(self, dissector_json):
