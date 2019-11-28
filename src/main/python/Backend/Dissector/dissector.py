@@ -112,10 +112,16 @@ class Dissector_Generator():
             result += "\n \t"
             return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset)
         elif wtype == 'Variable': 
-            pass
+            result += "{} {} {} = {} \n".format(curr['Scope'],curr['Data Type'],curr['Name'],self.get_value(curr['Data Type'],curr['Value']))
+            return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset)
         elif wtype == 'Do While':
             pass
-            
+
+    def get_value(self,data_type,value):
+        if data_type == 'number':
+            return int(value)
+        return str(value)
+
     def no_jinja_headers(self,workspace,JSON):
         f = open("{}/Lua/{}.lua".format(workspace,self.dissector['name']) ,"w+")
         f.write("-- Protocol Definition\n")
