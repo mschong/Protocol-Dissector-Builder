@@ -49,6 +49,7 @@ class DropGraphicsScene(QGraphicsScene):
         self.forloop_count = 0
         # self.doWhile_count = 0
         self.codeBlock_count = 0
+        self.variable_count = 0
 
     def contextMenuEvent(self, event):
         if(len(self.items(event.scenePos()))):
@@ -597,6 +598,13 @@ class DropGraphicsScene(QGraphicsScene):
             # Saving Variable informatin into dictionary
             elif(isinstance(defaultWidget, Variable)):
                 variableProperties = defaultWidget.saveMethod()
+
+                if(variableProperties["Name"] == ""):
+                    self.variable_count += 1
+                    tempVariableName = "Variable"+str(self.variable_count)
+                    defaultWidget.setName(tempVariableName)
+                    variableProperties["Name"] = tempVariableName
+                
                 variableName = variableProperties["Name"]
 
                 x_position = proxyWidget.scenePos().x()+70
@@ -740,8 +748,16 @@ class DropGraphicsScene(QGraphicsScene):
             endItem_name = endItem_Widget.table.cellWidget(0,1).text()
 
         elif(isinstance(endItem_Widget, Decision) or isinstance(endItem_Widget,While_Loop) or
-             isinstance(endItem_Widget, For_Loop)):
+             isinstance(endItem_Widget, For_Loop) or isinstance(endItem_Widget, CodeBlock)):
             endItem_name = endItem_Widget.getName()
+        elif(isinstance(endItem_Widget, Variable)):
+            if(endItem_Widget.getName() == ""):
+                self.variable_count += 1
+                tempVariableName = "Variable"+str(self.variable_count)
+                endItem_Widget.setName(tempVariableName)
+                endItem_name = tempVariableName
+            else:
+                endItem_name = endItem_Widget.getName()
 
         return endItem_name
 

@@ -53,6 +53,9 @@ class Variable(QWidget):
         self.widget_layout.addWidget(self.okButton)
         self.show()
 
+    def getName(self):
+        return self.name
+    
     def setName(self, name):
         #self.name = name
         self.nameLineEdit.setText(name)
