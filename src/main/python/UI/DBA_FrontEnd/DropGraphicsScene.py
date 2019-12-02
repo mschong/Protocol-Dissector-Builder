@@ -164,7 +164,9 @@ class DropGraphicsScene(QGraphicsScene):
             proxy = self.addWidgetToScene(do_widget, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         elif(event.mimeData().text() == "Variable"):
-            variable = Variable()
+            varNumber = "Variable"+str(self.variable_count)
+            self.variable_count += 1
+            variable = Variable(varNumber)
             proxy = self.addWidgetToScene(variable, event.scenePos(), event.mimeData().text())
             self.variableList.append(proxy)
             proxy.setPolygon()
@@ -287,7 +289,8 @@ class DropGraphicsScene(QGraphicsScene):
                     definedField.setRequired(defined_field_properties.get('Required'))
             return definedField
         else:
-            definedVariable = Variable()
+            definedVariable = Variable("Variable"+str(self.variable_count))
+            self.variable_count += 1
             for variable in self.variableList:
                 if text == variable.widget().text():
                     defined_variable_properties = variable.widget().menu().actions()[0].defaultWidget().saveMethod()
@@ -349,7 +352,8 @@ class DropGraphicsScene(QGraphicsScene):
                 widgetToAdd.setTextBox(widget['Code'])
                 widgetText = "Code Block"
             elif(widgetType == "Variable"):
-                widgetToAdd = Variable()
+                widgetToAdd = Variable(key)
+                self.variable_count += 1
                 widgetToAdd.setName(widget['Name'])
                 widgetToAdd.setValue(widget['Value'])
                 widgetToAdd.setScope(widget['Scope'])
@@ -410,6 +414,7 @@ class DropGraphicsScene(QGraphicsScene):
         for startItem, endItem in connectionsDict.items():
             # if there is more than one endItem (false,true)
             if(type(endItem) is dict):
+                print(endItem)
                 for path, innerEndItem in endItem.items():
                     connector = Connector(startItem, innerEndItem)
                     if(path == 0):
@@ -597,15 +602,8 @@ class DropGraphicsScene(QGraphicsScene):
 
             # Saving Variable informatin into dictionary
             elif(isinstance(defaultWidget, Variable)):
-                variableProperties = defaultWidget.saveMethod()
-
-                if(variableProperties["Name"] == ""):
-                    self.variable_count += 1
-                    tempVariableName = "Variable"+str(self.variable_count)
-                    defaultWidget.setName(tempVariableName)
-                    variableProperties["Name"] = tempVariableName
-                
-                variableName = variableProperties["Name"]
+                variableProperties = defaultWidget.saveMethod()                
+                variableName = defaultWidget.getVariableNumber()
 
                 x_position = proxyWidget.scenePos().x()+70
                 y_position = proxyWidget.scenePos().y()+70
@@ -673,6 +671,7 @@ class DropGraphicsScene(QGraphicsScene):
 
         for connector in proxyWidget.connectors:
             # Skip if this widget is the endItem of the connector
+            print("endItem:  ", connector.endItem())
             if(not isinstance(connector.endItem().widget(), QPushButton)):
                 if(self.getDefaultWidget(connector.endItem()) is defaultWidget):
                     continue # continue connector for-loop
@@ -707,7 +706,6 @@ class DropGraphicsScene(QGraphicsScene):
         return not 'next_field' in widget_properties
 
     def isStartField(self, proxyWidget):
-        loop_endItem_count = 0
         for connector in proxyWidget.connectors:
             
             if(not isinstance(connector.endItem().widget(), QPushButton)):
@@ -715,8 +713,7 @@ class DropGraphicsScene(QGraphicsScene):
                     if(not isinstance(self.getDefaultWidget(proxyWidget), While_Loop) and not isinstance(self.getDefaultWidget(proxyWidget), For_Loop)):
                         return False # false if this widget is pointed to by a connector
                     else:
-                        if(loop_endItem_count < 2):
-                            loop_endItem_count += 1
+                        if(connector.startItem().widget() == QPushButton):
                             continue
                         else:
                             return False
@@ -751,13 +748,14 @@ class DropGraphicsScene(QGraphicsScene):
              isinstance(endItem_Widget, For_Loop) or isinstance(endItem_Widget, CodeBlock)):
             endItem_name = endItem_Widget.getName()
         elif(isinstance(endItem_Widget, Variable)):
-            if(endItem_Widget.getName() == ""):
-                self.variable_count += 1
-                tempVariableName = "Variable"+str(self.variable_count)
-                endItem_Widget.setName(tempVariableName)
-                endItem_name = tempVariableName
-            else:
-                endItem_name = endItem_Widget.getName()
+            # if(endItem_Widget.getName() == ""):
+            #     self.variable_count += 1
+            #     tempVariableName = "Variable"+str(self.variable_count)
+            #     endItem_Widget.setName(tempVariableName)
+            #     endItem_name = tempVariableName
+            # else:
+            #     endItem_name = endItem_Widget.getName()
+            endItem_name = endItem_Widget.getVariableNumber()
 
         return endItem_name
 
@@ -783,4 +781,10 @@ class DropGraphicsScene(QGraphicsScene):
             self.removeItem(item)
         self.proxyWidgetList.clear()
         self.proxyDefinedFieldList.clear()
+        self.countFields = 0
+        self.decision_count = 0
+        self.while_count = 0 
+        self.forloop_count = 0
+        self.codeBlock_count = 0
+        self.variable_count = 0
 
