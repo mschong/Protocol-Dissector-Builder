@@ -10,6 +10,7 @@ from UI.DBA_FrontEnd.GraphicsProxyWidget  import GraphicsProxyWidget
 from UI.DBA_FrontEnd.Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
 from UI.DBA_FrontEnd.CodeBlock import CodeBlock
 from UI.DBA_FrontEnd.Variable import Variable
+import json
 import sys
 
 
@@ -497,6 +498,7 @@ class DropGraphicsScene(QGraphicsScene):
 
     def save_dissector(self):
         dissector = {}
+        fieldsForJSONFile = {}
         for proxyWidget in self.proxyWidgetList:
             
             # Saving "end loop" or "do" widgets into a dictionary
@@ -572,6 +574,7 @@ class DropGraphicsScene(QGraphicsScene):
                     dissector.update({'START': field['Name']}) 
 
                 dissector.update({field['Name']: field})
+                fieldsForJSONFile.update({field['Name']: field})
 
             # Saving Codeblock into dictionary
             elif(isinstance(defaultWidget, CodeBlock)):
@@ -649,6 +652,11 @@ class DropGraphicsScene(QGraphicsScene):
                 forLoop = self.saveConditionWidget(proxyWidget)
                 forLoop[list(forLoop.keys())[0]].update({'Type': "for"})
                 dissector.update(forLoop)
+
+
+        with open('fieldsJSON.txt', 'w') as f:
+            json.dump(fieldsForJSONFile, f)
+
 
         return dissector
 

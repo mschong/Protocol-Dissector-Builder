@@ -64,7 +64,7 @@ class Field(QWidget):
     # Creating line To get Name
 
         name_line = QLineEdit()
-        name_line_exp_validator = QRegExp("[A-za-z0-9_\s]+")
+        name_line_exp_validator = QRegExp("[A-za-z0-9_\.]+")
         name_line_validator = QRegExpValidator(name_line_exp_validator)
         name_line.setValidator(name_line_validator)
         widgets.append(name_line)
