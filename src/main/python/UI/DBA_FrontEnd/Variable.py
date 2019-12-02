@@ -5,7 +5,8 @@ from UI.DBA_FrontEnd.Dialogs.ErrorDialog import ErrorDialog
 import sys
 
 class Variable(QWidget):
-    def __init__(self):
+    def __init__(self, variableNumber):
+        self.variableNumber = variableNumber
         self.toolButton = None
         self.scope = "global"
         self.name = ""
@@ -53,8 +54,8 @@ class Variable(QWidget):
         self.widget_layout.addWidget(self.okButton)
         self.show()
 
-    def getName(self):
-        return self.name
+    def getVariableNumber(self):
+        return self.variableNumber
     
     def setName(self, name):
         #self.name = name

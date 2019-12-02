@@ -21,13 +21,14 @@ class PCap:
 
         self.pcapFile = pyshark.FileCapture(self.fileLocation)
         print("Done")
+        return "Done"
 
     def dissectPCAP(self,workspace,project):
         print(workspace)
         print(project)
         param = {"-X": 'lua_script: '  + '{}/Lua/{}.lua'.format(workspace,project)}
         self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
-
+        return "SUCCESSFUL"
 
     def savePackets(self):
         packets = {}

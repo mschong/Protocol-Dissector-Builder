@@ -34,7 +34,7 @@ class Loader():
             print(JSON)
            
             f = open("{}/{}.pdbws".format(self.workspace.wpath.strip(),self.workspace.name.strip()) ,"w+")
-            f.write(json.dumps(JSON))
+            f.write(json.dumps(JSON,indent=4))
             f.close()
     '''
     load a workspace already created
@@ -90,7 +90,7 @@ class Loader():
 
     def save_project(self,p_path,p):
         f = open("{}".format(p_path) ,"w+")
-        f.write(json.dumps(p.get_JSON()))
+        f.write(json.dumps(p.get_JSON(),indent=4))
         f.close()
         self.save_workspace()
 
