@@ -21,7 +21,7 @@ class FieldOKDialog(QDialog):
         self.layout.addWidget(self.okButton)
         self.setLayout(self.layout)
         self.layout.setAlignment(Qt.AlignCenter)
-        self.show()
+        
 
     def ok_button_clicked(self):
         self.close()
@@ -45,7 +45,6 @@ class Field(QWidget):
         self.layout.addWidget(self.okButton)
         self.setLayout(self.layout)
 
-        self.show()
     def draw_field_table(self):
         self.table = QTableWidget(11, 2)
         # Making the indexes of rows and columns invisible to user

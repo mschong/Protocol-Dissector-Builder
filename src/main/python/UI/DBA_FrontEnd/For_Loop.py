@@ -40,7 +40,6 @@ class For_Loop(QWidget):
         self.col += 1
 
         self.setLayout(self.layout)
-        self.show()
 
     def getName(self):
         return self.name

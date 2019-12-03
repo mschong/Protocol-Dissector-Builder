@@ -52,7 +52,6 @@ class Variable(QWidget):
         self.okButton = QPushButton('OK')
         self.okButton.clicked.connect(self.clickOKMethod)
         self.widget_layout.addWidget(self.okButton)
-        self.show()
 
     def getVariableNumber(self):
         return self.variableNumber

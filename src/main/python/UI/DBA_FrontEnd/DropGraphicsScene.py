@@ -661,8 +661,10 @@ class DropGraphicsScene(QGraphicsScene):
                 dissector.update(forLoop)
 
 
-        with open('fieldsJSON.txt', 'w') as f:
-            json.dump(fieldsForJSONFile, f)
+        # Writing fields to separate file for packet-preview-pane team
+        # Written in project's root directory
+        with open('fieldsExampleJSON.txt', 'w') as f:
+            f.write(json.dumps(fieldsForJSONFile, indent=4, sort_keys=True))
 
 
         return dissector
