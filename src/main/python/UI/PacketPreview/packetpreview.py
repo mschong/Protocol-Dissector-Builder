@@ -16,7 +16,6 @@ import json
 import Pyro4
 import Pyro4.util
 import os
-import subprocess
 from UI.PacketPreview.customSort import sortableElement
 
 class Ui_PackagePreview(object):
@@ -28,7 +27,7 @@ class Ui_PackagePreview(object):
         PackagePreview.resize(400, 200)
         PackagePreview.setMinimumSize(QtCore.QSize(100, 454))
         self.treeView = QtWidgets.QTreeView(PackagePreview)
-        self.treeView.setGeometry(QtCore.QRect(0, 50, 800, 401))
+        self.treeView.setGeometry(QtCore.QRect(0, 50, 400, 401))
         self.treeView.setObjectName("treeView")
         self.treeView.setSortingEnabled(True)
 
@@ -55,7 +54,7 @@ class Ui_PackagePreview(object):
         self.pushButton.clicked.connect(self.openFile)
 
         self.label_3 = QtWidgets.QLabel(PackagePreview)
-        self.label_3.setGeometry(QtCore.QRect(300, 30, 500, 17))
+        self.label_3.setGeometry(QtCore.QRect(300, 30, 200, 17))
         self.label_3.setObjectName("label_2")
 
         self.pushButton2 = QtWidgets.QPushButton(PackagePreview)
@@ -77,11 +76,10 @@ class Ui_PackagePreview(object):
         self.label_3.setText("Status: Opening a file...")
         self.model.removeRows(0,self.model.rowCount())
         self.name = QFileDialog.getOpenFileName()
-        p = subprocess.Popen(['python3.6', 'src/main/python/UI/PacketPreview/demo.py'])
         if(self.name[0] and ".pcap" in self.name[0] ):
             self.pyro_proxy.createPackets(self.name[0])
             self.pyro_proxy.savePackets()
-            self.label_3.setText(" ")
+            self.label_3.setText("Status: Opening a file...50%")
             self.pyro_proxy.printPackets()
             fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","r")
             vars = json.loads(fileToRead.read().strip())
@@ -110,10 +108,9 @@ class Ui_PackagePreview(object):
                         ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
                     branch1.appendRow(ProtocolToAdd)
                 self.model.appendRow([branch1])
-        p.terminate()
+            self.label_3.setText("Status: File has been opened.")
 
     def dissect(self):
-        p = subprocess.Popen(['python3.6', 'src/main/python/UI/PacketPreview/demo.py'])
         try:
             if(self.name[0] and ".pcap" in self.name[0] ):
                 self.model.removeRows(0,self.model.rowCount())
@@ -176,7 +173,7 @@ class Ui_PackagePreview(object):
                 self.label_3.setText("Status: Package has been dissected.")
         except:
                 pass
-        p.terminate()
+
 
 
     def retranslateUi(self, PackagePreview):

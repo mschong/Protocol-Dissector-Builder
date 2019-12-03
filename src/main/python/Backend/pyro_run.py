@@ -4,8 +4,12 @@ sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
 from subprocess import Popen
 from Backend.Loader import Loader
-import pexpect
 import platform
+
+if platform.system() == "Windows":
+    import winpexpect
+else:
+    import pexpect
 @Pyro4.expose
 class Pyro_Run():
     loader = None
@@ -69,16 +73,22 @@ class Pyro_Run():
             if(not answer) or (answer.lower()[0] != 'y'):
                 return
         projectPath = "src/main/python/Backend/PCAP/PCAPServices.py"
-        self.child = pexpect.spawn("python3.6 " + projectPath,encoding='utf-8')
-        self.child.expect("loop",timeout=None)
+        if platform.system() == "Windows":
+            self.child = winpexpect.winspawn("python " + projectPath)
+            print("created - w " )
+        else:
+            self.child = pexpect.spawn("python3.6 " + projectPath,encoding='utf-8')
+            print("created")
+        self.child.expect("loop")
         print("Creating")
+        print(fileName + " file name")
         self.child.sendline("create " + fileName)
-        self.child.expect("Done",timeout=None)
+        self.child.expect("Done")
 
     def savePackets(self):
         print("saving")
         self.child.sendline("save")
-        self.child.expect("saved",timeout=None)
+        self.child.expect("saved")
 
     def dissectPackets(self):
         print("dissecting")
