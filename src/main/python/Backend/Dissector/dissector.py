@@ -53,67 +53,72 @@ class Dissector_Generator():
     def fields_to_lua(self):
         fields_string = ""
         for field in self.dissector['fields']:
-            field_string = "{} = ProtoField.{}('{}','{}.{}',base.{}) \n".format(field['name'],field['type'],field['desc'],self.dissector['name'],field['abbrev'],field['display_type'])
+            field_string = "{} = ProtoField.{}({}.{}',{},base.{}) \n".format(field['name'],field['type'],self.dissector['name'],field['abbrev'],field['desc'],field['display_type'])
             fields_string += field_string   
         return fields_string
 
     def logic_to_lua(self,JSON):
         value = JSON['dissector']['START']
         print(value)
-        data = self.logic_to_lua_aux(value," ",JSON,0)
+        data = self.logic_to_lua_aux(value," ",JSON,0,1)
         data += "end \n"
         return data
 
-    def logic_to_lua_aux(self,value,result,JSON,offset):
+    def logic_to_lua_aux(self,value,result,JSON,offset,indent):
         print("curr : {}".format(value))
+        result += "\t " * indent
         if str(value) == 'END':
             return result
         curr = JSON['dissector'][value]
         wtype = JSON['dissector'][value]['Type']
+
         if wtype == 'End Loop':
             return result
         if  wtype == 'Field':
-            r = "\t subtree:add({},buffer({},{})) \n".format(curr['Name'],offset,int(self.get_size(curr['Var Size'])))
+            r = "subtree:add({},buffer({},{})) \n".format(curr['Name'],offset,int(self.get_size(curr['Var Size'])))
             offset += int(self.get_size(curr['Var Size']))
             result += r
-            return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset)
+            return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset,indent)
         elif wtype == 'Decision':
             decision = curr['Condition']
-            r = "\t if {} {} {} then \n \t".format(decision['operand1'],decision['operator1'],decision['operand2'])
             
-            result += self.logic_to_lua_aux(curr['true'],r,JSON,offset)
-            
-            r = "\t else \n \t"
+            r = "if {} {} {} then \n ".format(decision['operand1'],decision['operator1'],decision['operand2'])
+            result += self.logic_to_lua_aux(curr['true'],r,JSON,offset,indent+1)
+            r= "\t "*indent
+            r += "else \n "
            
-            result += self.logic_to_lua_aux(curr['false'],r,JSON,offset)
+            result += self.logic_to_lua_aux(curr['false'],r,JSON,offset,indent+1)
             
-            result += '\t end \n \t'
+            result += 'end \n '
             return result
         elif wtype == 'while':
             loop = curr['Condition']
-            r = "\t while({} {} {})\n do \n \t".format(loop['operand1'],loop['operator1'],loop['operand2'])
-            result += self.logic_to_lua_aux(curr['true'],r,JSON,offset)
-            result += '\t end \n \t'
+            r = "while({} {} {})\n do \n ".format(loop['operand1'],loop['operator1'],loop['operand2'])
+            result += self.logic_to_lua_aux(curr['true'],r,JSON,offset,indent+1)
+            result += "\t " * indent
+            result += 'end \n '
             r = " "
-            result += self.logic_to_lua_aux(curr['false'],r,JSON,offset)
+            result += self.logic_to_lua_aux(curr['false'],r,JSON,offset,indent+1)
+            result += "\t " * indent
             result += '\n'
             return result
         elif wtype == 'for':
             loop = curr['Expressions']
-            r = "\t for {}, {}, {} \n \t do \n \t".format(loop['exp1'],loop['exp2'],loop['exp3'])
-            result += self.logic_to_lua_aux(curr['true'],r,JSON,offset)
-            result += '\t end \n \t'
+            r = " for {}, {}, {} \n \t do \n ".format(loop['exp1'],loop['exp2'],loop['exp3'])
+            result += self.logic_to_lua_aux(curr['true'],r,JSON,offset,indent+1)
+            result += "\t " * indent
+            result += ' end \n '
             r = " "
-            result += self.logic_to_lua_aux(curr['false'],r,JSON,offset)
+            result += self.logic_to_lua_aux(curr['false'],r,JSON,offset,indent)
             result += '\n'
             return result
         elif wtype == 'CodeBlock':
             result += curr['Code']
-            result += "\n \t"
-            return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset)
+            result += "\n "
+            return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset,indent)
         elif wtype == 'Variable': 
             result += "{} {} {} = {} \n".format(curr['Scope'],curr['Data Type'],curr['Name'],self.get_value(curr['Data Type'],curr['Value']))
-            return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset)
+            return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset,indent)
         elif wtype == 'Do While':
             pass
 
