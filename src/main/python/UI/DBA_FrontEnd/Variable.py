@@ -56,6 +56,9 @@ class Variable(QWidget):
 
     def getVariableNumber(self):
         return self.variableNumber
+        
+    def setVariableNumber(self, number):
+        self.variableNumber = number
     
     def setName(self, name):
         #self.name = name

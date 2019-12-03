@@ -47,11 +47,11 @@ class Field(QWidget):
 
         self.show()
     def draw_field_table(self):
-        self.table = QTableWidget(10, 2)
+        self.table = QTableWidget(11, 2)
         # Making the indexes of rows and columns invisible to user
         self.table.verticalHeader().setVisible(False)
         self.table.horizontalHeader().setVisible(False)
-        column_1_text = ["Name *","Abbreviation *","Description *", "Data Type *", "Base", "Mask", "Value Constraint", "Var Size *", "ID Value", "Required"]
+        column_1_text = ["Name *","Abbreviation *","Description *", "Data Type *", "Base", "Mask", "Value Constraint", "Var Size *", "ID Value", "Required", "Little Endian"]
         i = 0
         while i < self.table.rowCount():
             item = QTableWidgetItem(column_1_text[i])
@@ -64,7 +64,7 @@ class Field(QWidget):
     # Creating line To get Name
 
         name_line = QLineEdit()
-        name_line_exp_validator = QRegExp("[A-za-z0-9_\s]+")
+        name_line_exp_validator = QRegExp("[A-za-z0-9_\.]+")
         name_line_validator = QRegExpValidator(name_line_exp_validator)
         name_line.setValidator(name_line_validator)
         widgets.append(name_line)
@@ -83,7 +83,7 @@ class Field(QWidget):
 
         # Creating drop down list of data types
         data_type_com= QComboBox()
-        data_types = ["Select data type", "NONE", "PROTOCOL", "BOOLEAN","FRAMENUM", "UNIT8", "UNIT16", "UNIT24", "UNIT32", "UNIT64", "INT8", "INT16",
+        data_types = ["NONE", "PROTOCOL", "BOOLEAN","FRAMENUM", "UNIT8", "UNIT16", "UNIT24", "UNIT32", "UNIT64", "INT8", "INT16",
                       "INT24", "INT32", "INT64", "FLOAT", "DOUBLE", "ABSOLUTE_TIME", "RELATIVE_TIME", "STRING", "STRINGZ", "UNIT_STRING", "ETHER", "BYTES","UNIT_BYTES", "IPv4","IPv6", "IPXNET", "PROTOCOL", "GUID", "OID"]
         for data_type in data_types:
             data_type_com.addItem(data_type)
@@ -91,7 +91,7 @@ class Field(QWidget):
 
         # Creating drop down list of bases
         base_com = QComboBox()
-        bases = ["Select base", "NONE", "DEC", "HEX", "OCT", "DEC_HEX", "HEX_DEC"]
+        bases = ["NONE", "ASCII", "DEC", "HEX", "OCT", "DEC_HEX", "HEX_DEC"]
         for base in bases:
             base_com.addItem(base)
         widgets.append(base_com)
@@ -131,6 +131,14 @@ class Field(QWidget):
         req_cell_layout.setAlignment(Qt.AlignCenter)
         req_cell.setLayout(req_cell_layout)
         widgets.append(req_cell)
+
+        little_endian_check_box = QCheckBox()
+        little_endian_cell = QWidget()
+        little_endian_cell_layout = QHBoxLayout()
+        little_endian_cell_layout.addWidget(little_endian_check_box)
+        little_endian_cell_layout.setAlignment(Qt.AlignCenter)
+        little_endian_cell.setLayout(little_endian_cell_layout)
+        widgets.append(little_endian_cell)
 
         # Adding Widgets to Table
         j = 0
@@ -208,12 +216,22 @@ class Field(QWidget):
         else:
             self.table.cellWidget(9,1).children()[1].setChecked(False)
 
+    def setLittleEndian(self, isChecked):
+        if(isChecked == "true"):
+            self.table.cellWidget(10,1).children()[1].setChecked(True)
+        else:
+            self.table.cellWidget(10,1).children()[1].setChecked(False)
+
     def saveMethod(self):
         field_properties = dict({'Name': self.table.cellWidget(0,1).text(), 'Abbreviation': self.table.cellWidget(1,1).text(), 'Description': self.table.cellWidget(2,1).text(), 'Data Type': self.table.cellWidget(3,1).currentText(), 'Base': self.table.cellWidget(4,1).currentText(), 'Mask': self.table.cellWidget(5,1).text(), 'Value Constraint': self.table.cellWidget(6,1).text(), 'Var Size': {'editText': self.table.cellWidget(7,1).children()[1].text(), 'combobox': self.table.cellWidget(7,1).children()[2].currentText()}, 'ID Value': self.table.cellWidget(8,1).text()})
         if self.table.cellWidget(9,1).children()[1].isChecked():
             field_properties.update({'Required': 'true'})
         else:
             field_properties.update({'Required': 'false'})
+        if self.table.cellWidget(10,1).children()[1].isChecked():
+            field_properties.update({'LE': 'true'})
+        else:
+            field_properties.update({'LE': 'false'})
 
         return field_properties
     
