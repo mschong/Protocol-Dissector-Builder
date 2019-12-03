@@ -33,6 +33,7 @@ class UiMainWindow(object):
     packetPreview_hlayout = None
     project_canvas_splitter = None
     packetpreview_splitter = None
+    packetpreview_log_splitter = None
 
     def setupUi(self, MainWindow):
         ## Pyro
@@ -52,6 +53,8 @@ class UiMainWindow(object):
         self.packetPreview_hlayout = QtWidgets.QHBoxLayout()
         self.project_canvas_splitter = QtWidgets.QSplitter()
         self.project_canvas_splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.packetpreview_log_splitter =QtWidgets.QSplitter()
+        self.packetpreview_log_splitter.setOrientation(QtCore.Qt.Horizontal)
         self.packetpreview_splitter = QtWidgets.QSplitter()
         self.packetpreview_splitter.setOrientation(QtCore.Qt.Vertical)
 
