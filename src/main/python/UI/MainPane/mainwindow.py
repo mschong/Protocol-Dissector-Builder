@@ -31,9 +31,14 @@ class UiMainWindow(object):
     workspace_label_hlayout = None
     projectView_canvas_hlayout = None
     packetPreview_hlayout = None
+    log_parent_vlayout = None
+    log_hlayout = None
     project_canvas_splitter = None
     packetpreview_splitter = None
     packetpreview_log_splitter = None
+    log_parent_widget = None
+    LogTextEdit = None
+    LogLabel = None
 
     def setupUi(self, MainWindow):
         ## Pyro
@@ -51,6 +56,8 @@ class UiMainWindow(object):
         self.workspace_label_hlayout = QtWidgets.QHBoxLayout()
         self.projectView_canvas_hlayout = QtWidgets.QHBoxLayout()
         self.packetPreview_hlayout = QtWidgets.QHBoxLayout()
+        self.log_parent_vlayout = QtWidgets.QVBoxLayout()
+        self.log_hlayout = QtWidgets.QHBoxLayout()
         self.project_canvas_splitter = QtWidgets.QSplitter()
         self.project_canvas_splitter.setOrientation(QtCore.Qt.Horizontal)
         self.packetpreview_log_splitter =QtWidgets.QSplitter()
@@ -108,8 +115,22 @@ class UiMainWindow(object):
         self.packetPreviewFrame.setWidgetResizable(True)
         self.packetPreview_hlayout.addWidget(self.packetPreviewFrame)
 
+        self.LogLabel = QtWidgets.QLabel(self.centralwidget)
+        self.LogLabel.setText("Log")
+        self.LogTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
+        self.LogTextEdit.setReadOnly(True)
+        self.log_parent_vlayout.addWidget(self.LogLabel)
+        self.log_parent_vlayout.addWidget(self.LogTextEdit)
+        #self.log_parent_vlayout.addLayout(self.log_hlayout)
+
+        self.log_parent_widget = QtWidgets.QWidget()
+        self.log_parent_widget.setLayout(self.log_parent_vlayout)
+
         self.packetpreview_parentwidget = QtWidgets.QWidget()
         self.packetpreview_parentwidget.setLayout(self.packetPreview_hlayout)
+
+        self.packetpreview_log_splitter.addWidget(self.packetpreview_parentwidget)
+        self.packetpreview_log_splitter.addWidget(self.log_parent_widget)
 
         ## Packet Preview Pane
         packetpreview_form = QtWidgets.QWidget()
@@ -118,10 +139,12 @@ class UiMainWindow(object):
         self.packetPreviewFrame.setWidget(packetpreview_form)
 
         self.packetpreview_splitter.addWidget(self.project_canvas_parentwidget)
-        self.packetpreview_splitter.addWidget(self.packetpreview_parentwidget)
+        #self.packetpreview_splitter.addWidget(self.packetpreview_parentwidget)
+        self.packetpreview_splitter.addWidget(self.packetpreview_log_splitter)
         canvasparent_index = self.packetpreview_splitter.indexOf(self.project_canvas_parentwidget)
         self.packetpreview_splitter.setCollapsible(canvasparent_index, False)
-        packetpreview_index = self.packetpreview_splitter.indexOf(self.packetpreview_parentwidget)
+        #packetpreview_index = self.packetpreview_splitter.indexOf(self.packetpreview_parentwidget)
+        packetpreview_index = self.packetpreview_splitter.indexOf(self.packetpreview_log_splitter)
         self.packetpreview_splitter.setCollapsible(packetpreview_index, False)
 
         self.bottom_hlayout = QtWidgets.QHBoxLayout()
