@@ -53,7 +53,7 @@ class Dissector_Generator():
     def fields_to_lua(self):
         fields_string = ""
         for field in self.dissector['fields']:
-            field_string = "{} = ProtoField.{}({}.{}',{},base.{}) \n".format(field['name'],field['type'],self.dissector['name'],field['abbrev'],field['desc'],field['display_type'])
+            field_string = "{} = ProtoField.{}('{}.{}',{},base.{}) \n".format(field['name'],field['type'],self.dissector['name'],field['abbrev'],field['desc'],field['display_type'])
             fields_string += field_string   
         return fields_string
 
