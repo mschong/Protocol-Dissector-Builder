@@ -247,8 +247,8 @@
             "Mask": "",
             "Value Constraint": "",
             "Var Size": {
-                "editText": "1",
-                "combobox": "BYTES"
+                "editText": "message_length",
+                "combobox": "Field"
             },
             "ID Value": "",
             "Required": "false",

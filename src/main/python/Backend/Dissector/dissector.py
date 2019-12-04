@@ -39,21 +39,27 @@ class Dissector_Generator():
         temp['type'] = fieldJSON['Data Type'].lower()
         temp['abbrev'] = fieldJSON['Abbreviation']
         temp['desc'] = fieldJSON['Description']
-        temp['size'] = int(self.get_size(fieldJSON['Var Size']))
+        temp['size'] = self.get_size(fieldJSON['Var Size'])
         temp['display_type'] = fieldJSON['Base']
         if temp not in self.dissector['fields']:
             self.dissector['fields'].append(temp)
  
     def get_size(self,sizeJSON):
-        size = int(sizeJSON['editText'])
+        size = sizeJSON['editText']
         if sizeJSON['combobox'] == "BITS":
-            size /= 2
-        return size
+            return int(size/2)
+            
+        elif sizeJSON['combobox'] == "Field" or sizeJSON['combobox'] == "Variable":
+            return size
+        else :
+            return int(size)
+            
+
 
     def fields_to_lua(self):
         fields_string = ""
         for field in self.dissector['fields']:
-            field_string = "{} = ProtoField.{}('{}.{}',{},base.{}) \n".format(field['name'],field['type'],self.dissector['name'],field['abbrev'],field['desc'],field['display_type'])
+            field_string = "{} = ProtoField.{}('{}.{}','{}',base.{}) \n".format(field['name'],field['type'],self.dissector['name'],field['abbrev'],field['desc'],field['display_type'])
             fields_string += field_string   
         return fields_string
 
@@ -77,11 +83,14 @@ class Dissector_Generator():
         if  wtype == 'Field':
             if curr['LE'] == "true":
                 r = "\t " * indent
-                r += "subtree:add_le({},buffer({},{})) \n".format(curr['Name'],offset,int(self.get_size(curr['Var Size'])))
+                r += "subtree:add_le({},buffer({},{})) \n".format(curr['Name'],offset,self.get_size(curr['Var Size']))
             else:
                 r = "\t " * indent
-                r += "subtree:add({},buffer({},{})) \n".format(curr['Name'],offset,int(self.get_size(curr['Var Size'])))
-            offset += int(self.get_size(curr['Var Size']))
+                r += "subtree:add({},buffer({},{})) \n".format(curr['Name'],offset,self.get_size(curr['Var Size']))
+            if(self.is_number(self.get_size(curr['Var Size']))):
+                offset += self.get_size(curr['Var Size'])
+            else:
+                offset = '{} + {}'.format(str(offset),curr['Var Size'])
             result += r
             return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset,indent)
         elif wtype == 'Decision':
@@ -134,6 +143,13 @@ class Dissector_Generator():
         if data_type == 'number':
             return int(value)
         return str(value)
+    
+    def is_number(self,num):
+        try:
+            int(num)
+            return True
+        except ValueError:
+            return False
 
     def no_jinja_headers(self,workspace,JSON):
         f = open("{}/Lua/{}.lua".format(workspace,self.dissector['name']) ,"w+")
