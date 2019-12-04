@@ -1,7 +1,7 @@
 {
     "name": "SAMPLE",
     "projects": {
-        "0": "/Users/danielornelas/projects/protocol-dissector-builder/Protocol-Dissector-Builder/SAMPLE/MongoDB.pdbproj",
+        "0": "/Users/danielornelas/projects/protocol-dissector-builder/Protocol-Dissector-Builder/SAMPLE/mongodb.pdbproj",
         "1": "/Users/danielornelas/projects/protocol-dissector-builder/Protocol-Dissector-Builder/SAMPLE/j.pdbproj",
         "2": "/Users/danielornelas/projects/protocol-dissector-builder/Protocol-Dissector-Builder/SAMPLE/k.pdbproj",
         "3": "/Users/danielornelas/projects/protocol-dissector-builder/Protocol-Dissector-Builder/SAMPLE/l.pdbproj",

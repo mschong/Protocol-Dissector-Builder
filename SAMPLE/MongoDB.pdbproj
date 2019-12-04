@@ -1,11 +1,11 @@
 {
-    "name": "MongoDB",
+    "name": "mongodb",
     "created": "12/02/2019 16:39:56",
     "edited": "12/02/2019 16:39:56",
-    "description": "MongoDB Protocol",
+    "description": "mongodb Protocol",
     "protocol": "tcp",
     "change_protocol": "mongodb",
-    "src_port": "59274",
+    "src_port": "27017",
     "dst_port": "-1",
     "author": "Daniel O",
     "dissector": {
