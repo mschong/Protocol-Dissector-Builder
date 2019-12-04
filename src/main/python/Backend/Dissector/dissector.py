@@ -75,7 +75,10 @@ class Dissector_Generator():
         if wtype == 'End Loop':
             return result
         if  wtype == 'Field':
-            r = "subtree:add({},buffer({},{})) \n".format(curr['Name'],offset,int(self.get_size(curr['Var Size'])))
+            if curr['LE'] == "true":
+                r = "subtree:add_le({},buffer({},{})) \n".format(curr['Name'],offset,int(self.get_size(curr['Var Size'])))
+            else:
+                r = "subtree:add({},buffer({},{})) \n".format(curr['Name'],offset,int(self.get_size(curr['Var Size'])))
             offset += int(self.get_size(curr['Var Size']))
             result += r
             return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset,indent)
