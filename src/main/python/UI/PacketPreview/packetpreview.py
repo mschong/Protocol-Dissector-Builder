@@ -105,6 +105,8 @@ class Ui_PackagePreview(object):
                 self.model.appendRow([branch1])
         p.terminate()
         logging.info("File Opened")
+        self.pushButton2.setText("Dissect")
+
 
     def dissect(self):
         logging.info("Dissecting")
@@ -192,9 +194,9 @@ class Ui_PackagePreview(object):
         if os.path.exists(path) is False:
             self.label_3.setText("Status: No LUA file found")
             logging.info("Lua file not found for the current project")
-        else: 
+        else:
             self.label_3.setText("Status: Waiting for Input")
-        
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
