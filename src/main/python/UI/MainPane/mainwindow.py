@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow
 import Pyro4
 import Pyro4.util
 import json
-import os, sys, ntpath
+import os, sys, ntpath, logging
 from PyQt5 import QtCore, QtGui, QtWidgets
 import datetime
 
@@ -17,6 +17,7 @@ from UI.OpenProjectDialog import openprojectwindow
 from UI.DBA_FrontEnd import DBA
 from UI.PacketPreview import packetpreview
 from UI.ProjectConfigDialog import projectconfig
+from UI.MainPane import qplaintexteditlogger
 
 class UiMainWindow(object):
 
@@ -117,11 +118,13 @@ class UiMainWindow(object):
 
         self.LogLabel = QtWidgets.QLabel(self.centralwidget)
         self.LogLabel.setText("Log")
-        self.LogTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.LogTextEdit.setReadOnly(True)
+        self.LogTextEdit = qplaintexteditlogger.QPlainTextEditLogger(self.centralwidget)
+        self.LogTextEdit.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
         self.log_parent_vlayout.addWidget(self.LogLabel)
-        self.log_parent_vlayout.addWidget(self.LogTextEdit)
-        #self.log_parent_vlayout.addLayout(self.log_hlayout)
+        self.log_parent_vlayout.addWidget(self.LogTextEdit.widget)
+
+        logging.getLogger().addHandler(self.LogTextEdit)
+        logging.getLogger().setLevel(logging.DEBUG)
 
         self.log_parent_widget = QtWidgets.QWidget()
         self.log_parent_widget.setLayout(self.log_parent_vlayout)
