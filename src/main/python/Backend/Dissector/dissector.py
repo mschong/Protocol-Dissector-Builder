@@ -66,7 +66,7 @@ class Dissector_Generator():
 
     def logic_to_lua_aux(self,value,result,JSON,offset,indent):
         print("curr : {}".format(value))
-        result += "\t " * indent
+        #result += "\t " * indent
         if str(value) == 'END':
             return result
         curr = JSON['dissector'][value]
@@ -76,22 +76,24 @@ class Dissector_Generator():
             return result
         if  wtype == 'Field':
             if curr['LE'] == "true":
-                r = "subtree:add_le({},buffer({},{})) \n".format(curr['Name'],offset,int(self.get_size(curr['Var Size'])))
+                r = "\t " * indent
+                r += "subtree:add_le({},buffer({},{})) \n".format(curr['Name'],offset,int(self.get_size(curr['Var Size'])))
             else:
-                r = "subtree:add({},buffer({},{})) \n".format(curr['Name'],offset,int(self.get_size(curr['Var Size'])))
+                r = "\t " * indent
+                r += "subtree:add({},buffer({},{})) \n".format(curr['Name'],offset,int(self.get_size(curr['Var Size'])))
             offset += int(self.get_size(curr['Var Size']))
             result += r
             return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset,indent)
         elif wtype == 'Decision':
             decision = curr['Condition']
-            
-            r = "if {} {} {} then \n ".format(decision['operand1'],decision['operator1'],decision['operand2'])
+            r = "\t " * indent
+            r += "if {} {} {} then \n ".format(decision['operand1'],decision['operator1'],decision['operand2'])
             result += self.logic_to_lua_aux(curr['true'],r,JSON,offset,indent+1)
-            r= "\t "*indent
+            r = "\t " * indent
             r += "else \n "
            
             result += self.logic_to_lua_aux(curr['false'],r,JSON,offset,indent+1)
-            
+            result += "\t " * indent
             result += 'end \n '
             return result
         elif wtype == 'while':
@@ -99,7 +101,7 @@ class Dissector_Generator():
             r = "while({} {} {})\n do \n ".format(loop['operand1'],loop['operator1'],loop['operand2'])
             result += self.logic_to_lua_aux(curr['true'],r,JSON,offset,indent+1)
             result += "\t " * indent
-            result += 'end \n '
+            result = 'end \n '
             r = " "
             result += self.logic_to_lua_aux(curr['false'],r,JSON,offset,indent+1)
             result += "\t " * indent
@@ -107,19 +109,22 @@ class Dissector_Generator():
             return result
         elif wtype == 'for':
             loop = curr['Expressions']
-            r = " for {}, {}, {} \n \t do \n ".format(loop['exp1'],loop['exp2'],loop['exp3'])
+            r = "\t " * indent
+            r += " for {}, {}, {} do \n ".format(loop['exp1'],loop['exp2'],loop['exp3'])
             result += self.logic_to_lua_aux(curr['true'],r,JSON,offset,indent+1)
             result += "\t " * indent
             result += ' end \n '
-            r = " "
+            r = "\t " * indent
             result += self.logic_to_lua_aux(curr['false'],r,JSON,offset,indent)
             result += '\n'
             return result
         elif wtype == 'CodeBlock':
+            result += "\t " * indent
             result += curr['Code']
             result += "\n "
             return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset,indent)
         elif wtype == 'Variable': 
+            result += "\t " * indent
             result += "{} {} {} = {} \n".format(curr['Scope'],curr['Data Type'],curr['Name'],self.get_value(curr['Data Type'],curr['Value']))
             return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset,indent)
         elif wtype == 'Do While':
