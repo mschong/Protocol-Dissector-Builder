@@ -79,16 +79,17 @@ class DropGraphicsScene(QGraphicsScene):
                         if item.scene():
                             item.removeConnectors()
                             self.proxyWidgetList.remove(item)
-                            if(isinstance(self.getDefaultWidget(item), Variable)):
-                                self.variableList.remove(item)
+                            if(not isinstance(item.widget(), QPushButton)):
+                                if(isinstance(self.getDefaultWidget(item), Variable)):
+                                    self.variableList.remove(item)
 
-                                i = 0
-                                for widget in self.proxyWidgetList:
-                                    if(isinstance(self.getDefaultWidget(widget), Variable)):
-                                        self.getDefaultWidget(widget).setVariableNumber(i)
-                                        i += 1
-                            elif(isinstance(self.getDefaultWidget(item), Field)):
-                                self.proxyDefinedFieldList.remove(item)
+                                    i = 0
+                                    for widget in self.proxyWidgetList:
+                                        if(isinstance(self.getDefaultWidget(widget), Variable)):
+                                            self.getDefaultWidget(widget).setVariableNumber(i)
+                                            i += 1
+                                elif(isinstance(self.getDefaultWidget(item), Field)):
+                                    self.proxyDefinedFieldList.remove(item)
                             self.removeItem(item)
 
 
@@ -669,7 +670,7 @@ class DropGraphicsScene(QGraphicsScene):
 
         return dissector
 
-    # called by self.saveDissector() to save Decision, While, Do_While
+    # called by self.saveDissector() to save Decision, While, For_Loop
     def saveConditionWidget(self, proxyWidget):
         defaultWidget = self.getDefaultWidget(proxyWidget)
         widget_name = defaultWidget.getName()
@@ -797,6 +798,7 @@ class DropGraphicsScene(QGraphicsScene):
             self.removeItem(item)
         self.proxyWidgetList.clear()
         self.proxyDefinedFieldList.clear()
+        self.variableList.clear()
         self.countFields = 0
         self.decision_count = 0
         self.while_count = 0 
