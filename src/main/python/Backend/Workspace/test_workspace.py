@@ -1,5 +1,8 @@
 import pytest
 from workspace import Workspace
+import sys
+sys.path.append('.')
+sys.path.append('../Project')
 from project import Project
 
 def test_create_workspace_firstparam():
@@ -73,7 +76,13 @@ def test_addProjectToWorkspace_oneProject():
         'created' : "10/31/2019",
         'edited' : "10/31/2019",
         'description': "filler description for testing purposes",
-        'author': "lorna"
+        'protocol': "UDP",
+        'change_protocol': "TCP",
+        'src_port': "1234",
+        'dst_port': "8080",
+        'author': "author1",
+        'path': "",
+        'dissector': ""
     })
     
     workspace = Workspace( "New Workspace", JSON = {
@@ -92,20 +101,32 @@ def test_addProjectToWorkspace_oneProject():
 
 
 def test_addProjectToWorkspace_twoProjects():
-    project1 = Project("New project 1" , JSON = {
+    project1 = Project("Project1" , JSON = {
         'name' : "New project in JSON",
         'created' : "10/31/2019",
         'edited' : "10/31/2019",
         'description': "filler description for testing purposes",
-        'author': "lorna"
+        'protocol': "UDP",
+        'change_protocol': "TCP",
+        'src_port': "1234",
+        'dst_port': "8080",
+        'author': "author1",
+        'path': "",
+        'dissector': ""
     })
 
-    project2 = Project("New project 2" , JSON = {
+    project2 = Project("Project 2" , JSON = {
         'name' : "New project in JSON",
         'created' : "10/31/2019",
         'edited' : "10/31/2019",
         'description': "filler description for testing purposes",
-        'author': "lorna"
+        'protocol': "UDP",
+        'change_protocol': "TCP",
+        'src_port': "1234",
+        'dst_port': "8080",
+        'author': "author1",
+        'path': "",
+        'dissector': ""
     })
     
     workspace = Workspace( "New Workspace", JSON = {
@@ -135,26 +156,20 @@ def test_addProjectToWorkspace_noProject():
         'path' : 'path'
     })
     
-    workspace.addProjectToWorkspace()
-    test_json = workspace.get_JSON()
-
-    assert test_json['projects'] == None
-    assert workspace.projects == None
-
+    assert workspace.addProjectToWorkspace(None) == None
 
 def test_addProjectToWorkspace_int():
     workspace = Workspace( "New Workspace", JSON = {
         'name' : "New Workspace",
         'projects' : {},
         'created' : "10/31/2019",
-        'edited': "10/31/2019"
+        'edited': "10/31/2019",
+        'path': 'path'
     })
     
-    workspace.addProjectToWorkspace(1)
-    test_json = workspace.get_JSON()
+    assert workspace.addProjectToWorkspace(1) == None
 
-    assert test_json['projects'] == None
-    assert workspace.projects == None
+  
 
 
 def test_addProjectToWorkspace_string():
@@ -166,11 +181,8 @@ def test_addProjectToWorkspace_string():
         'path' : 'path'
     })
     
-    workspace.addProjectToWorkspace("random string")
-    test_json = workspace.get_JSON()
-
-    assert test_json['projects'] == None
-    assert workspace.projects == None
+    assert workspace.addProjectToWorkspace("random string") == None
+  
 
 
 def test_addProjectToWorkspace_float():
