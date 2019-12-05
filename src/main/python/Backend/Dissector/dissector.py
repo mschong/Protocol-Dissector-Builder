@@ -1,4 +1,3 @@
-
 class Dissector_Generator():
    
     dissector = {}
@@ -81,6 +80,7 @@ class Dissector_Generator():
         if wtype == 'End Loop':
             return result
         if  wtype == 'Field':
+            print("OFFSET : {}".format(offset))
             if curr['LE'] == "true":
                 r = "\t " * indent
                 r += "subtree:add_le({},buffer({},{})) \n".format(curr['Name'],offset,self.get_size(curr['Var Size']))
@@ -88,9 +88,23 @@ class Dissector_Generator():
                 r = "\t " * indent
                 r += "subtree:add({},buffer({},{})) \n".format(curr['Name'],offset,self.get_size(curr['Var Size']))
             if(self.is_number(self.get_size(curr['Var Size']))):
-                offset += self.get_size(curr['Var Size'])
+                print("IS NUMBER")
+                chunks = str(offset).split(' ')
+                if len(chunks) == 1:
+                 
+                    offset += self.get_size(curr['Var Size'])
+                else :
+                    
+                    num = int(chunks[0])
+                    print(num)
+                    num += int(self.get_size(curr['Var Size']))
+                    print(num)
+                    chunks[0] = str(num)
+                    offset = ' '.join(chunks)
+
+
             else:
-                offset = '{} + {}'.format(str(offset),curr['Var Size'])
+                offset = '{} + {}'.format(str(offset),self.get_size(curr['Var Size']))
             result += r
             return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset,indent)
         elif wtype == 'Decision':
@@ -180,6 +194,3 @@ class Dissector_Generator():
         f.write('local port = DissectorTable.get("{}.port") \n'.format(self.dissector['port_type']))
         f.write('port:add({},protocol)'.format(self.dissector['port_number']))
         f.close()
-        
-    
-

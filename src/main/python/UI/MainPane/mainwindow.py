@@ -229,6 +229,7 @@ class UiMainWindow(object):
             self.workspace_file = openWorkspaceUi.filename   
             ws_name = self.loadWorkspace()
             self.workspaceLabel.setText("Worspace: " + ws_name)
+            logging.info(f"Workspace: {ws_name} opened")
 
     def saveWorkspace(self, wsname):
         msgBox = QtWidgets.QMessageBox()
@@ -243,6 +244,7 @@ class UiMainWindow(object):
         elif result == QtWidgets.QMessageBox.Discard:
             return True
         elif result == QtWidgets.QMessageBox.Save:
+            logging.info(f"Workspace: {wsname} saved")
             return self.pyro_proxy.save_workspace()
 
     def closeWorkspace(self):
@@ -252,6 +254,7 @@ class UiMainWindow(object):
         self.pyro_proxy.close_workspace()
         self.clearProjectTreview()
         self.dba_ui.clear_widgets_from_canvass()
+        logging.info(f"Workspace Closed")
 
     def loadWorkspace(self):
         if self.workspace_file == None or self.workspace_file == "":
@@ -271,7 +274,7 @@ class UiMainWindow(object):
                         data = json.load(json_file)
                        
                     self.addProjectToTreeView(self.treeview_model, data['name'])
-
+            logging.info(f"Workspace projects loaded")
             return JSON['name']
         except Exception as ex:
             errmsg = "Error while loading Workspace: " + str(ex)
@@ -329,8 +332,8 @@ class UiMainWindow(object):
 
     #PROJECT FUNCTIONS
     def export_lua_script(self):
-        
         self.pyro_proxy.export_lua_script(self.workspace_file,self.selected_project)
+        logging.info(f"Lua file exported into ./LUA/{self.selected_project}.lua")
        
     def openProjectConfigDialog(self,pname=None,pauthor = None,pdesc=None,created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         dialog = QtWidgets.QDialog()
@@ -356,6 +359,7 @@ class UiMainWindow(object):
 
     # PROJECT FUNCTIONS
     def showErrorMessage(self, errostr):
+        logging.error(errostr)
         msgBox = QtWidgets.QMessageBox()
         msgBox.setIcon(QtWidgets.QMessageBox.Critical)
         msgBox.setText("Error")
@@ -400,6 +404,7 @@ class UiMainWindow(object):
         print("ATTRIBUTES: {}".format(dissector_json))
         self.dba_ui.clear_widgets_from_canvass()
         self.dba_ui.restore_widgets_to_scene(dissector_json)
+        logging.info(f"Project: {self.selected_project} opened")
 
     def save_all_dissector(self):
         dissector_json = self.dba_ui.save_button_clicked()
