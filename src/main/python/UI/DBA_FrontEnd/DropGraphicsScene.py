@@ -82,7 +82,7 @@ class DropGraphicsScene(QGraphicsScene):
                             if(not isinstance(item.widget(), QPushButton)):
                                 if(isinstance(self.getDefaultWidget(item), Variable)):
                                     self.variableList.remove(item)
-
+                                    self.variable_count -= 1
                                     i = 0
                                     for widget in self.proxyWidgetList:
                                         if(isinstance(self.getDefaultWidget(widget), Variable)):
@@ -327,7 +327,10 @@ class DropGraphicsScene(QGraphicsScene):
                 widgetToAdd.setBase(widget["Base"])
                 widgetToAdd.setMask(widget["Mask"])
                 widgetToAdd.setValueConstraint(widget["Value Constraint"])
-                widgetToAdd.setSize(widget["Var Size"]['editText'], widget["Var Size"]["combobox"])
+                if(widget["Var Size"]["combobox"] == "BITS" or widget["Var Size"]["combobox"] == "BYTES"):
+                    widgetToAdd.setSize(widget["Var Size"]['editText'], widget["Var Size"]["combobox"])
+                else:
+                    widgetToAdd.setSizeofVariable(widget["Var Size"]["editText"], widget["Var Size"]["combobox"])
                 widgetToAdd.setID(widget["ID Value"])
                 widgetToAdd.setRequired(widget["Required"])
                 widgetToAdd.setLittleEndian(widget["LE"])

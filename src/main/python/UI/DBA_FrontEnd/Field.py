@@ -30,6 +30,7 @@ class Field(QWidget):
     def __init__(self):
 
         super().__init__()
+        self.customSize = 0
         self.initUI()
 
     def initUI(self):
@@ -82,8 +83,8 @@ class Field(QWidget):
 
         # Creating drop down list of data types
         data_type_com= QComboBox()
-        data_types = ["NONE", "PROTOCOL", "BOOLEAN","FRAMENUM", "UNIT8", "UNIT16", "UNIT24", "UNIT32", "UNIT64", "INT8", "INT16",
-                      "INT24", "INT32", "INT64", "FLOAT", "DOUBLE", "ABSOLUTE_TIME", "RELATIVE_TIME", "STRING", "STRINGZ", "UNIT_STRING", "ETHER", "BYTES","UNIT_BYTES", "IPv4","IPv6", "IPXNET", "PROTOCOL", "GUID", "OID"]
+        data_types = ["NONE", "PROTOCOL", "BOOLEAN","FRAMENUM", "UINT8", "UINT16", "UINT24", "UINT32", "UINT64", "INT8", "INT16",
+                      "INT24", "INT32", "INT64", "FLOAT", "DOUBLE", "ABSOLUTE_TIME", "RELATIVE_TIME", "STRING", "STRINGZ", "UINT_STRING", "ETHER", "BYTES","UINT_BYTES", "IPv4","IPv6", "IPXNET", "PROTOCOL", "GUID", "OID"]
         for data_type in data_types:
             data_type_com.addItem(data_type)
         widgets.append(data_type_com)
@@ -149,9 +150,9 @@ class Field(QWidget):
         self.table.resizeRowsToContents()
     
     def changeVarSizeEdit(self, text):
-        self.customSize = 1
-        cur_txt = text 
-        if cur_txt == 'Variable' or cur_txt == 'Field':
+        self.cur_txt = text 
+        if self.cur_txt == 'Variable' or self.cur_txt == 'Field':
+            self.customSize = 1
             #var_size_row_layout = QHBoxLayout()
             objectName = QLineEdit()
             objectName_exp_validator = QRegExp("[a-z0-9_]+\S?[A-za-z0-9_]+")
@@ -175,26 +176,35 @@ class Field(QWidget):
             text = "No name declared. Please declare a name"
             dialog = FieldOKDialog(text)
             dialog.exec()
+            return
         elif self.table.cellWidget(1, 1).text() == "":
             text = "No abbreviation declared. Please declare a abbreviation"
             dialog = FieldOKDialog(text)
             dialog.exec()
+            return
         elif self.table.cellWidget(2, 1).text() == "":
             text = "No description declared. Please declare a description"
             dialog = FieldOKDialog(text)
             dialog.exec()
+            return
         elif self.table.cellWidget(3, 1).currentText() == "Select data type":
             text = "No Data Type selected. If field has no type then select NONE otherwise please select a type"
             dialog = FieldOKDialog(text)
             dialog.exec()
-
-        elif self.table.cellWidget(7, 1).children()[1].text() == "":
-            text = "No size declared. Please declare a size"
-            dialog = FieldOKDialog(text)
-            dialog.exec()
-
-        else:
-            self.toolButton.setText(self.table.cellWidget(0, 1).text())
+            return
+        elif len(self.table.cellWidget(7,1).children()) == 3:
+            if self.table.cellWidget(7, 1).children()[1].text() == "":
+                text = "No size declared. Please declare a size"
+                dialog = FieldOKDialog(text)
+                dialog.exec()
+                return
+        elif len(self.table.cellWidget(7,1).children()) < 3:
+            if self.table.cellWidget(7, 1).text() == "":
+                text = "No size declared. Please declare a size"
+                dialog = FieldOKDialog(text)
+                dialog.exec()
+                return
+        self.toolButton.setText(self.table.cellWidget(0, 1).text())
     
     def setName(self, name):
         self.table.cellWidget(0,1).setText(name)
@@ -221,6 +231,10 @@ class Field(QWidget):
     def setValueConstraint(self, constraint):
         self.table.cellWidget(6,1).setText(constraint)
 
+    def setSizeofVariable(self, name, typeOfField):
+        self.changeVarSizeEdit(typeOfField)
+        self.table.cellWidget(7,1).setText(name)
+
     def setSize(self, value, unit):
         # setting lineEdit String
         self.table.cellWidget(7,1).children()[1].setText(value)
@@ -245,12 +259,11 @@ class Field(QWidget):
             self.table.cellWidget(10,1).children()[1].setChecked(False)
 
     def saveMethod(self):
-        field_properties = dict({'Name': self.table.cellWidget(0,1).text(), 'Abbreviation': self.table.cellWidget(1,1).text(), 'Description': self.table.cellWidget(2,1).text(), 'Data Type': self.table.cellWidget(3,1).currentText(), 'Base': self.table.cellWidget(4,1).currentText(), 'Mask': self.table.cellWidget(5,1).text(), 'Value Constraint': self.table.cellWidget(6,1).text(), 'Var Size': {'editText': self.table.cellWidget(7,1).children()[1].text(), 'combobox': self.table.cellWidget(7,1).children()[2].currentText()}, 'ID Value': self.table.cellWidget(8,1).text()})
         field_properties = dict({'Name': self.table.cellWidget(0,1).text(), 'Abbreviation': self.table.cellWidget(1,1).text(), 'Description': self.table.cellWidget(2,1).text(), 'Data Type': self.table.cellWidget(3,1).currentText(), 'Base': self.table.cellWidget(4,1).currentText(), 'Mask': self.table.cellWidget(5,1).text(), 'Value Constraint': self.table.cellWidget(6,1).text()})
         if self.customSize == 0:
             field_properties.update({'Var Size': {'editText': self.table.cellWidget(7,1).children()[1].text(), 'combobox': self.table.cellWidget(7,1).children()[2].currentText()},'ID Value': self.table.cellWidget(8,1).text()})
         if self.customSize == 1:
-            field_properties.update({'Var Size': self.table.cellWidget(7,1).text() ,'ID Value': self.table.cellWidget(8,1).text()})
+            field_properties.update({'Var Size': {'editText': self.table.cellWidget(7,1).text(), 'combobox': self.cur_txt} ,'ID Value': self.table.cellWidget(8,1).text()})
 
             """if self.table.cellWidget(7,1).children()[2].text() == 'Field':
                 fields =  self.scene.proxyDefinedFieldList
