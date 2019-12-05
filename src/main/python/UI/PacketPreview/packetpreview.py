@@ -7,6 +7,7 @@ import json
 import Pyro4
 import Pyro4.util
 import os
+import logging
 import subprocess
 from UI.PacketPreview.customSort import sortableElement
 
@@ -65,6 +66,7 @@ class Ui_PackagePreview(object):
         QtCore.QMetaObject.connectSlotsByName(PackagePreview)
 
     def openFile(self):
+        logging.info("Opening PCAP file")
         self.label_3.setText("Status: Opening a file...")
         self.model.removeRows(0,self.model.rowCount())
         self.name = QFileDialog.getOpenFileName()
@@ -102,8 +104,10 @@ class Ui_PackagePreview(object):
                     branch1.appendRow(ProtocolToAdd)
                 self.model.appendRow([branch1])
         p.terminate()
+        logging.info("File Opened")
 
     def dissect(self):
+        logging.info("Dissecting")
         p = subprocess.Popen(['python3.6', 'src/main/python/UI/PacketPreview/demo.py'])
         try:
             if(self.name[0] and ".pcap" in self.name[0] ):
@@ -168,6 +172,7 @@ class Ui_PackagePreview(object):
         except:
                 pass
         p.terminate()
+        logging.info("Dissected")
 
 
     def retranslateUi(self, PackagePreview):
@@ -183,15 +188,10 @@ class Ui_PackagePreview(object):
         self.set_ui_workspace(workspace,project)
         self.pyro_proxy.set_workspace(workspace,project)
     def set_ui_workspace(self,workspace,project):
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(project)
-        
         path = "{}/Lua/{}.lua".format(workspace,project)
-        print(path)
-        print("OTRAS MAMADAS")
         if os.path.exists(path) is False:
-            print("MAMADAS")
             self.label_3.setText("Status: No LUA file found")
+            logging.info("Lua file not found for the current project")
         else: 
             self.label_3.setText("Status: Waiting for Input")
         
