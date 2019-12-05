@@ -1,0 +1,68 @@
+{
+    "fields.chksum": {
+        "Abbreviation": "chat.chksum",
+        "Base": "HEX",
+        "Data Type": "UNIT32",
+        "Description": "Checksum",
+        "ID Value": "",
+        "LE": "false",
+        "Mask": "",
+        "Name": "fields.chksum",
+        "Position": {
+            "x": 1066.718322753907,
+            "y": 795.4522705078133
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "4"
+        },
+        "next_field": "Variable0"
+    },
+    "fields.command": {
+        "Abbreviation": "chat.command",
+        "Base": "NONE",
+        "Data Type": "UNIT8",
+        "Description": "Command",
+        "ID Value": "",
+        "LE": "false",
+        "Mask": "",
+        "Name": "fields.command",
+        "Position": {
+            "x": 1460.3950805664065,
+            "y": 792.4005126953133
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "1"
+        },
+        "next_field": "fields.chksum"
+    },
+    "fields.data": {
+        "Abbreviation": "chat.data",
+        "Base": "NONE",
+        "Data Type": "BYTES",
+        "Description": "Data",
+        "ID Value": "",
+        "LE": "false",
+        "Mask": "",
+        "Name": "fields.data",
+        "Position": {
+            "x": 1379.470703125,
+            "y": 594.17578125
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "32"
+        },
+        "next_field": "fields.command"
+    }
+}

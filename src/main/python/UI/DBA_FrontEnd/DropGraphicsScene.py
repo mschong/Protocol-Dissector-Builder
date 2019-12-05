@@ -79,16 +79,17 @@ class DropGraphicsScene(QGraphicsScene):
                         if item.scene():
                             item.removeConnectors()
                             self.proxyWidgetList.remove(item)
-                            if(isinstance(self.getDefaultWidget(item), Variable)):
-                                self.variableList.remove(item)
-
-                                i = 0
-                                for widget in self.proxyWidgetList:
-                                    if(isinstance(self.getDefaultWidget(widget), Variable)):
-                                        self.getDefaultWidget(widget).setVariableNumber(i)
-                                        i += 1
-                            elif(isinstance(self.getDefaultWidget(item), Field)):
-                                self.proxyDefinedFieldList.remove(item)
+                            if(not isinstance(item.widget(), QPushButton)):
+                                if(isinstance(self.getDefaultWidget(item), Variable)):
+                                    self.variableList.remove(item)
+                                    self.variable_count -= 1
+                                    i = 0
+                                    for widget in self.proxyWidgetList:
+                                        if(isinstance(self.getDefaultWidget(widget), Variable)):
+                                            self.getDefaultWidget(widget).setVariableNumber(i)
+                                            i += 1
+                                elif(isinstance(self.getDefaultWidget(item), Field)):
+                                    self.proxyDefinedFieldList.remove(item)
                             self.removeItem(item)
 
 
@@ -326,7 +327,10 @@ class DropGraphicsScene(QGraphicsScene):
                 widgetToAdd.setBase(widget["Base"])
                 widgetToAdd.setMask(widget["Mask"])
                 widgetToAdd.setValueConstraint(widget["Value Constraint"])
-                widgetToAdd.setSize(widget["Var Size"]['editText'], widget["Var Size"]["combobox"])
+                if(widget["Var Size"]["combobox"] == "BITS" or widget["Var Size"]["combobox"] == "BYTES"):
+                    widgetToAdd.setSize(widget["Var Size"]['editText'], widget["Var Size"]["combobox"])
+                else:
+                    widgetToAdd.setSizeofVariable(widget["Var Size"]["editText"], widget["Var Size"]["combobox"])
                 widgetToAdd.setID(widget["ID Value"])
                 widgetToAdd.setRequired(widget["Required"])
                 widgetToAdd.setLittleEndian(widget["LE"])
@@ -661,13 +665,15 @@ class DropGraphicsScene(QGraphicsScene):
                 dissector.update(forLoop)
 
 
-        with open('fieldsJSON.txt', 'w') as f:
-            json.dump(fieldsForJSONFile, f)
+        # Writing fields to separate file for packet-preview-pane team
+        # Written in project's root directory
+        with open('fieldsExampleJSON.txt', 'w') as f:
+            f.write(json.dumps(fieldsForJSONFile, indent=4, sort_keys=True))
 
 
         return dissector
 
-    # called by self.saveDissector() to save Decision, While, Do_While
+    # called by self.saveDissector() to save Decision, While, For_Loop
     def saveConditionWidget(self, proxyWidget):
         defaultWidget = self.getDefaultWidget(proxyWidget)
         widget_name = defaultWidget.getName()
@@ -795,6 +801,7 @@ class DropGraphicsScene(QGraphicsScene):
             self.removeItem(item)
         self.proxyWidgetList.clear()
         self.proxyDefinedFieldList.clear()
+        self.variableList.clear()
         self.countFields = 0
         self.decision_count = 0
         self.while_count = 0 
