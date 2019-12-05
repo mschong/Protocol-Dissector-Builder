@@ -72,7 +72,7 @@ class P_Dialog(object):
         self.label_2.setText(_translate("Dialog", "Project Author"))
         self.label_3.setText(_translate("Dialog", "Project Description"))
         self.label_4.setText(_translate("Dialog", "Protocol"))
-        self.label_5.setText(_translate("Dialog", "Change Protocol"))
+        self.label_5.setText(_translate("Dialog", "Subtree Protocol"))
         self.label_6.setText(_translate("Dialog", "Source Port"))
         self.label_7.setText(_translate("Dialog", "Destination Port"))
         self.lineEdit_7.setText(_translate("Dialog", "-1"))
