@@ -10,6 +10,7 @@ from UI.DBA_FrontEnd.GraphicsProxyWidget  import GraphicsProxyWidget
 from UI.DBA_FrontEnd.Dialogs.ConnectorTypeDialog import ConnectorTypeDialog
 from UI.DBA_FrontEnd.CodeBlock import CodeBlock
 from UI.DBA_FrontEnd.Variable import Variable
+import json
 import sys
 
 
@@ -78,10 +79,17 @@ class DropGraphicsScene(QGraphicsScene):
                         if item.scene():
                             item.removeConnectors()
                             self.proxyWidgetList.remove(item)
-                            if(isinstance(self.getDefaultWidget(item), Variable)):
-                                self.variableList.remove(item)
-                            elif(isinstance(self.getDefaultWidget(item), Field)):
-                                self.proxyDefinedFieldList.remove(item)
+                            if(not isinstance(item.widget(), QPushButton)):
+                                if(isinstance(self.getDefaultWidget(item), Variable)):
+                                    self.variableList.remove(item)
+                                    self.variable_count -= 1
+                                    i = 0
+                                    for widget in self.proxyWidgetList:
+                                        if(isinstance(self.getDefaultWidget(widget), Variable)):
+                                            self.getDefaultWidget(widget).setVariableNumber(i)
+                                            i += 1
+                                elif(isinstance(self.getDefaultWidget(item), Field)):
+                                    self.proxyDefinedFieldList.remove(item)
                             self.removeItem(item)
 
 
@@ -164,7 +172,7 @@ class DropGraphicsScene(QGraphicsScene):
             proxy = self.addWidgetToScene(do_widget, event.scenePos(), event.mimeData().text())
             proxy.setPolygon()
         elif(event.mimeData().text() == "Variable"):
-            varNumber = "Variable"+str(self.variable_count)
+            varNumber = self.variable_count
             self.variable_count += 1
             variable = Variable(varNumber)
             proxy = self.addWidgetToScene(variable, event.scenePos(), event.mimeData().text())
@@ -289,7 +297,7 @@ class DropGraphicsScene(QGraphicsScene):
                     definedField.setRequired(defined_field_properties.get('Required'))
             return definedField
         else:
-            definedVariable = Variable("Variable"+str(self.variable_count))
+            definedVariable = Variable(self.variable_count)
             self.variable_count += 1
             for variable in self.variableList:
                 if text == variable.widget().text():
@@ -304,7 +312,7 @@ class DropGraphicsScene(QGraphicsScene):
     def restoreWidgetsToScene(self, dissector):
         nameToProxyDict = {} # Used for filling out the values in connectionsDict
         connectionsDict = {} # Keys and Values are proxywidgets, key widget points to value widget on canvass
-
+        self.variable_count = 0
         if('START' in dissector.keys()):
             dissector.pop('START', None)
         for key in dissector.keys():
@@ -319,9 +327,13 @@ class DropGraphicsScene(QGraphicsScene):
                 widgetToAdd.setBase(widget["Base"])
                 widgetToAdd.setMask(widget["Mask"])
                 widgetToAdd.setValueConstraint(widget["Value Constraint"])
-                widgetToAdd.setSize(widget["Var Size"]['editText'], widget["Var Size"]["combobox"])
+                if(widget["Var Size"]["combobox"] == "BITS" or widget["Var Size"]["combobox"] == "BYTES"):
+                    widgetToAdd.setSize(widget["Var Size"]['editText'], widget["Var Size"]["combobox"])
+                else:
+                    widgetToAdd.setSizeofVariable(widget["Var Size"]["editText"], widget["Var Size"]["combobox"])
                 widgetToAdd.setID(widget["ID Value"])
                 widgetToAdd.setRequired(widget["Required"])
+                widgetToAdd.setLittleEndian(widget["LE"])
                 widgetText = widget["Name"]
 
             elif(widgetType == "Decision"):
@@ -352,7 +364,7 @@ class DropGraphicsScene(QGraphicsScene):
                 widgetToAdd.setTextBox(widget['Code'])
                 widgetText = "Code Block"
             elif(widgetType == "Variable"):
-                widgetToAdd = Variable(key)
+                widgetToAdd = Variable(self.variable_count)
                 self.variable_count += 1
                 widgetToAdd.setName(widget['Name'])
                 widgetToAdd.setValue(widget['Value'])
@@ -385,11 +397,11 @@ class DropGraphicsScene(QGraphicsScene):
                 conditionConnections = {}
                 # if field has a true key and it's not None
                 if("true" in dissector[key].keys()):
-                    if(dissector[key]["true"] != None):
+                    if(dissector[key]["true"] != "END"):
                         conditionConnections.update({1: dissector[key]["true"]})
                 # if field has a false key and it's not None
                 if("false" in dissector[key].keys()):
-                    if(dissector[key]["false"] != None):
+                    if(dissector[key]["false"] != "END"):
                         conditionConnections.update({0: dissector[key]["false"]})
                 connectionsDict.update({proxy: conditionConnections})
 
@@ -414,7 +426,6 @@ class DropGraphicsScene(QGraphicsScene):
         for startItem, endItem in connectionsDict.items():
             # if there is more than one endItem (false,true)
             if(type(endItem) is dict):
-                print(endItem)
                 for path, innerEndItem in endItem.items():
                     connector = Connector(startItem, innerEndItem)
                     if(path == 0):
@@ -497,6 +508,8 @@ class DropGraphicsScene(QGraphicsScene):
 
     def save_dissector(self):
         dissector = {}
+        fieldsForJSONFile = {}
+        variableCount = 0
         for proxyWidget in self.proxyWidgetList:
             
             # Saving "end loop" or "do" widgets into a dictionary
@@ -572,6 +585,7 @@ class DropGraphicsScene(QGraphicsScene):
                     dissector.update({'START': field['Name']}) 
 
                 dissector.update({field['Name']: field})
+                fieldsForJSONFile.update({field['Name']: field})
 
             # Saving Codeblock into dictionary
             elif(isinstance(defaultWidget, CodeBlock)):
@@ -603,7 +617,7 @@ class DropGraphicsScene(QGraphicsScene):
             # Saving Variable informatin into dictionary
             elif(isinstance(defaultWidget, Variable)):
                 variableProperties = defaultWidget.saveMethod()                
-                variableName = defaultWidget.getVariableNumber()
+                variableName = "Variable"+str(defaultWidget.getVariableNumber())
 
                 x_position = proxyWidget.scenePos().x()+70
                 y_position = proxyWidget.scenePos().y()+70
@@ -650,9 +664,16 @@ class DropGraphicsScene(QGraphicsScene):
                 forLoop[list(forLoop.keys())[0]].update({'Type': "for"})
                 dissector.update(forLoop)
 
+
+        # Writing fields to separate file for packet-preview-pane team
+        # Written in project's root directory
+        with open('fieldsExampleJSON.txt', 'w') as f:
+            f.write(json.dumps(fieldsForJSONFile, indent=4, sort_keys=True))
+
+
         return dissector
 
-    # called by self.saveDissector() to save Decision, While, Do_While
+    # called by self.saveDissector() to save Decision, While, For_Loop
     def saveConditionWidget(self, proxyWidget):
         defaultWidget = self.getDefaultWidget(proxyWidget)
         widget_name = defaultWidget.getName()
@@ -671,7 +692,6 @@ class DropGraphicsScene(QGraphicsScene):
 
         for connector in proxyWidget.connectors:
             # Skip if this widget is the endItem of the connector
-            print("endItem:  ", connector.endItem())
             if(not isinstance(connector.endItem().widget(), QPushButton)):
                 if(self.getDefaultWidget(connector.endItem()) is defaultWidget):
                     continue # continue connector for-loop
@@ -682,10 +702,10 @@ class DropGraphicsScene(QGraphicsScene):
             elif(connector.getType() == "False"):
                 widget_properties.update({'false': end_item})
 
-            if('true' not in widget_properties.keys()):
-                widget_properties.update({'true': None})
-            if('false' not in widget_properties.keys()):
-                widget_properties.update({'false': None})
+        if('true' not in widget_properties.keys()):
+            widget_properties.update({'true': "END"})
+        if('false' not in widget_properties.keys()):
+            widget_properties.update({'false': "END"})
 
         if(self.isStartField(proxyWidget)):
             return {widget_name: widget_properties, 'START': widget_name}
@@ -755,7 +775,7 @@ class DropGraphicsScene(QGraphicsScene):
             #     endItem_name = tempVariableName
             # else:
             #     endItem_name = endItem_Widget.getName()
-            endItem_name = endItem_Widget.getVariableNumber()
+            endItem_name = "Variable"+str(endItem_Widget.getVariableNumber())
 
         return endItem_name
 
@@ -781,6 +801,7 @@ class DropGraphicsScene(QGraphicsScene):
             self.removeItem(item)
         self.proxyWidgetList.clear()
         self.proxyDefinedFieldList.clear()
+        self.variableList.clear()
         self.countFields = 0
         self.decision_count = 0
         self.while_count = 0 

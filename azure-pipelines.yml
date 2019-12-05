@@ -27,6 +27,7 @@ jobs:
     - script: |
         python -m pip install --upgrade pip
         pip install -r requirements/base.txt
+        pip install -r requirements/linux-mac.txt
       displayName: 'Install dependencies'
 
     - script: |
@@ -74,6 +75,7 @@ jobs:
         pip install pypiwin32
         pip install pywin32
         pip install -r requirements/base.txt
+        pip install -r requirements/linux-mac.txt
       displayName: 'Install dependencies'
 
   
@@ -114,6 +116,7 @@ jobs:
     - script: |
         python -m pip install --upgrade pip
         pip install -r requirements/base.txt
+        pip install -r requirements/windows.txt
       displayName: 'Install dependencies'
 
   

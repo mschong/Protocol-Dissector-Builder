@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'packetpreview.ui'
-#
-# Created by: PyQt5 UI code generator 5.13.0
-#
-# WARNING! All changes made in this file will be lost!
-
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtGui import QBrush, QColor
@@ -16,6 +7,8 @@ import json
 import Pyro4
 import Pyro4.util
 import os
+import logging
+import subprocess
 from UI.PacketPreview.customSort import sortableElement
 
 class Ui_PackagePreview(object):
@@ -27,7 +20,7 @@ class Ui_PackagePreview(object):
         PackagePreview.resize(400, 200)
         PackagePreview.setMinimumSize(QtCore.QSize(100, 454))
         self.treeView = QtWidgets.QTreeView(PackagePreview)
-        self.treeView.setGeometry(QtCore.QRect(0, 50, 400, 401))
+        self.treeView.setGeometry(QtCore.QRect(0, 50, 800, 401))
         self.treeView.setObjectName("treeView")
         self.treeView.setSortingEnabled(True)
 
@@ -54,7 +47,7 @@ class Ui_PackagePreview(object):
         self.pushButton.clicked.connect(self.openFile)
 
         self.label_3 = QtWidgets.QLabel(PackagePreview)
-        self.label_3.setGeometry(QtCore.QRect(300, 30, 200, 17))
+        self.label_3.setGeometry(QtCore.QRect(300, 30, 500, 17))
         self.label_3.setObjectName("label_2")
 
         self.pushButton2 = QtWidgets.QPushButton(PackagePreview)
@@ -73,13 +66,15 @@ class Ui_PackagePreview(object):
         QtCore.QMetaObject.connectSlotsByName(PackagePreview)
 
     def openFile(self):
+        logging.info("Opening PCAP file")
         self.label_3.setText("Status: Opening a file...")
         self.model.removeRows(0,self.model.rowCount())
         self.name = QFileDialog.getOpenFileName()
+        p = subprocess.Popen(['python3.6', 'src/main/python/UI/PacketPreview/demo.py'])
         if(self.name[0] and ".pcap" in self.name[0] ):
             self.pyro_proxy.createPackets(self.name[0])
             self.pyro_proxy.savePackets()
-            self.label_3.setText("Status: Opening a file...50%")
+            self.label_3.setText(" ")
             self.pyro_proxy.printPackets()
             fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","r")
             vars = json.loads(fileToRead.read().strip())
@@ -108,9 +103,12 @@ class Ui_PackagePreview(object):
                         ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
                     branch1.appendRow(ProtocolToAdd)
                 self.model.appendRow([branch1])
-            self.label_3.setText("Status: File has been opened.")
+        p.terminate()
+        logging.info("File Opened")
 
     def dissect(self):
+        logging.info("Dissecting")
+        p = subprocess.Popen(['python3.6', 'src/main/python/UI/PacketPreview/demo.py'])
         try:
             if(self.name[0] and ".pcap" in self.name[0] ):
                 self.model.removeRows(0,self.model.rowCount())
@@ -119,7 +117,7 @@ class Ui_PackagePreview(object):
 
 
                 self.pyro_proxy.createPackets(self.name[0])
-                self.label_3.setText("Status: Dissecting...: 50%")
+                self.label_3.setText("")
 
                 self.pyro_proxy.dissectPackets()
 
@@ -173,7 +171,8 @@ class Ui_PackagePreview(object):
                 self.label_3.setText("Status: Package has been dissected.")
         except:
                 pass
-
+        p.terminate()
+        logging.info("Dissected")
 
 
     def retranslateUi(self, PackagePreview):
@@ -186,7 +185,16 @@ class Ui_PackagePreview(object):
         self.label_3.setText(_translate("PackagePreview", "Status: Waiting for Input"))
 
     def set_pyro_workspace(self,workspace,project):
+        self.set_ui_workspace(workspace,project)
         self.pyro_proxy.set_workspace(workspace,project)
+    def set_ui_workspace(self,workspace,project):
+        path = "{}/Lua/{}.lua".format(workspace,project)
+        if os.path.exists(path) is False:
+            self.label_3.setText("Status: No LUA file found")
+            logging.info("Lua file not found for the current project")
+        else: 
+            self.label_3.setText("Status: Waiting for Input")
+        
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

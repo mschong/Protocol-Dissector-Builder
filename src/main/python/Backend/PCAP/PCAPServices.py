@@ -18,12 +18,12 @@ try:
             print("saved")
         elif currCommand[0] == "dissect":
             PCAPFile.dissectPCAP(currCommand[1],currCommand[2])
-            PCAPFile.colorFilter()
+            PCAPFile.colorFilter(currCommand[1],currCommand[2])
             PCAPFile.savePackets()
             print("dissected")
             sys.exit()
         elif currCommand[0] == "colorcode":
-            PCAPFile.colorFilter()
+            #PCAPFile.colorFilter()
             print("colored")
         elif currCommand[0] == "debug":
             print(currCommand)

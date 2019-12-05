@@ -38,7 +38,6 @@ class Decision(QWidget):
         self.addButton.clicked.connect(self.clickMethod)
 
         self.setLayout(self.layout)
-        self.show()
 
     def getName(self):
         return self.name

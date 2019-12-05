@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow
 import Pyro4
 import Pyro4.util
 import json
-import os, sys, ntpath
+import os, sys, ntpath, logging
 from PyQt5 import QtCore, QtGui, QtWidgets
 import datetime
 
@@ -17,6 +17,7 @@ from UI.OpenProjectDialog import openprojectwindow
 from UI.DBA_FrontEnd import DBA
 from UI.PacketPreview import packetpreview
 from UI.ProjectConfigDialog import projectconfig
+from UI.MainPane import qplaintexteditlogger
 
 class UiMainWindow(object):
 
@@ -31,8 +32,14 @@ class UiMainWindow(object):
     workspace_label_hlayout = None
     projectView_canvas_hlayout = None
     packetPreview_hlayout = None
+    log_parent_vlayout = None
+    log_hlayout = None
     project_canvas_splitter = None
     packetpreview_splitter = None
+    packetpreview_log_splitter = None
+    log_parent_widget = None
+    LogTextEdit = None
+    LogLabel = None
 
     def setupUi(self, MainWindow):
         ## Pyro
@@ -50,8 +57,12 @@ class UiMainWindow(object):
         self.workspace_label_hlayout = QtWidgets.QHBoxLayout()
         self.projectView_canvas_hlayout = QtWidgets.QHBoxLayout()
         self.packetPreview_hlayout = QtWidgets.QHBoxLayout()
+        self.log_parent_vlayout = QtWidgets.QVBoxLayout()
+        self.log_hlayout = QtWidgets.QHBoxLayout()
         self.project_canvas_splitter = QtWidgets.QSplitter()
         self.project_canvas_splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.packetpreview_log_splitter =QtWidgets.QSplitter()
+        self.packetpreview_log_splitter.setOrientation(QtCore.Qt.Horizontal)
         self.packetpreview_splitter = QtWidgets.QSplitter()
         self.packetpreview_splitter.setOrientation(QtCore.Qt.Vertical)
 
@@ -105,8 +116,24 @@ class UiMainWindow(object):
         self.packetPreviewFrame.setWidgetResizable(True)
         self.packetPreview_hlayout.addWidget(self.packetPreviewFrame)
 
+        self.LogLabel = QtWidgets.QLabel(self.centralwidget)
+        self.LogLabel.setText("Log")
+        self.LogTextEdit = qplaintexteditlogger.QPlainTextEditLogger(self.centralwidget)
+        self.LogTextEdit.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+        self.log_parent_vlayout.addWidget(self.LogLabel)
+        self.log_parent_vlayout.addWidget(self.LogTextEdit.widget)
+
+        logging.getLogger().addHandler(self.LogTextEdit)
+        logging.getLogger().setLevel(logging.DEBUG)
+
+        self.log_parent_widget = QtWidgets.QWidget()
+        self.log_parent_widget.setLayout(self.log_parent_vlayout)
+
         self.packetpreview_parentwidget = QtWidgets.QWidget()
         self.packetpreview_parentwidget.setLayout(self.packetPreview_hlayout)
+
+        self.packetpreview_log_splitter.addWidget(self.packetpreview_parentwidget)
+        self.packetpreview_log_splitter.addWidget(self.log_parent_widget)
 
         ## Packet Preview Pane
         packetpreview_form = QtWidgets.QWidget()
@@ -115,10 +142,12 @@ class UiMainWindow(object):
         self.packetPreviewFrame.setWidget(packetpreview_form)
 
         self.packetpreview_splitter.addWidget(self.project_canvas_parentwidget)
-        self.packetpreview_splitter.addWidget(self.packetpreview_parentwidget)
+        #self.packetpreview_splitter.addWidget(self.packetpreview_parentwidget)
+        self.packetpreview_splitter.addWidget(self.packetpreview_log_splitter)
         canvasparent_index = self.packetpreview_splitter.indexOf(self.project_canvas_parentwidget)
         self.packetpreview_splitter.setCollapsible(canvasparent_index, False)
-        packetpreview_index = self.packetpreview_splitter.indexOf(self.packetpreview_parentwidget)
+        #packetpreview_index = self.packetpreview_splitter.indexOf(self.packetpreview_parentwidget)
+        packetpreview_index = self.packetpreview_splitter.indexOf(self.packetpreview_log_splitter)
         self.packetpreview_splitter.setCollapsible(packetpreview_index, False)
 
         self.bottom_hlayout = QtWidgets.QHBoxLayout()
@@ -200,6 +229,7 @@ class UiMainWindow(object):
             self.workspace_file = openWorkspaceUi.filename   
             ws_name = self.loadWorkspace()
             self.workspaceLabel.setText("Worspace: " + ws_name)
+            logging.info(f"Workspace: {ws_name} opened")
 
     def saveWorkspace(self, wsname):
         msgBox = QtWidgets.QMessageBox()
@@ -214,6 +244,7 @@ class UiMainWindow(object):
         elif result == QtWidgets.QMessageBox.Discard:
             return True
         elif result == QtWidgets.QMessageBox.Save:
+            logging.info(f"Workspace: {wsname} saved")
             return self.pyro_proxy.save_workspace()
 
     def closeWorkspace(self):
@@ -223,6 +254,7 @@ class UiMainWindow(object):
         self.pyro_proxy.close_workspace()
         self.clearProjectTreview()
         self.dba_ui.clear_widgets_from_canvass()
+        logging.info(f"Workspace Closed")
 
     def loadWorkspace(self):
         if self.workspace_file == None or self.workspace_file == "":
@@ -242,7 +274,7 @@ class UiMainWindow(object):
                         data = json.load(json_file)
                        
                     self.addProjectToTreeView(self.treeview_model, data['name'])
-
+            logging.info(f"Workspace projects loaded")
             return JSON['name']
         except Exception as ex:
             errmsg = "Error while loading Workspace: " + str(ex)
@@ -300,8 +332,8 @@ class UiMainWindow(object):
 
     #PROJECT FUNCTIONS
     def export_lua_script(self):
-        
         self.pyro_proxy.export_lua_script(self.workspace_file,self.selected_project)
+        logging.info(f"Lua file exported into ./LUA/{self.selected_project}.lua")
        
     def openProjectConfigDialog(self,pname=None,pauthor = None,pdesc=None,created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         dialog = QtWidgets.QDialog()
@@ -327,6 +359,7 @@ class UiMainWindow(object):
 
     # PROJECT FUNCTIONS
     def showErrorMessage(self, errostr):
+        logging.error(errostr)
         msgBox = QtWidgets.QMessageBox()
         msgBox.setIcon(QtWidgets.QMessageBox.Critical)
         msgBox.setText("Error")
@@ -371,6 +404,7 @@ class UiMainWindow(object):
         print("ATTRIBUTES: {}".format(dissector_json))
         self.dba_ui.clear_widgets_from_canvass()
         self.dba_ui.restore_widgets_to_scene(dissector_json)
+        logging.info(f"Project: {self.selected_project} opened")
 
     def save_all_dissector(self):
         dissector_json = self.dba_ui.save_button_clicked()

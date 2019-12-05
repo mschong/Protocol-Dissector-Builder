@@ -14,19 +14,25 @@ class PCap:
         self.colorList = {}
     def convertPCAP(self):
         print("Opening file with PyShark")
-
+    
         # How 2 dissect using MyDNS
         # param = {"-X": 'lua_script:/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
         # self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
-
+        
         self.pcapFile = pyshark.FileCapture(self.fileLocation)
         print("Done")
         return "Done"
-
+    
     def dissectPCAP(self,workspace,project):
-        print(workspace)
-        print(project)
-        param = {"-X": 'lua_script: '  + '{}/Lua/{}.lua'.format(workspace,project)}
+        # paramPath = os.getcwd() + '/src/main/python/Backend/Lua/dissector.lua'
+        # param = {"-X": 'lua_script:'  + paramPath}
+        # a = open("logFIle", "w+")
+        # a.write(paramPath)
+        
+        paramPath = '{}/Lua/{}.lua'.format(workspace,project)
+        print("Loading lua script from {}".format(paramPath))
+        param = {"-X": 'lua_script:'  + paramPath}
+       
         self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
         return "SUCCESSFUL"
 
@@ -77,38 +83,43 @@ class PCap:
             print(pkt.pretty_print())
             i = i+1
 
-    def colorFilter(self):
+    def colorFilter(self,workspace,project):
         tw = py.io.TerminalWriter()
         i = 0
         j = 0
-        # path = os.getcwd() + '/Lua/'
-        # if platform.system() == 'Darwin':
-        path = os.getcwd() + '/src/main/python/Backend/Lua/'
-        with open(path + "dissector.json") as f:
+        path = '{}/{}.pdbproj'.format(workspace,project)
+      
+        print("CURR PATH {}".format(path))
+        with open(path) as f:
             data = json.load(f)
-            print(data["protocol"])
-        print(data["protocol"])
-        if os.listdir(path) == []:
+        if os.listdir(workspace) == []:
             self.yellowFlag = True
             for x in self.pcapFile:
                 self.colorList[j] = "Yellow"
                 j+=1
         for pkt in self.pcapFile:
-            # if self.yellowFlag == False:
-            #     self.colorList[i] = "Red"
-            for prot in pkt.frame_info.protocols.split(":"):
-                #print(prot)
-                print("prot: {}".format(prot))
-                print("data[protocol]: {}".format(data['protocol']))
-                print("prot==data[protocol]: {}".format(prot==data['protocol']))
-                if prot=='mydns':
-                    # self.colorFlag=True
-                    self.colorList[i] = "Green"
-                    break
-                elif prot==data['protocol'] or prot=="data":
-                    self.colorList[i] = "Yellow"
-                else:
-                    self.colorList[i] = "Red"
+            self.colorList[i] = ""
+            theProtocols =pkt.frame_info.protocols.split(":")
+            for prot in theProtocols:
+                expectedVal=""
+                try:
+                    expectedVal = list(data.keys())[list(data.values()).index(prot)]
+                except Exception as e:
+                    pass
+                if prot in data.values():
+                    if prot==data['name']:
+                        self.colorList[i] = "Green"
+                        break
+                    else:
+                        try:
+                            diff = ""
+                            diff = (set(pkt[prot].field_names) ^ set(data.keys()))
+                        except Exception as e:
+                            pass
+                        if  len(diff)-len(data.keys()) > 0:
+                            self.colorList[i] = "Yellow"
+                if self.colorList[i] == "":
+                            self.colorList[i] = "Red"
             if (self.yellowFlag == True) or (self.colorList[i] == "Yellow"):
                 tw.write("%s : %s" %( str(i+1), pkt), yellow=True, bold=True)
             elif self.colorList[i] == "Red":
@@ -116,3 +127,4 @@ class PCap:
             else:
                 tw.write("%s : %s" %( str(i+1), pkt), green=True, bold=True)
             i+=1
+        print("COMPLETE")

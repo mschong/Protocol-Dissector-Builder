@@ -23,8 +23,6 @@ class CodeBlock(QWidget):
         self.layout.addWidget(self.textBox)
         self.setLayout(self.layout)
 
-        self.show()
-
     def getName(self):
         return self.name
 
