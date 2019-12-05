@@ -1,0 +1,248 @@
+{
+    "name": "gamespy",
+    "created": "12/05/2019 15:06:49",
+    "edited": "12/05/2019 15:06:49",
+    "description": "gamespy protocol",
+    "protocol": "tcp",
+    "change_protocol": "gamespy",
+    "src_port": "28900",
+    "dst_port": "-1",
+    "author": "marco",
+    "dissector": {
+        "START": "CodeBlock0",
+        "CodeBlock0": {
+            "Code": "local tab = {  -- tab[i][j] = xor(i-1, j-1)\n  {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, },\n  {1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14, },\n  {2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13, },\n  {3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12, },\n  {4, 5, 6, 7, 0, 1, 2, 3, 12, 13, 14, 15, 8, 9, 10, 11, },\n  {5, 4, 7, 6, 1, 0, 3, 2, 13, 12, 15, 14, 9, 8, 11, 10, },\n  {6, 7, 4, 5, 2, 3, 0, 1, 14, 15, 12, 13, 10, 11, 8, 9, },\n  {7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8, },\n  {8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, },\n  {9, 8, 11, 10, 13, 12, 15, 14, 1, 0, 3, 2, 5, 4, 7, 6, },\n  {10, 11, 8, 9, 14, 15, 12, 13, 2, 3, 0, 1, 6, 7, 4, 5, },\n  {11, 10, 9, 8, 15, 14, 13, 12, 3, 2, 1, 0, 7, 6, 5, 4, },\n  {12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3, },\n  {13, 12, 15, 14, 9, 8, 11, 10, 5, 4, 7, 6, 1, 0, 3, 2, },\n  {14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1, },\n  {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, },\n}\n\ncipher = {103, 97, 109, 101, 115, 112, 121}",
+            "Position": {
+                "x": 305.0,
+                "y": 95.0
+            },
+            "Type": "CodeBlock",
+            "next_field": "Variable0"
+        },
+        "Variable0": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "index",
+            "Value": "1",
+            "Position": {
+                "x": 307.0,
+                "y": 175.0
+            },
+            "Type": "Variable",
+            "next_field": "Variable1"
+        },
+        "Variable1": {
+            "Scope": "local",
+            "Data Type": "string",
+            "Name": "decoded",
+            "Value": "\"\"",
+            "Position": {
+                "x": 304.0,
+                "y": 251.0
+            },
+            "Type": "Variable",
+            "next_field": "Variable2"
+        },
+        "Variable2": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "size",
+            "Value": "buffer:len()",
+            "Position": {
+                "x": 311.0,
+                "y": 318.0
+            },
+            "Type": "Variable",
+            "next_field": "ForLoop0"
+        },
+        "ForLoop0": {
+            "Expressions": {
+                "exp1": "i=0",
+                "exp2": "size-1",
+                "exp3": "1"
+            },
+            "Position": {
+                "x": 305.0,
+                "y": 381.0
+            },
+            "true": "Variable3",
+            "false": "CodeBlock7",
+            "Type": "for"
+        },
+        "Variable3": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "res",
+            "Value": "0",
+            "Position": {
+                "x": 530.0,
+                "y": 462.0
+            },
+            "Type": "Variable",
+            "next_field": "Variable4"
+        },
+        "Variable4": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "c",
+            "Value": "0",
+            "Position": {
+                "x": 534.0,
+                "y": 538.0
+            },
+            "Type": "Variable",
+            "next_field": "Variable5"
+        },
+        "Variable5": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "a",
+            "Value": "0",
+            "Position": {
+                "x": 532.0,
+                "y": 600.0
+            },
+            "Type": "Variable",
+            "next_field": "Variable6"
+        },
+        "Variable6": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "b",
+            "Value": "0",
+            "Position": {
+                "x": 535.0,
+                "y": 663.0
+            },
+            "Type": "Variable",
+            "next_field": "CodeBlock1"
+        },
+        "CodeBlock1": {
+            "Code": "a = buffer(i,1):uint()\nb = cipher[index]",
+            "Position": {
+                "x": 536.0,
+                "y": 727.0
+            },
+            "Type": "CodeBlock",
+            "next_field": "While0"
+        },
+        "While0": {
+            "Condition": {
+                "operand1": "a",
+                "operator1": ">",
+                "operand2": "0",
+                "operator2": "AND",
+                "operand3": "b",
+                "operator3": ">",
+                "operand4": "0"
+            },
+            "Position": {
+                "x": 535.0,
+                "y": 786.0
+            },
+            "true": "Variable7",
+            "false": "CodeBlock4",
+            "Type": "while"
+        },
+        "Variable7": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "a2",
+            "Value": "a % 16",
+            "Position": {
+                "x": 740.0,
+                "y": 881.0
+            },
+            "Type": "Variable",
+            "next_field": "Variable8"
+        },
+        "Variable8": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "b2",
+            "Value": "b % 16",
+            "Position": {
+                "x": 733.0,
+                "y": 952.0
+            },
+            "Type": "Variable",
+            "next_field": "CodeBlock3"
+        },
+        "CodeBlock3": {
+            "Code": " res = res + tab[a2+1][b2+1]*c\n    a = (a-a2)/16\n    b = (b-b2)/16\n    c = c*16",
+            "Position": {
+                "x": 730.0,
+                "y": 1025.0
+            },
+            "Type": "CodeBlock",
+            "next_field": "End_While0"
+        },
+        "End_While0": {
+            "Position": {
+                "x": 723.0,
+                "y": 1081.0
+            },
+            "Type": "End Loop",
+            "next_field": "While0"
+        },
+        "End_ForLoop0": {
+            "Position": {
+                "x": 165.0,
+                "y": 1193.0
+            },
+            "Type": "End Loop",
+            "next_field": "ForLoop0"
+        },
+        "CodeBlock4": {
+            "Code": "res = res + a*c + b*c\n",
+            "Position": {
+                "x": 380.0,
+                "y": 884.0
+            },
+            "Type": "CodeBlock",
+            "next_field": "CodeBlock5"
+        },
+        "CodeBlock5": {
+            "Code": "decoded = decoded .. string.char(thebyte)\n\t\t\n\t\tindex = index + 1",
+            "Position": {
+                "x": 384.0,
+                "y": 977.0
+            },
+            "Type": "CodeBlock",
+            "next_field": "Decision0"
+        },
+        "Decision0": {
+            "Condition": {
+                "operand1": "index",
+                "operator1": "==",
+                "operand2": "8"
+            },
+            "Position": {
+                "x": 417.0,
+                "y": 1082.0
+            },
+            "true": "CodeBlock6",
+            "false": "End_ForLoop0",
+            "Type": "Decision"
+        },
+        "CodeBlock6": {
+            "Code": "index = 1",
+            "Position": {
+                "x": 269.0,
+                "y": 802.0
+            },
+            "Type": "CodeBlock",
+            "next_field": "End_ForLoop0"
+        },
+        "CodeBlock7": {
+            "Code": "local subtree = tree:add(protocol,buffer(),\"Gamspy Protocol\")\n    subtree:add(buffer(0,size), \"Decoded: \" .. decoded)",
+            "Position": {
+                "x": 153.0,
+                "y": 574.0
+            },
+            "Type": "CodeBlock",
+            "next_field": "END"
+        }
+    },
+    "path": "/Users/danielornelas/projects/protocol-dissector-builder/Protocol-Dissector-Builder/SAMPLE/gamespy.pdbproj"
+}
