@@ -13,8 +13,8 @@
         "CodeBlock0": {
             "Code": "length = buffer:len()",
             "Position": {
-                "x": 280.0,
-                "y": 198.0
+                "x": 300.0,
+                "y": 228.0
             },
             "Type": "CodeBlock",
             "next_field": "Decision0"
@@ -26,8 +26,8 @@
                 "operand2": "0"
             },
             "Position": {
-                "x": 281.0,
-                "y": 271.0
+                "x": 301.0,
+                "y": 301.0
             },
             "true": "CodeBlock1",
             "false": "message_length",
@@ -36,8 +36,8 @@
         "CodeBlock1": {
             "Code": "return",
             "Position": {
-                "x": 603.0,
-                "y": 343.0
+                "x": 623.0,
+                "y": 373.0
             },
             "Type": "CodeBlock",
             "next_field": "END"
@@ -58,8 +58,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 239.0,
-                "y": 343.0
+                "x": 259.0,
+                "y": 373.0
             },
             "Type": "Field",
             "next_field": "request_id"
@@ -80,8 +80,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 240.0,
-                "y": 408.0
+                "x": 260.0,
+                "y": 438.0
             },
             "Type": "Field",
             "next_field": "response_to"
@@ -91,7 +91,7 @@
             "Abbreviation": "response_to",
             "Description": "responseTo",
             "Data Type": "INT32",
-            "Base": "",
+            "Base": "DEC",
             "Mask": "",
             "Value Constraint": "",
             "Var Size": {
@@ -102,8 +102,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 240.0,
-                "y": 473.0
+                "x": 260.0,
+                "y": 503.0
             },
             "Type": "Field",
             "next_field": "CodeBlock3"
@@ -111,8 +111,8 @@
         "CodeBlock3": {
             "Code": " local opcode_number = buffer(12,4):le_uint()\n    local opcode_name = get_opcode_name(opcode_number)",
             "Position": {
-                "x": 241.0,
-                "y": 536.0
+                "x": 261.0,
+                "y": 566.0
             },
             "Type": "CodeBlock",
             "next_field": "opcode"
@@ -133,8 +133,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 241.0,
-                "y": 592.0
+                "x": 261.0,
+                "y": 622.0
             },
             "Type": "Field",
             "next_field": "Decision1"
@@ -146,8 +146,8 @@
                 "operand2": "\"OP_QUERY\""
             },
             "Position": {
-                "x": 241.0,
-                "y": 672.0
+                "x": 261.0,
+                "y": 702.0
             },
             "true": "CodeBlock4",
             "false": "Decision3",
@@ -156,8 +156,8 @@
         "CodeBlock4": {
             "Code": "local flags_number = buffer(16,4):le_uint()\n        local flags_description = get_flag_description(flags_number)",
             "Position": {
-                "x": 612.0,
-                "y": 726.0
+                "x": 632.0,
+                "y": 756.0
             },
             "Type": "CodeBlock",
             "next_field": "flags"
@@ -178,8 +178,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 643.0,
-                "y": 825.125
+                "x": 663.0,
+                "y": 855.125
             },
             "Type": "Field",
             "next_field": "CodeBlock5"
@@ -187,8 +187,8 @@
         "CodeBlock5": {
             "Code": "local string_length",
             "Position": {
-                "x": 653.0,
-                "y": 923.3125
+                "x": 673.0,
+                "y": 953.3125
             },
             "Type": "CodeBlock",
             "next_field": "ForLoop0"
@@ -200,8 +200,8 @@
                 "exp3": "1"
             },
             "Position": {
-                "x": 583.75,
-                "y": 1002.0
+                "x": 603.75,
+                "y": 1032.0
             },
             "true": "Decision2",
             "false": "full_coll_name",
@@ -209,13 +209,13 @@
         },
         "Decision2": {
             "Condition": {
-                "operand1": "uffer(i,1):le_uint()",
+                "operand1": "buffer(i,1):le_uint()",
                 "operator1": "==",
                 "operand2": "0"
             },
             "Position": {
-                "x": 943.0,
-                "y": 1026.4375
+                "x": 963.0,
+                "y": 1056.4375
             },
             "true": "CodeBlock6",
             "false": "End_ForLoop0",
@@ -224,16 +224,16 @@
         "CodeBlock6": {
             "Code": "  string_length = i - 20\n                break",
             "Position": {
-                "x": 1095.0,
-                "y": 1117.0
+                "x": 1115.0,
+                "y": 1147.0
             },
             "Type": "CodeBlock",
             "next_field": "END"
         },
         "End_ForLoop0": {
             "Position": {
-                "x": 777.4375,
-                "y": 1115.5625
+                "x": 797.4375,
+                "y": 1145.5625
             },
             "Type": "End Loop",
             "next_field": "ForLoop0"
@@ -254,8 +254,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 512.0,
-                "y": 1073.0
+                "x": 532.0,
+                "y": 1103.0
             },
             "Type": "Field",
             "next_field": "number_to_skip"
@@ -276,8 +276,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 513.0,
-                "y": 1162.0
+                "x": 533.0,
+                "y": 1192.0
             },
             "Type": "Field",
             "next_field": "number_to_return"
@@ -298,8 +298,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 458.0,
-                "y": 1214.0
+                "x": 478.0,
+                "y": 1244.0
             },
             "Type": "Field",
             "next_field": "query"
@@ -320,8 +320,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 762.0,
-                "y": 1219.0
+                "x": 782.0,
+                "y": 1249.0
             },
             "Type": "Field",
             "next_field": "END"
@@ -333,8 +333,8 @@
                 "operand2": "\"OP_REPLY\""
             },
             "Position": {
-                "x": 176.0,
-                "y": 764.0
+                "x": 196.0,
+                "y": 794.0
             },
             "true": "response_flags",
             "false": "END",
@@ -356,8 +356,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 277.0,
-                "y": 901.0
+                "x": 297.0,
+                "y": 931.0
             },
             "Type": "Field",
             "next_field": "cursor_id"
@@ -378,8 +378,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 277.0,
-                "y": 960.0
+                "x": 297.0,
+                "y": 990.0
             },
             "Type": "Field",
             "next_field": "starting_from"
@@ -400,8 +400,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 237.0,
-                "y": 1024.0
+                "x": 257.0,
+                "y": 1054.0
             },
             "Type": "Field",
             "next_field": "number_returned"
@@ -422,8 +422,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 212.0,
-                "y": 1086.0
+                "x": 232.0,
+                "y": 1116.0
             },
             "Type": "Field",
             "next_field": "document"
@@ -444,8 +444,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 201.0,
-                "y": 1154.0
+                "x": 221.0,
+                "y": 1184.0
             },
             "Type": "Field",
             "next_field": "END"

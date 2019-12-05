@@ -1,38 +1,38 @@
 {
-    "fields.chksum": {
-        "Abbreviation": "chat.chksum",
-        "Base": "HEX",
-        "Data Type": "UNIT32",
-        "Description": "Checksum",
+    "cursor_id": {
+        "Abbreviation": "cursor_id",
+        "Base": "DEC",
+        "Data Type": "INT32",
+        "Description": "cursorId",
         "ID Value": "",
-        "LE": "false",
+        "LE": "true",
         "Mask": "",
-        "Name": "fields.chksum",
+        "Name": "cursor_id",
         "Position": {
-            "x": 1066.718322753907,
-            "y": 795.4522705078133
+            "x": 297.0,
+            "y": 990.0
         },
         "Required": "false",
         "Type": "Field",
         "Value Constraint": "",
         "Var Size": {
             "combobox": "BYTES",
-            "editText": "4"
+            "editText": "8"
         },
-        "next_field": "Variable0"
+        "next_field": "starting_from"
     },
-    "fields.command": {
-        "Abbreviation": "chat.command",
-        "Base": "NONE",
-        "Data Type": "UNIT8",
-        "Description": "Command",
+    "document": {
+        "Abbreviation": "document",
+        "Base": "HEX",
+        "Data Type": "NONE",
+        "Description": "document",
         "ID Value": "",
-        "LE": "false",
+        "LE": "true",
         "Mask": "",
-        "Name": "fields.command",
+        "Name": "document",
         "Position": {
-            "x": 1460.3950805664065,
-            "y": 792.4005126953133
+            "x": 221.0,
+            "y": 1184.0
         },
         "Required": "false",
         "Type": "Field",
@@ -41,28 +41,270 @@
             "combobox": "BYTES",
             "editText": "1"
         },
-        "next_field": "fields.chksum"
+        "next_field": "END"
     },
-    "fields.data": {
-        "Abbreviation": "chat.data",
-        "Base": "NONE",
-        "Data Type": "BYTES",
-        "Description": "Data",
+    "flags": {
+        "Abbreviation": "flags",
+        "Base": "DEC",
+        "Data Type": "INT32",
+        "Description": "flags",
         "ID Value": "",
-        "LE": "false",
+        "LE": "true",
         "Mask": "",
-        "Name": "fields.data",
+        "Name": "flags",
         "Position": {
-            "x": 1379.470703125,
-            "y": 594.17578125
+            "x": 663.0,
+            "y": 855.125
         },
         "Required": "false",
         "Type": "Field",
         "Value Constraint": "",
         "Var Size": {
             "combobox": "BYTES",
-            "editText": "32"
+            "editText": "4"
         },
-        "next_field": "fields.command"
+        "next_field": "CodeBlock5"
+    },
+    "full_coll_name": {
+        "Abbreviation": "full_coll_name",
+        "Base": "ASCII",
+        "Data Type": "STRING",
+        "Description": "fullCollectionName",
+        "ID Value": "",
+        "LE": "true",
+        "Mask": "",
+        "Name": "full_coll_name",
+        "Position": {
+            "x": 532.0,
+            "y": 1103.0
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "Field",
+            "editText": "message_length"
+        },
+        "next_field": "number_to_skip"
+    },
+    "message_length": {
+        "Abbreviation": "message_length",
+        "Base": "DEC",
+        "Data Type": "INT32",
+        "Description": "messageLength",
+        "ID Value": "",
+        "LE": "true",
+        "Mask": "",
+        "Name": "message_length",
+        "Position": {
+            "x": 259.0,
+            "y": 373.0
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "4"
+        },
+        "next_field": "request_id"
+    },
+    "number_returned": {
+        "Abbreviation": "number_returned",
+        "Base": "DEC",
+        "Data Type": "INT32",
+        "Description": "numberReturned",
+        "ID Value": "",
+        "LE": "true",
+        "Mask": "",
+        "Name": "number_returned",
+        "Position": {
+            "x": 232.0,
+            "y": 1116.0
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "4"
+        },
+        "next_field": "document"
+    },
+    "number_to_return": {
+        "Abbreviation": "number_to_return",
+        "Base": "DEC",
+        "Data Type": "INT32",
+        "Description": "numberToReturn",
+        "ID Value": "",
+        "LE": "true",
+        "Mask": "",
+        "Name": "number_to_return",
+        "Position": {
+            "x": 478.0,
+            "y": 1244.0
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "4"
+        },
+        "next_field": "query"
+    },
+    "number_to_skip": {
+        "Abbreviation": "number_to_skip",
+        "Base": "DEC",
+        "Data Type": "INT32",
+        "Description": "numberToSkip",
+        "ID Value": "",
+        "LE": "true",
+        "Mask": "",
+        "Name": "number_to_skip",
+        "Position": {
+            "x": 533.0,
+            "y": 1192.0
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "4"
+        },
+        "next_field": "number_to_return"
+    },
+    "opcode": {
+        "Abbreviation": "opcode",
+        "Base": "DEC",
+        "Data Type": "INT32",
+        "Description": "opCode",
+        "ID Value": "",
+        "LE": "true",
+        "Mask": "",
+        "Name": "opcode",
+        "Position": {
+            "x": 261.0,
+            "y": 622.0
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "4"
+        },
+        "next_field": "Decision1"
+    },
+    "query": {
+        "Abbreviation": "query",
+        "Base": "HEX",
+        "Data Type": "NONE",
+        "Description": "query",
+        "ID Value": "",
+        "LE": "true",
+        "Mask": "",
+        "Name": "query",
+        "Position": {
+            "x": 782.0,
+            "y": 1249.0
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "1"
+        },
+        "next_field": "END"
+    },
+    "request_id": {
+        "Abbreviation": "request_id",
+        "Base": "DEC",
+        "Data Type": "INT32",
+        "Description": "RequestID",
+        "ID Value": "",
+        "LE": "true",
+        "Mask": "",
+        "Name": "request_id",
+        "Position": {
+            "x": 260.0,
+            "y": 438.0
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "4"
+        },
+        "next_field": "response_to"
+    },
+    "response_flags": {
+        "Abbreviation": "response_flags",
+        "Base": "DEC",
+        "Data Type": "INT32",
+        "Description": "responseFlags",
+        "ID Value": "",
+        "LE": "true",
+        "Mask": "",
+        "Name": "response_flags",
+        "Position": {
+            "x": 297.0,
+            "y": 931.0
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "4"
+        },
+        "next_field": "cursor_id"
+    },
+    "response_to": {
+        "Abbreviation": "response_to",
+        "Base": "DEC",
+        "Data Type": "INT32",
+        "Description": "responseTo",
+        "ID Value": "",
+        "LE": "true",
+        "Mask": "",
+        "Name": "response_to",
+        "Position": {
+            "x": 260.0,
+            "y": 503.0
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "4"
+        },
+        "next_field": "CodeBlock3"
+    },
+    "starting_from": {
+        "Abbreviation": "starting_from",
+        "Base": "DEC",
+        "Data Type": "INT32",
+        "Description": "startingFrom",
+        "ID Value": "",
+        "LE": "true",
+        "Mask": "",
+        "Name": "starting_from",
+        "Position": {
+            "x": 257.0,
+            "y": 1054.0
+        },
+        "Required": "false",
+        "Type": "Field",
+        "Value Constraint": "",
+        "Var Size": {
+            "combobox": "BYTES",
+            "editText": "4"
+        },
+        "next_field": "number_returned"
     }
 }
