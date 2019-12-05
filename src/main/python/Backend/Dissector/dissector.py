@@ -124,7 +124,7 @@ class Dissector_Generator():
             r = "while({} {} {})\n do \n ".format(loop['operand1'],loop['operator1'],loop['operand2'])
             result += self.logic_to_lua_aux(curr['true'],r,JSON,offset,indent+1)
             result += "\t " * indent
-            result = 'end \n '
+            result += 'end \n '
             r = " "
             result += self.logic_to_lua_aux(curr['false'],r,JSON,offset,indent+1)
             result += "\t " * indent
