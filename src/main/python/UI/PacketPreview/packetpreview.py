@@ -113,7 +113,7 @@ class Ui_PackagePreview(object):
 
 
                 self.pyro_proxy.createPackets(self.name[0])
-                self.label_3.setText("Status: Dissecting...: 50%")
+                self.label_3.setText("")
 
                 self.pyro_proxy.dissectPackets()
 
@@ -180,7 +180,12 @@ class Ui_PackagePreview(object):
         self.label_3.setText(_translate("PackagePreview", "Status: Waiting for Input"))
 
     def set_pyro_workspace(self,workspace,project):
+        self.set_ui_workspace(workspace,project)
         self.pyro_proxy.set_workspace(workspace,project)
+    def set_ui_workspace(self,workspace,project):
+        path = "{}/Lua/{}.lua".format(workspace,project)
+        if not os._exists(path):
+            self.label_3.setText("Status: No LUA file found")
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
