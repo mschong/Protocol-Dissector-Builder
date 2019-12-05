@@ -47,7 +47,7 @@ function protocol.dissector(buffer,pinfo,tree)
  	 	 	 	 else 
  	 	 	 	 end 
  	 	 	  end 
- 	 	 	subtree:add_le(full_coll_name,buffer(20,message_length)) 
+ 	 	 	 	 	 	 subtree:add_le(full_coll_name,buffer(20,message_length)) 
 	 	 	 subtree:add_le(number_to_skip,buffer(20 + message_length,4)) 
 	 	 	 subtree:add_le(number_to_return,buffer(24 + message_length,4)) 
 	 	 	 subtree:add_le(query,buffer(28 + message_length,1)) 
@@ -64,8 +64,6 @@ function protocol.dissector(buffer,pinfo,tree)
  	 	 end 
  	 end 
  end 
- 
-
  
 local port = DissectorTable.get("tcp.port") 
 port:add(27017,protocol)
