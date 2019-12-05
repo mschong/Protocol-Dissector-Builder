@@ -106,9 +106,10 @@ class Field(QWidget):
         # Creating a line edit to add number of size and drop down to identify if it is in bytes or bits
         var_size_row_layout = QHBoxLayout()
         var_choice = QComboBox()
-        var_choices = ["BYTES", "BITS"]
+        var_choices = ["BYTES", "BITS", 'Variable', 'Field']
         for choice in var_choices:
             var_choice.addItem(choice)
+        var_choice.activated[str].connect(self.changeVarSizeEdit) 
         var_size_line = QLineEdit()
         var_size_line_exp_validator = QRegExp("[0-9]+")
         var_size_line_validator = QRegExpValidator(var_size_line_exp_validator)
@@ -146,7 +147,29 @@ class Field(QWidget):
             j += 1
         self.table.setColumnWidth(1, 138)
         self.table.resizeRowsToContents()
-
+    
+    def changeVarSizeEdit(self, text):
+        self.customSize = 1
+        cur_txt = text 
+        if cur_txt == 'Variable' or cur_txt == 'Field':
+            #var_size_row_layout = QHBoxLayout()
+            objectName = QLineEdit()
+            objectName_exp_validator = QRegExp("[a-z0-9_]+\S?[A-za-z0-9_]+")
+            objectName_validator = QRegExpValidator(objectName_exp_validator)
+            objectName.setValidator(objectName_validator)
+            """objectType = QComboBox()
+            objectTypes = ['Variable', 'Field']
+            for ob_type in objectTypes:
+                objectType.addItem(ob_type)
+            var_size_row_layout = QHBoxLayout()
+            var_size_row_layout.addWidget(objectName
+            #var_size_row_layout.addWidget(objectType)
+            var_size_cell = QWidget()
+            var_size_cell.setLayout(var_size_row_layout)"""
+            self.table.setCellWidget(7, 1, objectName)
+            #self.table.resizeRowsToContents()
+            #self.parent().resize(self.layout.sizeHint())
+            
     def clickOKMethod(self):
         if self.table.cellWidget(0, 1).text() == "":
             text = "No name declared. Please declare a name"
@@ -223,6 +246,26 @@ class Field(QWidget):
 
     def saveMethod(self):
         field_properties = dict({'Name': self.table.cellWidget(0,1).text(), 'Abbreviation': self.table.cellWidget(1,1).text(), 'Description': self.table.cellWidget(2,1).text(), 'Data Type': self.table.cellWidget(3,1).currentText(), 'Base': self.table.cellWidget(4,1).currentText(), 'Mask': self.table.cellWidget(5,1).text(), 'Value Constraint': self.table.cellWidget(6,1).text(), 'Var Size': {'editText': self.table.cellWidget(7,1).children()[1].text(), 'combobox': self.table.cellWidget(7,1).children()[2].currentText()}, 'ID Value': self.table.cellWidget(8,1).text()})
+        field_properties = dict({'Name': self.table.cellWidget(0,1).text(), 'Abbreviation': self.table.cellWidget(1,1).text(), 'Description': self.table.cellWidget(2,1).text(), 'Data Type': self.table.cellWidget(3,1).currentText(), 'Base': self.table.cellWidget(4,1).currentText(), 'Mask': self.table.cellWidget(5,1).text(), 'Value Constraint': self.table.cellWidget(6,1).text()})
+        if self.customSize == 0:
+            field_properties.update({'Var Size': {'editText': self.table.cellWidget(7,1).children()[1].text(), 'combobox': self.table.cellWidget(7,1).children()[2].currentText()},'ID Value': self.table.cellWidget(8,1).text()})
+        if self.customSize == 1:
+            field_properties.update({'Var Size': self.table.cellWidget(7,1).text() ,'ID Value': self.table.cellWidget(8,1).text()})
+
+            """if self.table.cellWidget(7,1).children()[2].text() == 'Field':
+                fields =  self.scene.proxyDefinedFieldList
+                for field in fields:
+                    if field.widget().menu().actions()[0].defaultWidget().table.cellWidget(0,1).text() == self.table.cellWidget(7,1).children()[1].text():
+                        field_properties.update(field.widget().menu().actions()[0].defaultWidget().size())
+                        field_properties.update({'ID Value': self.table.cellWidget(8,1).text()})
+            elif self.table.cellWidget(7,1).children()[2].text() == 'Variable':
+                variables =  self.scene.variableList
+                for variable in variables:
+                    if variable.widget().menu().actions()[0].defaultWidget().nameLineEdit.text() == self.table.cellWidget(7,1).children()[1].text():
+                        field_properties.update(variable.widget().menu().actions()[0].defaultWidget().size())
+                        field_properties.update({'ID Value': self.table.cellWidget(8,1).text()})"""
+        
+        
         if self.table.cellWidget(9,1).children()[1].isChecked():
             field_properties.update({'Required': 'true'})
         else:
@@ -236,6 +279,14 @@ class Field(QWidget):
     
     def setButton(self, toolButton):
         self.toolButton = toolButton
+    
+    def setScene(self, scene):
+        self.scene = scene
+    def size(self):
+    
+        size = dict({'Var Size': {'editText': self.table.cellWidget(7,1).children()[1].text(), 'combobox': self.table.cellWidget(7,1).children()[2].currentText()}})
+            
+        return size
 if __name__ == '__main__':
     app = QApplication([])
     test = Field()
