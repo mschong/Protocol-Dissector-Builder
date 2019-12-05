@@ -155,7 +155,8 @@ class Dissector_Generator():
 
     def get_value(self,data_type,value):
         if data_type == 'number':
-            return int(value)
+            if self.is_number(value):
+                return int(value)
         return str(value)
     
     def is_number(self,num):
