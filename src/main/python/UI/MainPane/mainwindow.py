@@ -1,5 +1,5 @@
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 import Pyro4
 import Pyro4.util
 import json
@@ -10,9 +10,10 @@ import datetime
 sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
 from UI.OpenWorkspaceDialog import openworkspacedialog
-from UI.WorkspaceButton import WorkspaceButton
+
 from UI.WorkspaceConfigDialog import workspaceconfigwindow
 from UI.CloseWorkspaceDialog import closeworkspacewindow
+from UI.ExportConfirmDialog import exportconfirm
 from UI.OpenProjectDialog import openprojectwindow
 from UI.DBA_FrontEnd import DBA
 from UI.PacketPreview import packetpreview
@@ -200,7 +201,7 @@ class UiMainWindow(object):
         #Project options functions
         self.new_proj.triggered.connect(self.openProjectConfigDialog)
         self.import_proj.triggered.connect(self.openProjectDialog)
-        self.export_lua.triggered.connect(self.export_lua_script)
+        self.export_lua.triggered.connect(self.export_lua_dialog)
         self.save_all.triggered.connect(self.save_all_dissector)
 
 
@@ -291,7 +292,13 @@ class UiMainWindow(object):
             self.closeWorkspace()
 
   
-
+    def export_lua_dialog(self):
+        edialog = QtWidgets.QDialog()
+        elUi = exportconfirm.Ui_Dialog()
+        elUi.setupUi(edialog)
+        if edialog.exec_() == QtWidgets.QDialog.Accepted:
+            self.save_all_dissector()
+            self.export_lua_script()
 
     
 
@@ -326,7 +333,6 @@ class UiMainWindow(object):
                     wsName = wcUi.workspaceFileLineEdit.text()
                     self.workspace_file ="{}/{}.pdbws".format(self.pyro_proxy.new_workspace(wsName,wsStartDate,wsEditDate),wsName.strip())
                     self.workspaceLabel.setText("Workspace: " + wsName)
-                    
                     self.loadWorkspace()
  
 
@@ -334,6 +340,14 @@ class UiMainWindow(object):
     def export_lua_script(self):
         self.pyro_proxy.export_lua_script(self.workspace_file,self.selected_project)
         logging.info(f"Lua file exported into ./LUA/{self.selected_project}.lua")
+        self.showExportdialog()
+
+    def showExportdialog(self):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.setInformativeText(f"Lua file exported into {self.workspace_file}/LUA/{self.selected_project}.lua")
+        msg.setWindowTitle("LUA Export")
+        msg.exec_()
        
     def openProjectConfigDialog(self,pname=None,pauthor = None,pdesc=None,created=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"), edited=datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")):
         dialog = QtWidgets.QDialog()
@@ -409,3 +423,4 @@ class UiMainWindow(object):
     def save_all_dissector(self):
         dissector_json = self.dba_ui.save_button_clicked()
         self.pyro_proxy.save_dissector_attributes(dissector_json,self.workspace_file,self.selected_project)
+        logging.info(f"Canvas area saved into project file")

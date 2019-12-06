@@ -36,5 +36,5 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Close Workspace"))
-        self.label.setText(_translate("Dialog", "[ You can re-open it later in File menu ]"))
+        Dialog.setWindowTitle(_translate("Dialog", "Export to LUA"))
+        self.label.setText(_translate("Dialog", "Project will be saved before exporting to LUA"))
