@@ -665,12 +665,6 @@ class DropGraphicsScene(QGraphicsScene):
                 dissector.update(forLoop)
 
 
-        # Writing fields to separate file for packet-preview-pane team
-        # Written in project's root directory
-        with open('fieldsExampleJSON.txt', 'w') as f:
-            f.write(json.dumps(fieldsForJSONFile, indent=4, sort_keys=True))
-
-
         return dissector
 
     # called by self.saveDissector() to save Decision, While, For_Loop
