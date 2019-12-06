@@ -45,14 +45,14 @@ class While_Loop(QWidget):
 
     def setCondition(self, condition):
         colNum = 0
-        if(len(condition.keys()) > 1):
-            for i in range(int(len(condition.keys())/2)):
+        if(len(condition) > 1):
+            for i in range(int(len(condition)/2)):
                 self.clickMethod()
-        for key, value in condition.items():
+        for value in condition:
             conditionWidget = self.layout.itemAtPosition(1, colNum).widget()
-            if("operand" == key[0:7]):
+            if(isinstance(conditionWidget, QLineEdit)):
                 conditionWidget.setText(value)
-            elif("operator" == key[0:8]):
+            elif(isinstance(conditionWidget, QComboBox)):
                 index = conditionWidget.findText(value)
                 conditionWidget.setCurrentIndex(index)
             colNum += 1
@@ -74,21 +74,14 @@ class While_Loop(QWidget):
         self.parent().resize(self.layout.sizeHint())
 
     def saveMethod(self):
-        while_properties = {}
+        while_properties = []
         colCount = self.layout.columnCount()
-        operandNum = 1
-        if(colCount > 1):
-            operatorNum = 1
         for i in range(colCount):
             loopWidget = self.layout.itemAtPosition(1, i).widget()
             if(isinstance(loopWidget, QLineEdit)):
-                operandName = "operand" + str(operandNum)
-                operandNum = operandNum + 1
-                while_properties.update({operandName: loopWidget.text()})
+                while_properties.append(loopWidget.text())
             if(isinstance(loopWidget, QComboBox)):
-                operatorName = "operator" + str(operatorNum)
-                operatorNum = operatorNum + 1
-                while_properties.update({operatorName: loopWidget.currentText()})
+                while_properties.append(loopWidget.currentText())
         return while_properties
         
 if __name__ == '__main__':
