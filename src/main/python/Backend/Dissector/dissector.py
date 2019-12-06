@@ -110,7 +110,7 @@ class Dissector_Generator():
         elif wtype == 'Decision':
             decision = curr['Condition']
             r = "\t " * indent
-            r += "if {} {} {} then \n ".format(decision['operand1'],decision['operator1'],decision['operand2'])
+            r += "if({}) then \n ".format(self.get_decision(decision))
             result += self.logic_to_lua_aux(curr['true'],r,JSON,offset,indent+1)
             r = "\t " * indent
             r += "else \n "
@@ -121,7 +121,7 @@ class Dissector_Generator():
             return result
         elif wtype == 'while':
             loop = curr['Condition']
-            r = "while({} {} {})\n do \n ".format(loop['operand1'],loop['operator1'],loop['operand2'])
+            r = "while({})\n do \n ".format(self.get_decision(loop))
             result += self.logic_to_lua_aux(curr['true'],r,JSON,offset,indent+1)
             result += "\t " * indent
             result += 'end \n '
@@ -152,6 +152,9 @@ class Dissector_Generator():
             return self.logic_to_lua_aux(curr['next_field'],result,JSON,offset,indent)
         elif wtype == 'Do While':
             pass
+
+    def get_decision(self,decision_list):
+        return " ".join(decision_list)
 
     def get_value(self,data_type,value):
         if data_type == 'number':
