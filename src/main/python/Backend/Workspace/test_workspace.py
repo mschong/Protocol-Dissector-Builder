@@ -53,7 +53,7 @@ def test_create_workspace_without_params():
     assert workspace.JSON['edited'] == None
     assert workspace.JSON['path'] == None
 
-def test_get_JSON():
+def test_get_json():
     workspace = Workspace(None , JSON = {
         'name' : "New Workspace in JSON",
         'projects' : {},
@@ -63,14 +63,14 @@ def test_get_JSON():
     })
     assert workspace.name == "New Workspace in JSON"
     
-    test_json = workspace.get_JSON()
+    test_json = workspace.get_json()
     assert test_json['name'] == "New Workspace in JSON"
     assert test_json['projects'] == {}
     assert test_json['created'] == "10/31/2019"
     assert test_json['edited'] == "10/31/2019"
     assert test_json['path'] == 'path'
     
-def test_addProjectToWorkspace_oneProject():
+def test_add_project_to_workspace_oneProject():
     project = Project("New project" , JSON = {
         'name' : "New project in JSON",
         'created' : "10/31/2019",
@@ -93,14 +93,14 @@ def test_addProjectToWorkspace_oneProject():
         'path' : 'path'
     })
     
-    workspace.addProjectToWorkspace(project)
-    test_json = workspace.get_JSON()
+    workspace.add_project_to_workspace(project)
+    test_json = workspace.get_json()
 
     assert test_json['projects'][0] == project
     assert workspace.projects[0] == project
 
 
-def test_addProjectToWorkspace_twoProjects():
+def test_add_project_to_workspace_twoProjects():
     project1 = Project("Project1" , JSON = {
         'name' : "New project in JSON",
         'created' : "10/31/2019",
@@ -137,9 +137,9 @@ def test_addProjectToWorkspace_twoProjects():
         'path' : 'path'
     })
     
-    workspace.addProjectToWorkspace(project1)
-    workspace.addProjectToWorkspace(project2)
-    test_json = workspace.get_JSON()
+    workspace.add_project_to_workspace(project1)
+    workspace.add_project_to_workspace(project2)
+    test_json = workspace.get_json()
 
     assert test_json['projects'][0] == project1
     assert workspace.projects[0] == project1
@@ -147,7 +147,7 @@ def test_addProjectToWorkspace_twoProjects():
     assert workspace.projects[1] == project2
 
 
-def test_addProjectToWorkspace_noProject():
+def test_add_project_to_workspace_noProject():
     workspace = Workspace( "New Workspace", JSON = {
         'name' : "New Workspace",
         'projects' : {},
@@ -156,9 +156,9 @@ def test_addProjectToWorkspace_noProject():
         'path' : 'path'
     })
     
-    assert workspace.addProjectToWorkspace(None) == None
+    assert workspace.add_project_to_workspace(None) == None
 
-def test_addProjectToWorkspace_int():
+def test_add_project_to_workspace_int():
     workspace = Workspace( "New Workspace", JSON = {
         'name' : "New Workspace",
         'projects' : {},
@@ -167,12 +167,12 @@ def test_addProjectToWorkspace_int():
         'path': 'path'
     })
     
-    assert workspace.addProjectToWorkspace(1) == None
+    assert workspace.add_project_to_workspace(1) == None
 
   
 
 
-def test_addProjectToWorkspace_string():
+def test_add_project_to_workspace_string():
     workspace = Workspace( "New Workspace", JSON = {
         'name' : "New Workspace",
         'projects' : {},
@@ -181,11 +181,11 @@ def test_addProjectToWorkspace_string():
         'path' : 'path'
     })
     
-    assert workspace.addProjectToWorkspace("random string") == None
+    assert workspace.add_project_to_workspace("random string") == None
   
 
 
-def test_addProjectToWorkspace_float():
+def test_add_project_to_workspace_float():
     workspace = Workspace( "New Workspace", JSON = {
         'name' : "New Workspace",
         'projects' : {},
@@ -194,5 +194,5 @@ def test_addProjectToWorkspace_float():
         'path' : 'path'
     })
     
-    assert workspace.addProjectToWorkspace(1.0) == None
+    assert workspace.add_project_to_workspace(1.0) == None
 

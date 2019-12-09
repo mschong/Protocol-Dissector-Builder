@@ -4,7 +4,7 @@ from project import Project
 def test_create_project_firstparam():
     project = Project("New project")
     assert project.name == "New project"
-    assert project.editDate == None
+    assert project.edit_date == None
     assert project.description == None
     assert project.protocol == None
     assert project.change_protocol == None
@@ -42,9 +42,9 @@ def test_create_project_secondparam():
     assert project.JSON['author'] == "author1"
     assert project.JSON['path'] == ""
     assert project.JSON['dissector'] == ""
-    assert project.dateCreated == "10/31/2019"
+    assert project.date_created == "10/31/2019"
     
-    assert project.editDate == "10/31/2019"
+    assert project.edit_date == "10/31/2019"
     assert project.description == "filler description for testing purposes"
     assert project.protocol == "UDP"
     assert project.change_protocol == "TCP"
@@ -81,7 +81,7 @@ def test_create_project_allparams():
     assert project.JSON['path'] == ""
     assert project.JSON['dissector'] == ""
 
-    assert project.editDate == "10/31/2019"
+    assert project.edit_date == "10/31/2019"
     assert project.description == "filler description for testing purposes"
     assert project.protocol == "UDP"
     assert project.change_protocol == "TCP"
@@ -95,7 +95,7 @@ def test_create_project_allparams():
 def test_create_project_without_params():
     project = Project()
     assert project.name == None
-    assert project.editDate == None
+    assert project.edit_date == None
     assert project.description == None
     assert project.protocol == None
     assert project.change_protocol == None
@@ -105,7 +105,7 @@ def test_create_project_without_params():
     assert project.path == None
     assert project.dissector == None
 
-def test_get_JSON():
+def test_get_json():
     project = Project("New project" , JSON = {
         'name' : "New project in JSON",
         'created' : "10/31/2019",
@@ -120,7 +120,7 @@ def test_get_JSON():
         'dissector': ""
     })
 
-    test_json = project.get_JSON()
+    test_json = project.get_json()
 
     assert test_json['name'] == "New project in JSON"
     assert test_json['created'] == "10/31/2019"

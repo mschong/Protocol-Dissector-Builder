@@ -30,7 +30,7 @@ class Pyro_Run():
         return self.workspace_file,self.selected_project
 
     def load_workspace(self, file):
-        return self.loader.loadworkspace(file)
+        return self.loader.load_workspace(file)
 
     def get_current_workspace(self):
         return self.loader.workspace.JSON
