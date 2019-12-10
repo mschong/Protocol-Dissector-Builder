@@ -60,6 +60,7 @@ class Project:
             self.dst_port = JSON['dst_port']
             self.author = JSON['author']
             self.path = JSON['path']
+            self.dissector = JSON['dissector']
 
     def add_fields(self, json):
         """
