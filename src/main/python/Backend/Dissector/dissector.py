@@ -221,7 +221,7 @@ class DissectorGenerator():
         #Process variables,
         elif wtype == 'Variable':
             result += "\t " * indent
-            result += "{} {} {} = {} \n".format(curr['Scope'], curr['Data Type'], curr['Name'], self.get_value(curr['Data Type'], curr['Value']))
+            result += "{} = {} \n".format(curr['Name'], self.get_value(curr['Data Type'], curr['Value']))
             return self.logic_to_lua_aux(curr['next_field'], result, json, offset, indent)
 
     def get_decision(self, decision_list):
@@ -233,6 +233,12 @@ class DissectorGenerator():
         Yields:
             String adding the list values separated by a space
         '''
+        #Replace OR,AND,!= to lua accepted values
+        for i, item in enumerate(decision_list):
+            if item in ("OR", "AND"):
+                decision_list[i] = item.lower()
+            if item == "!=":
+                decision_list[i] = "~="
         return " ".join(decision_list)
 
     def get_value(self, data_type, value):
