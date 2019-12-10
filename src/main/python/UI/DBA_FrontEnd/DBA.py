@@ -35,7 +35,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(900, 550)
-        Form.setMinimumSize(QtCore.QSize(900, 550))
+        #Form.setMinimumSize(QtCore.QSize(900, 550))
         self.dba_label = QtWidgets.QLabel(Form)
         self.dba_label.setGeometry(QtCore.QRect(120, 10, 151, 16))
         self.dba_label.setObjectName("dba_label")
@@ -67,6 +67,10 @@ class Ui_Form(object):
         self.splitter.addWidget(self.dba_parent_widget)
         self.splitter.addWidget(self.toolbox_parent_widget)
         self.splitter.setSizes([self.splitter.size().width() , 200])
+        dba_index = self.splitter.indexOf(self.dba_parent_widget)
+        self.splitter.setCollapsible(dba_index, False)
+        toolbox_index = self.splitter.indexOf(self.toolbox_parent_widget)
+        self.splitter.setCollapsible(toolbox_index, False)
         self.parent_layout = QtWidgets.QVBoxLayout(Form)
         self.parent_layout.addWidget(self.splitter)
 
