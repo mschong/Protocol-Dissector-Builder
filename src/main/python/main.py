@@ -1,3 +1,10 @@
+'''
+@Authors:
+    Ernesto Vazquez
+    Daniel Ornelas
+
+This is the main module in charge of kickstarting the application.
+'''
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
@@ -7,15 +14,17 @@ from Backend import pyro_run
 import threading
 import time
 
-#
-# Loads GUI
-# Pyro service needs to be started before running GUI (run start-pyro service script)
 if __name__ == "__main__":
+    '''
+    Starts pyro service and UI
+    '''
     pyro = pyro_run.Pyro_Run()
-    
+    #pyro needs to start in a separate thread
     pyro_thread = threading.Thread(target=pyro.main)
     pyro_thread.start()
+    #sleep to allow pyro namespace to register
     time.sleep(10)
+    #start UI
     appctxt = ApplicationContext()
     app = QtWidgets.QApplication(sys.argv)
     mainDialog = QtWidgets.QMainWindow()
