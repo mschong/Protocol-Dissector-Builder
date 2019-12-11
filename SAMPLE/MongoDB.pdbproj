@@ -9,16 +9,6 @@
     "dst_port": "-1",
     "author": "Daniel O",
     "dissector": {
-        "START": "CodeBlock0",
-        "CodeBlock0": {
-            "Code": "length = buffer:len()",
-            "Position": {
-                "x": 580.0,
-                "y": 648.0
-            },
-            "Type": "CodeBlock",
-            "next_field": "Decision0"
-        },
         "Decision0": {
             "Condition": [
                 "length",
@@ -26,8 +16,8 @@
                 "0"
             ],
             "Position": {
-                "x": 581.0,
-                "y": 721.0
+                "x": 701.0,
+                "y": 901.0
             },
             "true": "CodeBlock1",
             "false": "message_length",
@@ -36,8 +26,8 @@
         "CodeBlock1": {
             "Code": "return",
             "Position": {
-                "x": 903.0,
-                "y": 793.0
+                "x": 1023.0,
+                "y": 973.0
             },
             "Type": "CodeBlock",
             "next_field": "END"
@@ -58,8 +48,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 539.0,
-                "y": 793.0
+                "x": 659.0,
+                "y": 973.0
             },
             "Type": "Field",
             "next_field": "request_id"
@@ -80,8 +70,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 540.0,
-                "y": 858.0
+                "x": 660.0,
+                "y": 1038.0
             },
             "Type": "Field",
             "next_field": "response_to"
@@ -102,42 +92,11 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 540.0,
-                "y": 923.0
+                "x": 660.0,
+                "y": 1103.0
             },
             "Type": "Field",
-            "next_field": "CodeBlock3"
-        },
-        "CodeBlock3": {
-            "Code": " local opcode_number = buffer(12,4):le_uint()\n    local opcode_name = get_opcode_name(opcode_number)",
-            "Position": {
-                "x": 541.0,
-                "y": 986.0
-            },
-            "Type": "CodeBlock",
-            "next_field": "opcode"
-        },
-        "opcode": {
-            "Name": "opcode",
-            "Abbreviation": "opcode",
-            "Description": "opCode",
-            "Data Type": "INT32",
-            "Base": "DEC",
-            "Mask": "",
-            "Value Constraint": "",
-            "Var Size": {
-                "editText": "4",
-                "combobox": "BYTES"
-            },
-            "ID Value": "",
-            "Required": "false",
-            "LE": "true",
-            "Position": {
-                "x": 541.0,
-                "y": 1042.0
-            },
-            "Type": "Field",
-            "next_field": "Decision1"
+            "next_field": "Variable1"
         },
         "Decision1": {
             "Condition": [
@@ -146,21 +105,12 @@
                 "\"OP_QUERY\""
             ],
             "Position": {
-                "x": 541.0,
-                "y": 1122.0
+                "x": 661.0,
+                "y": 1302.0
             },
-            "true": "CodeBlock4",
+            "true": "Variable3",
             "false": "Decision3",
             "Type": "Decision"
-        },
-        "CodeBlock4": {
-            "Code": "local flags_number = buffer(16,4):le_uint()\n        local flags_description = get_flag_description(flags_number)",
-            "Position": {
-                "x": 912.0,
-                "y": 1176.0
-            },
-            "Type": "CodeBlock",
-            "next_field": "flags"
         },
         "flags": {
             "Name": "flags",
@@ -178,20 +128,11 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 943.0,
-                "y": 1275.125
+                "x": 1063.0,
+                "y": 1455.125
             },
             "Type": "Field",
-            "next_field": "CodeBlock5"
-        },
-        "CodeBlock5": {
-            "Code": "local string_length",
-            "Position": {
-                "x": 953.0,
-                "y": 1373.3125
-            },
-            "Type": "CodeBlock",
-            "next_field": "ForLoop0"
+            "next_field": "Variable5"
         },
         "ForLoop0": {
             "Expressions": {
@@ -200,8 +141,8 @@
                 "exp3": "1"
             },
             "Position": {
-                "x": 883.75,
-                "y": 1452.0
+                "x": 1003.75,
+                "y": 1632.0
             },
             "true": "Decision2",
             "false": "full_coll_name",
@@ -209,13 +150,13 @@
         },
         "Decision2": {
             "Condition": [
-                "operand1",
-                "",
-                "operand2"
+                "buffer(i,1):le_uint()",
+                "==",
+                "0"
             ],
             "Position": {
-                "x": 1243.0,
-                "y": 1476.4375
+                "x": 1363.0,
+                "y": 1656.4375
             },
             "true": "CodeBlock6",
             "false": "End_ForLoop0",
@@ -224,16 +165,16 @@
         "CodeBlock6": {
             "Code": "  string_length = i - 20\n                break",
             "Position": {
-                "x": 1395.0,
-                "y": 1567.0
+                "x": 1515.0,
+                "y": 1747.0
             },
             "Type": "CodeBlock",
             "next_field": "END"
         },
         "End_ForLoop0": {
             "Position": {
-                "x": 1077.4375,
-                "y": 1565.5625
+                "x": 1197.4375,
+                "y": 1745.5625
             },
             "Type": "End Loop",
             "next_field": "ForLoop0"
@@ -247,15 +188,15 @@
             "Mask": "",
             "Value Constraint": "",
             "Var Size": {
-                "editText": "message_length",
+                "editText": "string_length",
                 "combobox": "Field"
             },
             "ID Value": "",
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 812.0,
-                "y": 1523.0
+                "x": 932.0,
+                "y": 1703.0
             },
             "Type": "Field",
             "next_field": "number_to_skip"
@@ -276,8 +217,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 813.0,
-                "y": 1612.0
+                "x": 933.0,
+                "y": 1792.0
             },
             "Type": "Field",
             "next_field": "number_to_return"
@@ -298,8 +239,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 758.0,
-                "y": 1664.0
+                "x": 878.0,
+                "y": 1844.0
             },
             "Type": "Field",
             "next_field": "query"
@@ -313,15 +254,15 @@
             "Mask": "",
             "Value Constraint": "",
             "Var Size": {
-                "editText": "1",
-                "combobox": "BYTES"
+                "editText": "length - string_length - 28",
+                "combobox": "Variable"
             },
             "ID Value": "",
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 1062.0,
-                "y": 1669.0
+                "x": 1182.0,
+                "y": 1849.0
             },
             "Type": "Field",
             "next_field": "END"
@@ -333,8 +274,8 @@
                 "\"OP_REPLY\""
             ],
             "Position": {
-                "x": 476.0,
-                "y": 1214.0
+                "x": 596.0,
+                "y": 1394.0
             },
             "true": "response_flags",
             "false": "END",
@@ -356,8 +297,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 577.0,
-                "y": 1351.0
+                "x": 697.0,
+                "y": 1531.0
             },
             "Type": "Field",
             "next_field": "cursor_id"
@@ -378,8 +319,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 577.0,
-                "y": 1410.0
+                "x": 697.0,
+                "y": 1590.0
             },
             "Type": "Field",
             "next_field": "starting_from"
@@ -400,8 +341,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 537.0,
-                "y": 1474.0
+                "x": 657.0,
+                "y": 1654.0
             },
             "Type": "Field",
             "next_field": "number_returned"
@@ -422,8 +363,8 @@
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 512.0,
-                "y": 1536.0
+                "x": 632.0,
+                "y": 1716.0
             },
             "Type": "Field",
             "next_field": "document"
@@ -437,18 +378,91 @@
             "Mask": "",
             "Value Constraint": "",
             "Var Size": {
-                "editText": "1",
-                "combobox": "BYTES"
+                "editText": "length-36",
+                "combobox": "Field"
             },
             "ID Value": "",
             "Required": "false",
             "LE": "true",
             "Position": {
-                "x": 501.0,
-                "y": 1604.0
+                "x": 621.0,
+                "y": 1784.0
             },
             "Type": "Field",
             "next_field": "END"
+        },
+        "START": "Variable0",
+        "Variable0": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "length",
+            "Value": "buffer:len()",
+            "Position": {
+                "x": 703.0,
+                "y": 824.0
+            },
+            "Type": "Variable",
+            "next_field": "Decision0"
+        },
+        "Variable1": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "opcode_number",
+            "Value": "buffer(12,4):le_uint()",
+            "Position": {
+                "x": 984.0,
+                "y": 1139.0
+            },
+            "Type": "Variable",
+            "next_field": "Variable2"
+        },
+        "Variable2": {
+            "Scope": "local",
+            "Data Type": "string",
+            "Name": "opcode_name",
+            "Value": "get_opcode_name(opcode_number)",
+            "Position": {
+                "x": 985.0,
+                "y": 1210.0
+            },
+            "Type": "Variable",
+            "next_field": "Decision1"
+        },
+        "Variable3": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "flags_number",
+            "Value": "buffer(16,4):le_uint()",
+            "Position": {
+                "x": 1060.0,
+                "y": 1304.0
+            },
+            "Type": "Variable",
+            "next_field": "Variable4"
+        },
+        "Variable4": {
+            "Scope": "local",
+            "Data Type": "string",
+            "Name": "flags_description",
+            "Value": "get_flags_description(flag_number)",
+            "Position": {
+                "x": 1069.0,
+                "y": 1379.0
+            },
+            "Type": "Variable",
+            "next_field": "flags"
+        },
+        "Variable5": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "string_length",
+            "Value": "0",
+            "Position": {
+                "x": 1132.0,
+                "y": 1543.0
+            },
+            "Type": "Variable",
+            "next_field": "ForLoop0"
         }
     },
     "path": "/Users/danielornelas/projects/protocol-dissector-builder/Protocol-Dissector-Builder/SAMPLE/MongoDB.pdbproj"

@@ -11,7 +11,8 @@ protocol.fields ={ }
 function protocol.dissector(buffer,pinfo,tree) 
 	 pinfo.cols.protocol = protocol.name 
 	 local subtree = tree:add(protocol, buffer(), "gamespy" )
- 	 local tab = {  -- tab[i][j] = xor(i-1, j-1)
+ -- CODEBLOCK START 
+	 local tab = {  -- tab[i][j] = xor(i-1, j-1)
   {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, },
   {1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14, },
   {2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13, },
@@ -31,38 +32,53 @@ function protocol.dissector(buffer,pinfo,tree)
 }
 cipher = {103, 97, 109, 101, 115, 112, 121}
 size = buffer:len()
- 	 index = 1 
+ -- CODEBLOCK END 
+	 index = 1 
 	 decoded = "" 
 	  for i=0, size-1, 1 do 
  	 	 res = 0 
 	 	 c = 1 
 	 	 a = 0 
 	 	 b = 0 
+-- CODEBLOCK START 
 	 	 a = buffer(i,1):uint()
 b = cipher[index]
- while(a > 0 and b > 0)
+ -- CODEBLOCK END 
+while(a > 0 and b > 0)
  do 
  	 	 	 a2 = 0 
 	 	 	 b2 = 0 
+-- CODEBLOCK START 
 	 	 	 a2 = a%16
 b2 = b%16
- 	 	 	 res = res + tab[a2+1][b2+1]*c
+ -- CODEBLOCK END 
+-- CODEBLOCK START 
+	 	 	 res = res + tab[a2+1][b2+1]*c
   a = (a-a2)/16
   b = (b-b2)/16
   c = c*16
- 	 	 end 
-  	 	 	 res = res + a*c + b*c
- 	 	 	 decoded = decoded .. string.char(res)
+ -- CODEBLOCK END 
+	 	 end 
+  -- CODEBLOCK START 
+	 	 	 res = res + a*c + b*c
+ -- CODEBLOCK END 
+-- CODEBLOCK START 
+	 	 	 decoded = decoded .. string.char(res)
 index = index + 1
 
- 	 	 	 if(index == 8) then 
- 	 	 	 	 index = 1
- 	 	 	 else 
+ -- CODEBLOCK END 
+	 	 	 if(index == 8) then 
+ -- CODEBLOCK START 
+	 	 	 	 index = 1
+ -- CODEBLOCK END 
+	 	 	 else 
  	 	 	 end 
  	 	 
 	  end 
- 	 	 subtree:add(buffer(0,size), "Decoded: " .. decoded)
- 
+ 	 -- CODEBLOCK START 
+	 subtree:add(buffer(0,size), "Decoded: " .. decoded)
+ -- CODEBLOCK END 
+
 end 
  
 local port = DissectorTable.get("tcp.port") 

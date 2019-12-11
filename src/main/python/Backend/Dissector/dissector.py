@@ -214,9 +214,12 @@ class DissectorGenerator():
             return result
         #Process codeblocks, get codeblock data and store in result
         elif wtype == 'CodeBlock':
+            #add comment to show this was inserted by a codeblock
+            result += "-- CODEBLOCK START \n"
             result += "\t " * indent
             result += curr['Code']
             result += "\n "
+            result += "-- CODEBLOCK END \n"
             return self.logic_to_lua_aux(curr['next_field'], result, json, offset, indent)
         #Process variables,
         elif wtype == 'Variable':
