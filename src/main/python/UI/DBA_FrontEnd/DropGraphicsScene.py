@@ -288,6 +288,7 @@ class DropGraphicsScene(QGraphicsScene):
                 else:
                     self.countFields = self.countFields + 1
                     button = ToolButton(widget, self)
+                    field_text = button.widget.table.cellWidget(0,1).text()
                     button.setText(text)
                     widget.setName(field_text)
                     widget.setButton(button)

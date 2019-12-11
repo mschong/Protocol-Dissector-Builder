@@ -159,12 +159,13 @@ class Field(QWidget):
             #objectName_exp_validator = QRegExp("[A-za-z0-9_+]+")
             #objectName_validator = QRegExpValidator(objectName_exp_validator)
             #objectName.setValidator(objectName_validator)
-            if self.cur_txt == 'Variable':
-                autoList = self.get_data("Variable")
-            else:
-                autoList = self.get_data("Field")
-            completer = QCompleter(autoList)
-            objectName.setCompleter(completer)
+            #AUTOCOMPLETE TODO: FIX BUG
+            # if self.cur_txt == 'Variable':
+            #     autoList = self.get_data("Variable")
+            # else:
+            #     autoList = self.get_data("Field")
+            # completer = QCompleter(autoList)
+            # objectName.setCompleter(completer)
         
             
             """objectType = QComboBox()
@@ -332,4 +333,3 @@ if __name__ == '__main__':
     app = QApplication([])
     test = Field()
     sys.exit(app.exec_())
-
