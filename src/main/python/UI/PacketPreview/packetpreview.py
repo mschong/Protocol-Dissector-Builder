@@ -70,7 +70,7 @@ class Ui_PackagePreview(object):
         self.label_3.setText("Status: Opening a file...")
         self.model.removeRows(0,self.model.rowCount())
         self.name = QFileDialog.getOpenFileName()
-        p = subprocess.Popen(['python3.6', 'src/main/python/UI/PacketPreview/demo.py'])
+        p = subprocess.Popen(['python', 'src/main/python/UI/PacketPreview/demo.py'])
         if(self.name[0] and ".pcap" in self.name[0] ):
             self.pyro_proxy.createPackets(self.name[0])
             self.pyro_proxy.savePackets()
