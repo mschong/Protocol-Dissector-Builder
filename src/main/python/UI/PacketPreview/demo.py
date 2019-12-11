@@ -31,7 +31,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QColor
 
-from waitingspinnerwidget import QtWaitingSpinner
+from UI.PacketPreview.waitingspinnerwidget import QtWaitingSpinner
 
 
 class Demo(QWidget):
