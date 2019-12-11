@@ -14,25 +14,16 @@ class PCap:
         self.colorList = {}
     def convertPCAP(self):
         print("Opening file with PyShark")
-    
-        # How 2 dissect using MyDNS
-        # param = {"-X": 'lua_script:/root/Desktop/Protocol-Dissector-Builder/src/main/python/Backend/PCAP/dissector.lua'}
-        # self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
-        
+
         self.pcapFile = pyshark.FileCapture(self.fileLocation)
         print("Done")
         return "Done"
-    
+
     def dissectPCAP(self,workspace,project):
-        # paramPath = os.getcwd() + '/src/main/python/Backend/Lua/dissector.lua'
-        # param = {"-X": 'lua_script:'  + paramPath}
-        # a = open("logFIle", "w+")
-        # a.write(paramPath)
-        
         paramPath = '{}/Lua/{}.lua'.format(workspace,project)
         print("Loading lua script from {}".format(paramPath))
         param = {"-X": 'lua_script:'  + paramPath}
-       
+
         self.pcapFile = pyshark.FileCapture(input_file=self.fileLocation,custom_parameters=param)
         return "SUCCESSFUL"
 
@@ -88,7 +79,6 @@ class PCap:
         i = 0
         j = 0
         path = '{}/{}.pdbproj'.format(workspace,project)
-      
         print("CURR PATH {}".format(path))
         with open(path) as f:
             data = json.load(f)
@@ -111,13 +101,15 @@ class PCap:
                         self.colorList[i] = "Green"
                         break
                     else:
-                        try:
-                            diff = ""
-                            diff = (set(pkt[prot].field_names) ^ set(data.keys()))
-                        except Exception as e:
-                            pass
-                        if  len(diff)-len(data.keys()) > 0:
-                            self.colorList[i] = "Yellow"
+                        if prot.casefold()==str(pkt.transport_layer).casefold():
+                            try:
+                                diff = ""
+                                diff = (set(pkt[prot].field_names) ^ set(data.keys()))
+                            except Exception as e:
+                                print(str(e))
+                                pass
+                            if  len(diff)-len(data.keys()) > 0:
+                                self.colorList[i] = "Yellow"
                 if self.colorList[i] == "":
                             self.colorList[i] = "Red"
             if (self.yellowFlag == True) or (self.colorList[i] == "Yellow"):
