@@ -11,7 +11,6 @@ import sys
 sys.path.insert(1, "../")
 from UI.MainPane import mainwindow
 from Backend import pyro_run
-from UI.PacketPreview import demo
 import threading
 import time
 

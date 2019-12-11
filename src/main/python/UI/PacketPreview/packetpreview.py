@@ -10,6 +10,7 @@ import os
 import logging
 import subprocess
 from UI.PacketPreview.customSort import sortableElement
+from UI.PacketPreview.demo import Demo
 
 class Ui_PackagePreview(object):
     def setupUi(self, PackagePreview):
