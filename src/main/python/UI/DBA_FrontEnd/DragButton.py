@@ -6,7 +6,9 @@ import sys
 class DragButton(QPushButton):
     def __init__(self, title, parent):
         super(DragButton, self).__init__(title, parent)
-
+    def mousePressEvent(self, e):
+        # This helps the button to not appear as pressed when a field is being dragged
+        self.setCheckable(False)
     def mouseMoveEvent(self, e):
         if e.buttons() != Qt.LeftButton:
             return QPushButton.mouseMoveEvent(self, e)
@@ -31,7 +33,6 @@ class DragButton(QPushButton):
 
         # This helps execute the dragging move action
         drag.exec_(Qt.MoveAction)
-
         return QPushButton.mouseMoveEvent(self, e)
 
     def dragEnterEvent(self, e):
