@@ -8,6 +8,7 @@ class Variable(QWidget):
     def __init__(self, variableNumber):
         self.variableNumber = variableNumber
         self.toolButton = None
+        self.isCopy = False
         self.scope = "global"
         self.name = ""
         self.value = ""
@@ -15,6 +16,7 @@ class Variable(QWidget):
         self.initUI()
 
     def initUI(self):
+        
         self.setGeometry(20, 20, 278, 100)
         self.nameLineEdit = QLineEdit()
         name_line_exp_validator = QRegExp("[a-z0-9_]+\S?[A-za-z0-9_]+")
@@ -60,7 +62,7 @@ class Variable(QWidget):
         self.variableNumber = number
     
     def setName(self, name):
-        #self.name = name
+        self.name = name
         self.nameLineEdit.setText(name)
     def setValue(self, value):
         #self.value = value
@@ -83,6 +85,12 @@ class Variable(QWidget):
     def setButton(self, toolButton):
         self.toolButton = toolButton
 
+    def getIsCopy(self):
+        return self.isCopy
+    def setIsCopy(self, isCopy):
+        self.isCopy = isCopy
+    def setScene(self, scene):
+        self.scene = scene
     def clickOKMethod(self):
         if self.nameLineEdit.text() == "":
             text = "No Name declared. Please declare a name for variable"
@@ -94,7 +102,15 @@ class Variable(QWidget):
             dialog = ErrorDialog(text)
             dialog.exec()
         else:
+            i = 0
+            while(i < len(self.scene.variableList)):
+                if(self.name == str(self.scene.variableList[i])):
+                    self.scene.variableList[i] = self.nameLineEdit.text()
+                    self.name = self.nameLineEdit.text()
+                    break
+                i = i + 1    
             self.toolButton.setText(self.nameLineEdit.text())
+            self.toolButton.menu().hide()
 
 if __name__ == '__main__':
     app = QApplication([])

@@ -1,5 +1,5 @@
 import pytest
-from dissector import Dissector_Generator
+from dissector import DissectorGenerator
 
 test_json = {
     "name": "mongodb",
@@ -1366,7 +1366,7 @@ test_json4 = {
 }
 
 def test_parse_json_correct_json():
-    diss = Dissector_Generator()
+    diss = DissectorGenerator()
     diss.parse_json(test_json)
 
     assert diss.dissector['name'] == "mongodb"
@@ -1377,24 +1377,24 @@ def test_parse_json_correct_json():
 
 def test_parse_json_empty_json():
     with pytest.raises(Exception) as e_info:
-        diss = Dissector_Generator()
+        diss = DissectorGenerator()
         diss.parse_json(test_json2)
         
 
 def test_parse_json_missing_json():
     with pytest.raises(Exception) as e_info:
-        diss = Dissector_Generator()
+        diss = DissectorGenerator()
         diss.parse_json()
 
 def test_parse_json_improperly_formatted_json():
     with pytest.raises(Exception) as e_info:
-        diss = Dissector_Generator()
+        diss = DissectorGenerator()
         diss.parse_json(test_json3)
 
 
 def test_parse_json_missing_attributes_json():
     with pytest.raises(Exception) as e_info:
-        diss = Dissector_Generator()
+        diss = DissectorGenerator()
         diss.parse_json(test_json4)
 
 #def test

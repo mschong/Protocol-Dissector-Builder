@@ -9,33 +9,36 @@ from UI.DBA_FrontEnd.DragButton import DragButton
 import json
 
 class QGraphicsView(QtWidgets.QGraphicsView):
+    
     def __init__(self, parent=None):
         super(QGraphicsView, self).__init__(parent)
         
     #This helps zoom in and out the canvas 
     #RESOURCE: https://stackoverflow.com/questions/19113532/qgraphicsview-zooming-in-and-out-under-mouse-position-using-mouse-wheel
     def wheelEvent(self, event):
-        
-        zoomInFactor = 1.25
-        zoomOutFactor = 1 / zoomInFactor
+        if (event.modifiers() == QtCore.Qt.ControlModifier):
+            zoomInFactor = 1.25
+            zoomOutFactor = 1 / zoomInFactor
 
-        oldPos = self.mapToScene(event.pos())
+            oldPos = self.mapToScene(event.pos())
+            if event.angleDelta().y() > 0:
+                zoomFactor = zoomInFactor
+            else:
+                zoomFactor = zoomOutFactor
+            self.scale(zoomFactor, zoomFactor)
 
-        if event.angleDelta().y() > 0:
-            zoomFactor = zoomInFactor
+            newPos = self.mapToScene(event.pos())
+
+            delta = newPos - oldPos
+            self.translate(delta.x(), delta.y())
         else:
-            zoomFactor = zoomOutFactor
-        self.scale(zoomFactor, zoomFactor)
-
-        newPos = self.mapToScene(event.pos())
-
-        delta = newPos - oldPos
-        self.translate(delta.x(), delta.y())
+            QGraphicsView.wheelEvent(self, event)
+        
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(900, 550)
-        Form.setMinimumSize(QtCore.QSize(900, 550))
+        #Form.setMinimumSize(QtCore.QSize(900, 550))
         self.dba_label = QtWidgets.QLabel(Form)
         self.dba_label.setGeometry(QtCore.QRect(120, 10, 151, 16))
         self.dba_label.setObjectName("dba_label")
@@ -51,11 +54,32 @@ class Ui_Form(object):
         self.toolBox = QtWidgets.QToolBox(Form)
         self.toolBox.setGeometry(QtCore.QRect(850, 30, 250, 400))
         self.toolBox.setObjectName("toolBox")
+
+        self.dba_hlayout = QtWidgets.QVBoxLayout()
+        self.dba_hlayout.addWidget(self.dba_label)
+        self.dba_hlayout.addWidget(self.graphicsView)
+        self.dba_parent_widget = QtWidgets.QWidget()
+        self.dba_parent_widget.setLayout(self.dba_hlayout)
+        self.toolbox_hlayout = QtWidgets.QVBoxLayout()
+        self.toolbox_hlayout.addWidget(self.toolbox_label)
+        self.toolbox_hlayout.addWidget(self.toolBox)
+        self.toolbox_parent_widget = QtWidgets.QWidget()
+        self.toolbox_parent_widget.setLayout(self.toolbox_hlayout)
+        self.splitter = QtWidgets.QSplitter()
+        self.splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.splitter.addWidget(self.dba_parent_widget)
+        self.splitter.addWidget(self.toolbox_parent_widget)
+        self.splitter.setSizes([self.splitter.size().width() , 200])
+        dba_index = self.splitter.indexOf(self.dba_parent_widget)
+        self.splitter.setCollapsible(dba_index, False)
+        toolbox_index = self.splitter.indexOf(self.toolbox_parent_widget)
+        self.splitter.setCollapsible(toolbox_index, False)
+        self.parent_layout = QtWidgets.QVBoxLayout(Form)
+        self.parent_layout.addWidget(self.splitter)
+
         self.field_tab = QtWidgets.QWidget()
         self.field_tab.setGeometry(QtCore.QRect(0, 0, 250, 350))
         self.field_tab.setObjectName("field_tab")
-        
-
         self.field_button = DragButton('Field', self.field_tab)
         self.field_button.setGeometry(QtCore.QRect(20, 5, 100, 30))
         self.field_button.setObjectName("field_button")
@@ -149,6 +173,7 @@ class Ui_Form(object):
         self.retranslateUi(Form)
         self.toolBox.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Form)
+        
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -161,12 +186,14 @@ class Ui_Form(object):
     def populateVariableListButton(self):
         self.list_variables_button.menu().clear()
         self.variables = self.scene.variableList
-        
-        for variable in self.variables:
+        i = 0
+        while i < len(self.variables):
             action = QtWidgets.QAction(self.field_tab)
-            action.setText(variable.widget().text())
+            action.setText(str(self.variables[i]))
+            print(str(self.variables[i]))
             action.triggered.connect(self.prepareDefinedVariableButton)
             self.list_variables_button.menu().addAction(action)
+            i = i+1
         
         self.list_variables_button.showMenu()
 
@@ -182,11 +209,13 @@ class Ui_Form(object):
         self.list_fields_button.menu().clear()
         self.fields = self.scene.proxyDefinedFieldList
         
-        for field in self.fields:
+        i = 0
+        while i < len(self.fields):
             action = QtWidgets.QAction(self.field_tab)
-            action.setText(field.widget().text())
+            action.setText(str(self.fields[i]))
             action.triggered.connect(self.prepareDefinedFieldButton)
             self.list_fields_button.menu().addAction(action)
+            i = i+1
         
         self.list_fields_button.showMenu()
     
@@ -218,8 +247,8 @@ class Ui_Form(object):
 
     def clear_widgets_from_canvass(self):
         self.scene.clearCanvass()
-       
-
+    
+   
    
 
 if __name__ == "__main__":

@@ -1,0 +1,491 @@
+{
+    "name": "mongodb",
+    "created": "12/02/2019 16:39:56",
+    "edited": "12/02/2019 16:39:56",
+    "description": "mongodb Protocol",
+    "protocol": "tcp",
+    "change_protocol": "mongodb",
+    "src_port": "27017",
+    "dst_port": "-1",
+    "author": "Daniel O",
+    "dissector": {
+        "Decision0": {
+            "Condition": [
+                "length",
+                "==",
+                "0"
+            ],
+            "Position": {
+                "x": 721.0,
+                "y": 931.0
+            },
+            "true": "CodeBlock1",
+            "false": "message_length",
+            "Type": "Decision"
+        },
+        "CodeBlock1": {
+            "Code": "return",
+            "Position": {
+                "x": 1043.0,
+                "y": 1003.0
+            },
+            "Type": "CodeBlock",
+            "next_field": "END"
+        },
+        "message_length": {
+            "Name": "message_length",
+            "Abbreviation": "message_length",
+            "Description": "messageLength",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 679.0,
+                "y": 1003.0
+            },
+            "Type": "Field",
+            "next_field": "request_id"
+        },
+        "request_id": {
+            "Name": "request_id",
+            "Abbreviation": "request_id",
+            "Description": "RequestID",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 680.0,
+                "y": 1068.0
+            },
+            "Type": "Field",
+            "next_field": "response_to"
+        },
+        "response_to": {
+            "Name": "response_to",
+            "Abbreviation": "response_to",
+            "Description": "responseTo",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 680.0,
+                "y": 1133.0
+            },
+            "Type": "Field",
+            "next_field": "Variable1"
+        },
+        "Decision1": {
+            "Condition": [
+                "opcode_name",
+                "==",
+                "\"OP_QUERY\""
+            ],
+            "Position": {
+                "x": 681.0,
+                "y": 1332.0
+            },
+            "true": "Variable3",
+            "false": "Decision3",
+            "Type": "Decision"
+        },
+        "flags": {
+            "Name": "flags",
+            "Abbreviation": "flags",
+            "Description": "flags",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 1083.0,
+                "y": 1485.125
+            },
+            "Type": "Field",
+            "next_field": "Variable5"
+        },
+        "ForLoop0": {
+            "Expressions": {
+                "exp1": "i=20",
+                "exp2": "length-1",
+                "exp3": "1"
+            },
+            "Position": {
+                "x": 1023.75,
+                "y": 1662.0
+            },
+            "true": "Decision2",
+            "false": "full_coll_name",
+            "Type": "for"
+        },
+        "Decision2": {
+            "Condition": [
+                "buffer(i,1):le_uint()",
+                "==",
+                "0"
+            ],
+            "Position": {
+                "x": 1383.0,
+                "y": 1686.4375
+            },
+            "true": "CodeBlock6",
+            "false": "End_ForLoop0",
+            "Type": "Decision"
+        },
+        "CodeBlock6": {
+            "Code": "  string_length = i - 20\n                break",
+            "Position": {
+                "x": 1535.0,
+                "y": 1777.0
+            },
+            "Type": "CodeBlock",
+            "next_field": "END"
+        },
+        "End_ForLoop0": {
+            "Position": {
+                "x": 1217.4375,
+                "y": 1775.5625
+            },
+            "Type": "End Loop",
+            "next_field": "ForLoop0"
+        },
+        "full_coll_name": {
+            "Name": "full_coll_name",
+            "Abbreviation": "full_coll_name",
+            "Description": "fullCollectionName",
+            "Data Type": "STRING",
+            "Base": "ASCII",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "string_length",
+                "combobox": "Field"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 952.0,
+                "y": 1733.0
+            },
+            "Type": "Field",
+            "next_field": "number_to_skip"
+        },
+        "number_to_skip": {
+            "Name": "number_to_skip",
+            "Abbreviation": "number_to_skip",
+            "Description": "numberToSkip",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 953.0,
+                "y": 1822.0
+            },
+            "Type": "Field",
+            "next_field": "number_to_return"
+        },
+        "number_to_return": {
+            "Name": "number_to_return",
+            "Abbreviation": "number_to_return",
+            "Description": "numberToReturn",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 898.0,
+                "y": 1874.0
+            },
+            "Type": "Field",
+            "next_field": "query"
+        },
+        "query": {
+            "Name": "query",
+            "Abbreviation": "query",
+            "Description": "query",
+            "Data Type": "NONE",
+            "Base": "HEX",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "length - string_length - 28",
+                "combobox": "Variable"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 1202.0,
+                "y": 1879.0
+            },
+            "Type": "Field",
+            "next_field": "END"
+        },
+        "Decision3": {
+            "Condition": [
+                "opcode_name",
+                "==",
+                "\"OP_REPLY\""
+            ],
+            "Position": {
+                "x": 616.0,
+                "y": 1424.0
+            },
+            "true": "response_flags",
+            "false": "END",
+            "Type": "Decision"
+        },
+        "response_flags": {
+            "Name": "response_flags",
+            "Abbreviation": "response_flags",
+            "Description": "responseFlags",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 717.0,
+                "y": 1561.0
+            },
+            "Type": "Field",
+            "next_field": "cursor_id"
+        },
+        "cursor_id": {
+            "Name": "cursor_id",
+            "Abbreviation": "cursor_id",
+            "Description": "cursorId",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "8",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 717.0,
+                "y": 1620.0
+            },
+            "Type": "Field",
+            "next_field": "starting_from"
+        },
+        "starting_from": {
+            "Name": "starting_from",
+            "Abbreviation": "starting_from",
+            "Description": "startingFrom",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 677.0,
+                "y": 1684.0
+            },
+            "Type": "Field",
+            "next_field": "number_returned"
+        },
+        "number_returned": {
+            "Name": "number_returned",
+            "Abbreviation": "number_returned",
+            "Description": "numberReturned",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 652.0,
+                "y": 1746.0
+            },
+            "Type": "Field",
+            "next_field": "document"
+        },
+        "document": {
+            "Name": "document",
+            "Abbreviation": "document",
+            "Description": "document",
+            "Data Type": "NONE",
+            "Base": "HEX",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "length-36",
+                "combobox": "Field"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "true",
+            "Position": {
+                "x": 641.0,
+                "y": 1814.0
+            },
+            "Type": "Field",
+            "next_field": "END"
+        },
+        "START": "Variable0",
+        "Variable0": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "length",
+            "Value": "buffer:len()",
+            "Position": {
+                "x": 723.0,
+                "y": 854.0
+            },
+            "Type": "Variable",
+            "next_field": "Decision0"
+        },
+        "Variable1": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "opcode_number",
+            "Value": "buffer(12,4):le_uint()",
+            "Position": {
+                "x": 1105.0,
+                "y": 1070.0
+            },
+            "Type": "Variable",
+            "next_field": "Variable2"
+        },
+        "Variable2": {
+            "Scope": "local",
+            "Data Type": "string",
+            "Name": "opcode_name",
+            "Value": "get_opcode_name(opcode_number)",
+            "Position": {
+                "x": 1091.0,
+                "y": 1166.0
+            },
+            "Type": "Variable",
+            "next_field": "opcode"
+        },
+        "Variable3": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "flags_number",
+            "Value": "buffer(16,4):le_uint()",
+            "Position": {
+                "x": 1080.0,
+                "y": 1334.0
+            },
+            "Type": "Variable",
+            "next_field": "Variable4"
+        },
+        "Variable4": {
+            "Scope": "local",
+            "Data Type": "string",
+            "Name": "flags_description",
+            "Value": "get_flags_description(flag_number)",
+            "Position": {
+                "x": 1089.0,
+                "y": 1409.0
+            },
+            "Type": "Variable",
+            "next_field": "flags"
+        },
+        "Variable5": {
+            "Scope": "local",
+            "Data Type": "number",
+            "Name": "string_length",
+            "Value": "0",
+            "Position": {
+                "x": 1152.0,
+                "y": 1573.0
+            },
+            "Type": "Variable",
+            "next_field": "ForLoop0"
+        },
+        "opcode": {
+            "Name": "opcode",
+            "Abbreviation": "opcode",
+            "Description": "opCode",
+            "Data Type": "INT32",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "4",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "false",
+            "Position": {
+                "x": 927.0,
+                "y": 1233.0
+            },
+            "Type": "Field",
+            "next_field": "Decision1"
+        }
+    },
+    "path": "/Users/danielornelas/projects/protocol-dissector-builder/Protocol-Dissector-Builder/SAMPLE/MongoDB.pdbproj"
+}

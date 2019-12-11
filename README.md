@@ -3,10 +3,11 @@
 The protocol dissector builder is a system to generate protocol dissectors using drag and drop functioanlities. The generated dissectors can be saved in LUA format and applied to PCAP files.
 
 # Running
-### Python and pip
+### Python3.6 and pip
 
 ```
 pip install -r requirements/base.txt
+pip install -r requirements/[linux-mac.txt] or [windows.txt]
 fbs run
 ```
 

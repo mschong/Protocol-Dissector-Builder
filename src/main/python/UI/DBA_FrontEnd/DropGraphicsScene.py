@@ -78,10 +78,26 @@ class DropGraphicsScene(QGraphicsScene):
                     for item in self.items(event.scenePos()):
                         if item.scene():
                             item.removeConnectors()
-                            self.proxyWidgetList.remove(item)
+                            i = 0
+                            while (i < len(self.proxyWidgetList)):
+                                if(isinstance(self.getDefaultWidget(item), Variable) or isinstance(self.getDefaultWidget(item), Field)):
+                                    # Deletes the copy of a defined field without affecting the original field
+                                    if(self.proxyWidgetList[i] == item and self.proxyWidgetList[i].widget().menu().actions()[0].defaultWidget().getIsCopy() == True):
+                                        del self.proxyWidgetList[i]
+                                        break
+                                    # Deletes the original of a defined field without affecting the copy field
+                                    elif(self.proxyWidgetList[i] == item and self.proxyWidgetList[i].widget().menu().actions()[0].defaultWidget().getIsCopy() == False):
+                                        del self.proxyWidgetList[i]
+                                        break
+                                else:
+                                    del self.proxyWidgetList[i]
+                                    break
+                                i = i+1    
                             if(not isinstance(item.widget(), QPushButton)):
                                 if(isinstance(self.getDefaultWidget(item), Variable)):
-                                    self.variableList.remove(item)
+                                    # If there's no other occurrences of the deleted field or variable then it going to be removed from the list of defined variable or field
+                                    if(self.countOccurrences(item) == 0):
+                                        self.variableList.remove(item.widget().menu().actions()[0].defaultWidget().nameLineEdit.text())
                                     self.variable_count -= 1
                                     i = 0
                                     for widget in self.proxyWidgetList:
@@ -89,12 +105,22 @@ class DropGraphicsScene(QGraphicsScene):
                                             self.getDefaultWidget(widget).setVariableNumber(i)
                                             i += 1
                                 elif(isinstance(self.getDefaultWidget(item), Field)):
-                                    self.proxyDefinedFieldList.remove(item)
+                                     if(self.countOccurrences(item) == 0):
+                                        self.proxyDefinedFieldList.remove(item.widget().menu().actions()[0].defaultWidget().table.cellWidget(0,1).text())
                             self.removeItem(item)
 
 
-    # The following two functions are only preparing the scene to accept any drag movements
+    # This function counts how repeats are form the item selected for deletion
+    def countOccurrences(self, item):
+       i = 0
+       counter = 0
+       while (i < len(self.proxyWidgetList)):
+            if(item.widget().text() == self.proxyWidgetList[i].widget().text()):
+                counter = counter + 1
+            i = i+1
+       return counter
 
+    # The following two functions are only preparing the scene to accept any drag movements
     def dragEnterEvent(self, event):
         event.acceptProposedAction()
 
@@ -107,26 +133,31 @@ class DropGraphicsScene(QGraphicsScene):
         if(event.mimeData().text() == "Field"):
             field = Field()
             proxy = self.addWidgetToScene(field, event.scenePos(), event.mimeData().text())
+            self.proxyDefinedFieldList.append(str(proxy.widget().menu().actions()[0].defaultWidget().table.cellWidget(0,1).text()))
             proxy.setPolygon()
         elif(event.mimeData().text() == "Field (String)"):
             str_field = Field()
             str_field.setDataType("STRING")
             proxy = self.addWidgetToScene(str_field, event.scenePos(), event.mimeData().text())
+            self.proxyDefinedFieldList.append(str(proxy.widget().menu().actions()[0].defaultWidget().table.cellWidget(0,1).text()))
             proxy.setPolygon()
         elif(event.mimeData().text() == "Field (Integer)"):
             int_field = Field()
             int_field.setDataType("INT32")
             proxy = self.addWidgetToScene(int_field, event.scenePos(), event.mimeData().text())
+            self.proxyDefinedFieldList.append(str(proxy.widget().menu().actions()[0].defaultWidget().table.cellWidget(0,1).text()))
             proxy.setPolygon()
         elif(event.mimeData().text() == "Field (Float)"):
             float_field = Field()
             float_field.setDataType("FLOAT")
             proxy = self.addWidgetToScene(float_field, event.scenePos(), event.mimeData().text())
+            self.proxyDefinedFieldList.append(str(proxy.widget().menu().actions()[0].defaultWidget().table.cellWidget(0,1).text()))
             proxy.setPolygon()
         elif(event.mimeData().text() == "Field (Octal)"):
             octal_field = Field()
             octal_field.setBase("OCT")
             proxy = self.addWidgetToScene(octal_field, event.scenePos(), event.mimeData().text())
+            self.proxyDefinedFieldList.append(str(proxy.widget().menu().actions()[0].defaultWidget().table.cellWidget(0,1).text()))
             proxy.setPolygon()
         elif(event.mimeData().text() == "Code Block"):
             name = "CodeBlock" + str(self.codeBlock_count)
@@ -176,7 +207,7 @@ class DropGraphicsScene(QGraphicsScene):
             self.variable_count += 1
             variable = Variable(varNumber)
             proxy = self.addWidgetToScene(variable, event.scenePos(), event.mimeData().text())
-            self.variableList.append(proxy)
+            self.variableList.append(str(proxy.widget().menu().actions()[0].defaultWidget().nameLineEdit.text()))
             proxy.setPolygon()
         else: 
             for widget in self.proxyWidgetList:
@@ -197,8 +228,8 @@ class DropGraphicsScene(QGraphicsScene):
             self.updateScene(proxy.size().height(), False)
 
         self.proxyWidgetList.append(proxy)
-        if(event.mimeData().text()[0:5] == "Field"):
-            self.proxyDefinedFieldList.append(proxy)
+        """if(event.mimeData().text()[0:5] == "Field"):
+            self.proxyDefinedFieldList.append(proxy)"""
         event.accept()
 
     def addWidgetToScene(self, widget, pos, text):
@@ -211,10 +242,17 @@ class DropGraphicsScene(QGraphicsScene):
                     button.setText(text)
                     widget.setButton(button)
                     if(text=='Defined Variable'):
-                        variable_name = button.widget.nameLineEdit.text()
+                        variable_name = button.menu().actions()[0].defaultWidget().nameLineEdit.text()
                         button.setText(variable_name)
+                        widget.setIsCopy(True)
                     else:
-                        button.setText('No Name Variable')
+                        variable_text = 'No Name Variable' + ' ' + str(self.variable_count)
+                        button.setText(variable_text)
+                        button.menu().actions()[0].defaultWidget().nameLineEdit.setText(button.text())
+                        widget.setIsCopy(False)
+                        widget.setName(variable_text)
+                        widget.setScene(self)
+
 
                 
                 else:
@@ -235,18 +273,27 @@ class DropGraphicsScene(QGraphicsScene):
                     field_text = button.text() + ' ' + str(self.countFields)
                     button.setText(field_text)
                     button.menu().actions()[0].defaultWidget().table.cellWidget(0,1).setText(field_text)
+                    widget.setName(field_text)
                     widget.setButton(button)
+                    widget.setIsCopy(False)
+                    widget.setScene(self)
                 elif(text == "Defined Field"):
                     self.countFields = self.countFields + 1
                     button = ToolButton(widget, self)
                     field_text = button.widget.table.cellWidget(0,1).text()
                     button.setText(field_text)
                     widget.setButton(button)
+                    widget.setIsCopy(True)
+                    widget.setScene(self)
                 else:
                     self.countFields = self.countFields + 1
                     button = ToolButton(widget, self)
+                    field_text = button.widget.table.cellWidget(0,1).text()
                     button.setText(text)
+                    widget.setName(field_text)
                     widget.setButton(button)
+                    widget.setIsCopy(False)
+                    widget.setScene(self)
         else:
             button = QPushButton()
             button.setGeometry(QRect(20, 30, 278, 40))
@@ -271,11 +318,6 @@ class DropGraphicsScene(QGraphicsScene):
         proxy.setWidget(button)
         proxy.setParentItem(parent)
 
-        # if(isinstance(proxy.widget().menu().actions()[0].defaultWidget(),Field)):
-        #    self.proxyFieldWidgetList.append(proxy)
-        #if(isinstance(widget, Field)):
-         #   self.proxyFieldWidgetList.append(proxy)
-
         return proxy
 
 
@@ -299,7 +341,7 @@ class DropGraphicsScene(QGraphicsScene):
         else:
             definedVariable = Variable(self.variable_count)
             self.variable_count += 1
-            for variable in self.variableList:
+            for variable in self.proxyWidgetList:
                 if text == variable.widget().text():
                     defined_variable_properties = variable.widget().menu().actions()[0].defaultWidget().saveMethod()
                     definedVariable.setScope(defined_variable_properties.get('Scope'))

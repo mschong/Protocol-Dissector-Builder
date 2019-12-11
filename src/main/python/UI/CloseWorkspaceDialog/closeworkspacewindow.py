@@ -5,8 +5,10 @@
 # Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
-
-
+'''
+Author: Ernesto Vazquez
+Dialog to be displayed when close workspace is clicked
+'''
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -37,4 +39,4 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Close Workspace"))
-        self.label.setText(_translate("Dialog", "[ You can re-open it later in Add Worspace [+] ]"))
+        self.label.setText(_translate("Dialog", "[ You can re-open it later in File menu ]"))

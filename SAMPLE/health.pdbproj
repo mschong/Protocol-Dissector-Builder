@@ -1,0 +1,161 @@
+{
+    "name": "health",
+    "created": "12/03/2019 16:55:15",
+    "edited": "12/03/2019 16:55:15",
+    "description": "Health Protocol",
+    "protocol": "udp",
+    "change_protocol": "health",
+    "src_port": "55055",
+    "dst_port": "-1",
+    "author": "team",
+    "dissector": {
+        "START": "version_buffer",
+        "version_buffer": {
+            "Name": "version_buffer",
+            "Abbreviation": "version",
+            "Description": "Version",
+            "Data Type": "INT8",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "1",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "false",
+            "Position": {
+                "x": 204.0,
+                "y": 103.0
+            },
+            "Type": "Field",
+            "next_field": "field_health"
+        },
+        "field_health": {
+            "Name": "field_health",
+            "Abbreviation": "code",
+            "Description": "Code",
+            "Data Type": "INT8",
+            "Base": "HEX",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "1",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "false",
+            "Position": {
+                "x": 205.0,
+                "y": 190.0
+            },
+            "Type": "Field",
+            "next_field": "groupid"
+        },
+        "groupid": {
+            "Name": "groupid",
+            "Abbreviation": "group",
+            "Description": "Group ID",
+            "Data Type": "INT16",
+            "Base": "DEC",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "2",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "false",
+            "Position": {
+                "x": 198.0,
+                "y": 261.0
+            },
+            "Type": "Field",
+            "next_field": "workerguid"
+        },
+        "workerguid": {
+            "Name": "workerguid",
+            "Abbreviation": "guid",
+            "Description": "Worked ID",
+            "Data Type": "GUID",
+            "Base": "NONE",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "16",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "false",
+            "Position": {
+                "x": 199.0,
+                "y": 337.0
+            },
+            "Type": "Field",
+            "next_field": "Variable0"
+        },
+        "Variable0": {
+            "Scope": "local",
+            "Data Type": "table",
+            "Name": "health_code_table",
+            "Value": "{\"Healthy,\"High Load\",\"Failure\"}",
+            "Position": {
+                "x": 533.0,
+                "y": 113.0
+            },
+            "Type": "Variable",
+            "next_field": "Variable1"
+        },
+        "Variable1": {
+            "Scope": "local",
+            "Data Type": "string",
+            "Name": "health_code",
+            "Value": "buffer(1,1):uint()",
+            "Position": {
+                "x": 535.0,
+                "y": 188.0
+            },
+            "Type": "Variable",
+            "next_field": "Variable2"
+        },
+        "Variable2": {
+            "Scope": "local",
+            "Data Type": "string",
+            "Name": "health_string",
+            "Value": "health_code_table[health_code]",
+            "Position": {
+                "x": 527.0,
+                "y": 267.0
+            },
+            "Type": "Variable",
+            "next_field": "generated_health_name"
+        },
+        "generated_health_name": {
+            "Name": "generated_health_name",
+            "Abbreviation": "status",
+            "Description": "Health Status",
+            "Data Type": "STRING",
+            "Base": "NONE",
+            "Mask": "",
+            "Value Constraint": "",
+            "Var Size": {
+                "editText": "1",
+                "combobox": "BYTES"
+            },
+            "ID Value": "",
+            "Required": "false",
+            "LE": "false",
+            "Position": {
+                "x": 531.0,
+                "y": 353.0
+            },
+            "Type": "Field",
+            "next_field": "END"
+        }
+    },
+    "path": "/Users/danielornelas/projects/protocol-dissector-builder/Protocol-Dissector-Builder/SAMPLE/health.pdbproj"
+}

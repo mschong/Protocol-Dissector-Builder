@@ -9,6 +9,7 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 		super().__init__()
 		self.connectors = []
 		self.polygon = None
+		# Helps with allowing a item to be movable in the canvas
 		self.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
 
 	def dragEnterEvent(self, e):

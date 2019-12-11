@@ -6,6 +6,11 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+'''
+Author:Daniel Ornelas
+Project config dialog is in charge of taking the settings for the project
+'''
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class P_Dialog(object):
@@ -59,7 +64,15 @@ class P_Dialog(object):
         self.lineEdit_7 = QtWidgets.QLineEdit(Dialog)
         self.lineEdit_7.setGeometry(QtCore.QRect(140, 200, 161, 21))
         self.lineEdit_7.setObjectName("lineEdit_7")
-
+        #Tooltips
+        self.lineEdit.setToolTip("Project name will be the name of the dissector")
+        self.lineEdit_2.setToolTip("Name of the author")
+        self.lineEdit_3.setToolTip("Description of the dissector")
+        self.lineEdit_4.setToolTip("Name of the source communication protocol")
+        self.lineEdit_5.setToolTip("Name given to the subtree created for the dissected data")
+        self.lineEdit_6.setToolTip("Port Number for source of packets")
+        self.lineEdit_7.setToolTip("Port Number for destination of packets")
+        
         self.retranslateUi(Dialog)
         self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
