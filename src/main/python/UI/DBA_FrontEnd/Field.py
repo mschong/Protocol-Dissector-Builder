@@ -6,7 +6,7 @@ from PyQt5.QtCore import *
 class FieldOKDialog(QDialog):
     def __init__(self, text):
         super().__init__()
-
+        self.name = ""
         self.title = "ERROR"
         self.initUI(text)
 
@@ -31,6 +31,7 @@ class Field(QWidget):
 
         super().__init__()
         self.customSize = 0
+        self.isCopy = False
         self.initUI()
 
     def initUI(self):
@@ -155,9 +156,17 @@ class Field(QWidget):
             self.customSize = 1
             #var_size_row_layout = QHBoxLayout()
             objectName = QLineEdit()
-            objectName_exp_validator = QRegExp("[a-z0-9_]+\S?[A-za-z0-9_]+")
-            objectName_validator = QRegExpValidator(objectName_exp_validator)
+            #objectName_exp_validator = QRegExp("[A-za-z0-9_+]+")
+            #objectName_validator = QRegExpValidator(objectName_exp_validator)
             #objectName.setValidator(objectName_validator)
+            if self.cur_txt == 'Variable':
+                autoList = self.get_data("Variable")
+            else:
+                autoList = self.get_data("Field")
+            completer = QCompleter(autoList)
+            objectName.setCompleter(completer)
+        
+            
             """objectType = QComboBox()
             objectTypes = ['Variable', 'Field']
             for ob_type in objectTypes:
@@ -204,9 +213,19 @@ class Field(QWidget):
                 dialog = FieldOKDialog(text)
                 dialog.exec()
                 return
+        
+        i = 0
+        while(i < len(self.scene.proxyDefinedFieldList)):
+            if(self.name == str(self.scene.proxyDefinedFieldList[i])):
+                self.scene.proxyDefinedFieldList[i] = self.table.cellWidget(0, 1).text()
+                self.name = self.table.cellWidget(0, 1).text()
+                break
+            i = i + 1        
         self.toolButton.setText(self.table.cellWidget(0, 1).text())
+        self.toolButton.menu().hide()
     
     def setName(self, name):
+        self.name = name
         self.table.cellWidget(0,1).setText(name)
 
     def setAbbreviation(self, abbr):
@@ -292,9 +311,18 @@ class Field(QWidget):
     
     def setButton(self, toolButton):
         self.toolButton = toolButton
-    
+    def getIsCopy(self):
+        return self.isCopy
+    def setIsCopy(self, isCopy):
+        self.isCopy = isCopy
     def setScene(self, scene):
         self.scene = scene
+    def get_data(self, typeWidget):
+        if(typeWidget == "Variable"):
+            print(self.scene.variableList[1])
+            return self.scene.variableList
+        else:
+            return self.scene.proxyDefinedFieldList
     def size(self):
     
         size = dict({'Var Size': {'editText': self.table.cellWidget(7,1).children()[1].text(), 'combobox': self.table.cellWidget(7,1).children()[2].currentText()}})

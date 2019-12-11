@@ -9,28 +9,31 @@ from UI.DBA_FrontEnd.DragButton import DragButton
 import json
 
 class QGraphicsView(QtWidgets.QGraphicsView):
+    
     def __init__(self, parent=None):
         super(QGraphicsView, self).__init__(parent)
         
     #This helps zoom in and out the canvas 
     #RESOURCE: https://stackoverflow.com/questions/19113532/qgraphicsview-zooming-in-and-out-under-mouse-position-using-mouse-wheel
     def wheelEvent(self, event):
-        
-        zoomInFactor = 1.25
-        zoomOutFactor = 1 / zoomInFactor
+        if (event.modifiers() == QtCore.Qt.ControlModifier):
+            zoomInFactor = 1.25
+            zoomOutFactor = 1 / zoomInFactor
 
-        oldPos = self.mapToScene(event.pos())
+            oldPos = self.mapToScene(event.pos())
+            if event.angleDelta().y() > 0:
+                zoomFactor = zoomInFactor
+            else:
+                zoomFactor = zoomOutFactor
+            self.scale(zoomFactor, zoomFactor)
 
-        if event.angleDelta().y() > 0:
-            zoomFactor = zoomInFactor
+            newPos = self.mapToScene(event.pos())
+
+            delta = newPos - oldPos
+            self.translate(delta.x(), delta.y())
         else:
-            zoomFactor = zoomOutFactor
-        self.scale(zoomFactor, zoomFactor)
-
-        newPos = self.mapToScene(event.pos())
-
-        delta = newPos - oldPos
-        self.translate(delta.x(), delta.y())
+            QGraphicsView.wheelEvent(self, event)
+        
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -170,6 +173,7 @@ class Ui_Form(object):
         self.retranslateUi(Form)
         self.toolBox.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Form)
+        
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -182,12 +186,14 @@ class Ui_Form(object):
     def populateVariableListButton(self):
         self.list_variables_button.menu().clear()
         self.variables = self.scene.variableList
-        
-        for variable in self.variables:
+        i = 0
+        while i < len(self.variables):
             action = QtWidgets.QAction(self.field_tab)
-            action.setText(variable.widget().text())
+            action.setText(str(self.variables[i]))
+            print(str(self.variables[i]))
             action.triggered.connect(self.prepareDefinedVariableButton)
             self.list_variables_button.menu().addAction(action)
+            i = i+1
         
         self.list_variables_button.showMenu()
 
@@ -203,11 +209,13 @@ class Ui_Form(object):
         self.list_fields_button.menu().clear()
         self.fields = self.scene.proxyDefinedFieldList
         
-        for field in self.fields:
+        i = 0
+        while i < len(self.fields):
             action = QtWidgets.QAction(self.field_tab)
-            action.setText(field.widget().text())
+            action.setText(str(self.fields[i]))
             action.triggered.connect(self.prepareDefinedFieldButton)
             self.list_fields_button.menu().addAction(action)
+            i = i+1
         
         self.list_fields_button.showMenu()
     
@@ -239,8 +247,8 @@ class Ui_Form(object):
 
     def clear_widgets_from_canvass(self):
         self.scene.clearCanvass()
-       
-
+    
+   
    
 
 if __name__ == "__main__":
