@@ -157,7 +157,7 @@ class Field(QWidget):
             objectName = QLineEdit()
             objectName_exp_validator = QRegExp("[a-z0-9_]+\S?[A-za-z0-9_]+")
             objectName_validator = QRegExpValidator(objectName_exp_validator)
-            objectName.setValidator(objectName_validator)
+            #objectName.setValidator(objectName_validator)
             """objectType = QComboBox()
             objectTypes = ['Variable', 'Field']
             for ob_type in objectTypes:
