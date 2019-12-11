@@ -6,6 +6,10 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+'''
+Author : Daniel Ornelas
+Dialog to confirm that project will be saved on export.
+'''
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 

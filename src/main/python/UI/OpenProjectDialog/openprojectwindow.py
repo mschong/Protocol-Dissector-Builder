@@ -5,7 +5,10 @@
 # Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
-
+'''
+Author: Ernesto Vazquez 
+Dialog to browse files to open a project
+'''
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -42,8 +45,12 @@ class Ui_Dialog(object):
         self.addButton.setStandardButtons(QtWidgets.QDialogButtonBox.Ok)
 
     def openProject(self):
+        '''
+        Open the selected project
+        '''
         title = "Please select Project"
         directory = "./"
+        #Look for files with pdbproj extension only
         ftype = "JSON files (*.pdbproj)"
         dialog = QtWidgets.QFileDialog(None, title, directory, ftype)
         if dialog.exec_() == QtWidgets.QDialog.Accepted:

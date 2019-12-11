@@ -6,6 +6,11 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+'''
+Author:Daniel Ornelas
+Project config dialog is in charge of taking the settings for the project
+'''
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class P_Dialog(object):

@@ -33,3 +33,4 @@ if __name__ == "__main__":
     mainDialog.show()
     exit_code = appctxt.app.exec_()
     sys.exit(exit_code)
+    

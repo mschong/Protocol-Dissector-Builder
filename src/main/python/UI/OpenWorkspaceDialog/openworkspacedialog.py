@@ -5,7 +5,10 @@ sys.path.insert(1, "./")
 sys.path.insert(1, "../../")
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+'''
+Author: Ernesto Vazquez 
+Dialog to browse files to open a workspace
+'''
 
 class Ui_OpenWorkspaceDialog(object):
 
@@ -32,8 +35,12 @@ class Ui_OpenWorkspaceDialog(object):
         QtCore.QMetaObject.connectSlotsByName(OpenWorkspaceDialog)
 
     def openworkspace(self):
+        '''
+        Open the selected workspace file
+        '''
         title = "Please select Workspace"
         directory = "./"
+        #Look for files with pdbws extension only
         ftype = "JSON files (*.pdbws)"
         dialog = QtWidgets.QFileDialog(None, title, directory, ftype)
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
