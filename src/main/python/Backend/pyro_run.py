@@ -136,7 +136,8 @@ class Pyro_Run():
             if(not answer) or (answer.lower()[0] != 'y'):
                 return
         # projectPath = "src/main/python/Backend/PCAP/PCAPServices.py"
-        projectPath="PCAPServices.py"
+        projectPath= "{}/{}.py".format(os.getcwd(), "PCAPServices")
+        print(projectPath)
         #spawn a new process using the right library for the OS
         if platform.system() == "Windows":
             self.child = winpexpect.winspawn("python " + projectPath)
