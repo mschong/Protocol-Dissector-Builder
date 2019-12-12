@@ -55,13 +55,13 @@ class PCap:
             # if platform.system() == 'Linux' or platform.system() == 'Windows':
             #     writeFile = open("../UI/MainPane/dictColor.log","w")
             # if platform.system() == 'Darwin':
-            writeFile = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","w")
+            writeFile = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","w+")
             output = [packets,protocols,self.colorList]
         else:
             # if platform.system() == 'Linux' or platform.system() == 'Windows':
             #     writeFile = open("../UI/MainPane/dict.log","w")
             # if platform.system() == 'Darwin':
-            writeFile = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","w")
+            writeFile = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","w+")
 
             output = [packets,protocols]
         json.dump(output,writeFile)
