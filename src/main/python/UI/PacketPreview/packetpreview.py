@@ -111,7 +111,7 @@ class Ui_PackagePreview(object):
 
     def dissect(self):
         logging.info("Dissecting")
-        p = subprocess.Popen(['python3.6', 'src/main/python/UI/PacketPreview/demo.py'])
+        p = subprocess.Popen(['python', f'{os.getcwd()}/src/main/python/UI/PacketPreview/demo.py'])
         try:
             if(self.name[0] and ".pcap" in self.name[0] ):
                 self.model.removeRows(0,self.model.rowCount())

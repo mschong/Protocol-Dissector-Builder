@@ -18,7 +18,7 @@ else:
 class Pyro_Run():
     '''
     This class is in charge of handling communication between UI and backend.
-    
+
     Attributes;
         loader : instance of the Loader class
         workspace_file : path to the current loaded workspace
@@ -39,7 +39,7 @@ class Pyro_Run():
         Yields:
             workspace file set and selected project set
         '''
-        #workspace set 
+        #workspace set
         if workspace != None:
             self.workspace_file = workspace
         #workspace not setalready
@@ -48,7 +48,7 @@ class Pyro_Run():
         self.selected_project = selected_project
         print("project changed to {}/{}".format(self.workspace_file,self.selected_project))
         return self.workspace_file,self.selected_project
-    
+
     def load_workspace(self, file):
         '''
         Load workspace. Calls Loader -> load_workspace
@@ -94,11 +94,11 @@ class Pyro_Run():
     def new_project(self,name,author,desc,created,edited , protocol, change_protocol, src_port, dst_port):
         '''
         Create a new project. Calls Loader-> new_project
-        ''' 
+        '''
         return self.loader.new_project(name,author,desc,created,edited,protocol,change_protocol,src_port,dst_port)
 
     def export_lua_script(self,workspace,project):
-        ''' 
+        '''
         Export a lua script for the current project. calls Loader -> export_lua_script
         '''
         self.loader.export_lua_script(workspace,project)
@@ -110,7 +110,7 @@ class Pyro_Run():
         self.loader.save_dissector_attributes(dissector,workspace,project)
 
     def get_dissector_attributes(self,workspace,project):
-        ''' 
+        '''
         Get dissector attributes. call Loader->get_dissector_attributes
         '''
         return self.loader.get_dissector_attributes(workspace,project)
@@ -166,7 +166,7 @@ class Pyro_Run():
         print(self.workspace_file)
         print(self.selected_project)
         self.child.sendline("dissect {} {}".format(self.workspace_file,self.selected_project))
-        
+
         print(self.child.read())
 
     def colorCode(self):
@@ -181,7 +181,10 @@ class Pyro_Run():
         '''
         Send the signal to print packets
         '''
+        print("print")
         self.child.sendline("print")
+        if platform.system() == "Windows": #IMPORT WINPEXPECT OR PEXPECT DEPENDING ON OS
+            self.child.expect(winpexpect.EOF, timeout=600000)
         print(self.child.read())
 
     def main(self):
