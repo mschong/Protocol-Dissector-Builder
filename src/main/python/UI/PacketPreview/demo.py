@@ -67,7 +67,7 @@ class Demo(QWidget):
         grid.addWidget(groupbox1, *(1, 1))
         self.spinner.start()
         self.show()
-    
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

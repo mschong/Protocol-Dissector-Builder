@@ -71,7 +71,7 @@ class Ui_PackagePreview(object):
         self.label_3.setText("Status: Opening a file...")
         self.model.removeRows(0,self.model.rowCount())
         self.name = QFileDialog.getOpenFileName()
-        #p = subprocess.Popen(['python', f'{os.getcwd()}/src/main/python/UI/PacketPreview/demo.py'])
+        p = subprocess.Popen(['python', f'{os.getcwd()}/demo.py'])
         if(self.name[0] and ".pcap" in self.name[0] ):
             self.pyro_proxy.createPackets(self.name[0])
             self.pyro_proxy.savePackets()
@@ -106,14 +106,14 @@ class Ui_PackagePreview(object):
                         ProtocolToAdd.appendRow([ProtocolField,ProtocolValue])
                     branch1.appendRow(ProtocolToAdd)
                 self.model.appendRow([branch1])
-        #p.terminate()
+        p.terminate()
         logging.info("File Opened")
         self.pushButton2.setText("Dissect")
 
 
     def dissect(self):
         logging.info("Dissecting")
-        #p = subprocess.Popen(['python', f'{os.getcwd()}/src/main/python/UI/PacketPreview/demo.py'])
+        p = subprocess.Popen(['python', f'{os.getcwd()}/demo.py'])
         try:
             if(self.name[0] and ".pcap" in self.name[0] ):
                 self.model.removeRows(0,self.model.rowCount())
@@ -177,7 +177,7 @@ class Ui_PackagePreview(object):
                 self.label_3.setText("Status: Package has been dissected.")
         except:
                 pass
-        #p.terminate()
+        p.terminate()
         logging.info("Dissected")
 
 
