@@ -77,7 +77,9 @@ class Ui_PackagePreview(object):
             self.pyro_proxy.savePackets()
             self.label_3.setText(" ")
             self.pyro_proxy.printPackets()
-            fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","r")
+            fileToRead = open(f'{os.getcwd()}/dict.log', "r")
+
+            # fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dict.log","r")
             vars = json.loads(fileToRead.read().strip())
             packetDict = vars[0]
             protocolDict = vars[1]
@@ -123,8 +125,9 @@ class Ui_PackagePreview(object):
                 self.label_3.setText("")
 
                 self.pyro_proxy.dissectPackets()
+                fileToRead = open(f'{os.getcwd()}/dictColor.log', "r")
 
-                fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","r")
+                # fileToRead = open(os.getcwd() + "/src/main/python/UI/MainPane/dictColor.log","r")
                 vars = json.loads(fileToRead.read().strip())
                 packetDict = vars[0]
                 protocolDict = vars[1]
