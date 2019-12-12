@@ -140,7 +140,7 @@ class Pyro_Run():
         print(projectPath)
         #spawn a new process using the right library for the OS
         if platform.system() == "Windows":
-            self.child = winpexpect.winspawn("python " + projectPath)
+            self.child = winpexpect.winspawn("python " + '"' + projectPath + '"')
             print("created - w " )
         else:
             self.child = pexpect.spawn("python3.6 " + projectPath,encoding='utf-8')
