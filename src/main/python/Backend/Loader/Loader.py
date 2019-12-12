@@ -12,6 +12,7 @@ sys.path.insert(1, "../../../../")
 from Backend.Project import project
 from Backend.Workspace import workspace
 from Backend.Dissector import dissector
+from Backend.Writer import writer
 class Loader():
     """
     This class works as a manager for dissector, project, and workspace classes.
